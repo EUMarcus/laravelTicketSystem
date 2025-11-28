@@ -10,6 +10,11 @@ class LoginController extends Controller
 {
     public function showLoginForm()
     {
+        // Redirect if already authenticated
+        if (Auth::check()) {
+            return redirect()->route('dashboard');
+        }
+        
         return view('auth.login');
     }
 

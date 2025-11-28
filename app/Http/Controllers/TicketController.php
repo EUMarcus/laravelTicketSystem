@@ -20,7 +20,7 @@ class TicketController extends Controller
     public function index()
     {
         $user = auth()->user();
-        $profile = Profile::find($user->id) ?? Profile::where('name', $user->name)->first();
+        $profile = $user->profile;
 
         if (!$profile) {
             // Create profile if it doesn't exist (for existing users)
@@ -60,7 +60,7 @@ class TicketController extends Controller
         ]);
 
         $user = auth()->user();
-        $profile = Profile::find($user->id) ?? Profile::where('name', $user->name)->first();
+        $profile = $user->profile;
 
         if (!$profile) {
             $profile = Profile::create([
@@ -79,21 +79,30 @@ class TicketController extends Controller
             'status' => 'open',
         ]);
 
-        // Handle file uploads
+        // Handle file uploads with error handling
         if ($request->hasFile('attachments')) {
             foreach ($request->file('attachments') as $file) {
-                $upload = $this->supabase->uploadFile($file, "tickets/{$ticket->id}");
-                
-                $ticket->attachments()->create([
-                    'id' => (string) Str::uuid(),
-                    'ticket_id' => $ticket->id,
-                    'file_name' => $upload['name'],
-                    'file_path' => $upload['path'],
-                    'file_url' => $upload['url'],
-                    'file_type' => $file->getMimeType(),
-                    'file_size' => $file->getSize(),
-                    'uploaded_by' => $profile->id,
-                ]);
+                try {
+                    // Upload to Supabase
+                    $upload = $this->supabase->uploadFile($file, "tickets/{$ticket->id}");
+                    
+                    // Create attachment record only if upload succeeds
+                    $ticket->attachments()->create([
+                        'id' => (string) Str::uuid(),
+                        'ticket_id' => $ticket->id,
+                        'file_name' => $upload['name'],
+                        'file_path' => $upload['path'],
+                        'file_url' => $upload['url'],
+                        'file_type' => $file->getMimeType(),
+                        'file_size' => $file->getSize(),
+                        'uploaded_by' => $profile->id,
+                    ]);
+                } catch (\Exception $e) {
+                    // Return error if upload fails
+                    return back()
+                        ->withInput()
+                        ->withErrors(['attachments' => 'Failed to upload file: ' . $file->getClientOriginalName() . '. ' . $e->getMessage()]);
+                }
             }
         }
 
@@ -105,7 +114,7 @@ class TicketController extends Controller
     {
         $ticket->load(['customer', 'assignedEmployee', 'messages.sender', 'messages.attachments', 'attachments']);
         $user = auth()->user();
-        $profile = Profile::find($user->id) ?? Profile::where('name', $user->name)->first();
+        $profile = $user->profile;
 
         if (!$profile) {
             $profile = Profile::create([

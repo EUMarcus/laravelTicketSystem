@@ -11,7 +11,7 @@
             <p class="text-kampay-text-muted mt-2">Create your account to get started</p>
         </div>
 
-        <form method="POST" action="{{ route('register') }}">
+        <form method="POST" action="{{ route('register') }}" id="register-form">
             @csrf
 
             <div class="mb-6">
@@ -25,6 +25,7 @@
                     value="{{ old('name') }}" 
                     required 
                     autofocus
+                    autocomplete="name"
                     class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-kampay-bg-dark focus:ring-2 focus:ring-kampay-teal focus:border-transparent dark:bg-kampay-bg-dark dark:text-white"
                     placeholder="John Doe"
                 >
@@ -40,6 +41,7 @@
                     name="email" 
                     value="{{ old('email') }}" 
                     required
+                    autocomplete="email"
                     class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-kampay-bg-dark focus:ring-2 focus:ring-kampay-teal focus:border-transparent dark:bg-kampay-bg-dark dark:text-white"
                     placeholder="you@example.com"
                 >
@@ -69,6 +71,7 @@
                     type="password" 
                     name="password" 
                     required
+                    autocomplete="new-password"
                     class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-kampay-bg-dark focus:ring-2 focus:ring-kampay-teal focus:border-transparent dark:bg-kampay-bg-dark dark:text-white"
                     placeholder="••••••••"
                 >
@@ -83,6 +86,7 @@
                     type="password" 
                     name="password_confirmation" 
                     required
+                    autocomplete="new-password"
                     class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-kampay-bg-dark focus:ring-2 focus:ring-kampay-teal focus:border-transparent dark:bg-kampay-bg-dark dark:text-white"
                     placeholder="••••••••"
                 >
@@ -106,6 +110,59 @@
         </form>
     </div>
 </div>
+
+<script>
+    // Prevent form auto-submit and ensure user must fill all fields
+    document.getElementById('register-form').addEventListener('submit', function(e) {
+        const name = document.getElementById('name').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value;
+        const passwordConfirmation = document.getElementById('password_confirmation').value;
+        const role = document.getElementById('role').value;
+
+        // Validate all fields are filled
+        if (!name || !email || !password || !passwordConfirmation || !role) {
+            e.preventDefault();
+            alert('Please fill in all required fields.');
+            return false;
+        }
+
+        // Validate password match
+        if (password !== passwordConfirmation) {
+            e.preventDefault();
+            alert('Passwords do not match.');
+            return false;
+        }
+
+        // Validate password length
+        if (password.length < 8) {
+            e.preventDefault();
+            alert('Password must be at least 8 characters long.');
+            return false;
+        }
+
+        // Prevent any auto-submit behavior
+        return true;
+    });
+
+    // Prevent Enter key from submitting form prematurely
+    document.querySelectorAll('#register-form input, #register-form select').forEach(input => {
+        input.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && e.target.type !== 'submit') {
+                // Only allow Enter on the last field (password confirmation) to submit
+                if (e.target.id !== 'password_confirmation') {
+                    e.preventDefault();
+                    // Move to next field
+                    const form = e.target.form;
+                    const index = Array.from(form).indexOf(e.target);
+                    if (form.elements[index + 1]) {
+                        form.elements[index + 1].focus();
+                    }
+                }
+            }
+        });
+    });
+</script>
 @endsection
 
 

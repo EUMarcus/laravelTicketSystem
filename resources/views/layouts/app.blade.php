@@ -21,7 +21,7 @@
                     </a>
                 </div>
                 
-                @auth
+                @if(auth()->check() && !request()->routeIs('register'))
                 <div class="flex items-center space-x-4">
                     <a href="{{ route('tickets.index') }}" class="text-kampay-text-warm dark:text-white hover:text-kampay-teal transition">Tickets</a>
                     <a href="{{ route('tickets.create') }}" class="bg-kampay-teal hover:bg-kampay-teal-dark text-white px-4 py-2 rounded-lg transition transform hover:scale-105">New Ticket</a>
@@ -35,7 +35,7 @@
                     <a href="{{ route('login') }}" class="text-kampay-text-warm dark:text-white hover:text-kampay-teal transition">Login</a>
                     <a href="{{ route('register') }}" class="bg-kampay-teal hover:bg-kampay-teal-dark text-white px-4 py-2 rounded-lg transition transform hover:scale-105">Sign Up</a>
                 </div>
-                @endauth
+                @endif
             </div>
         </div>
     </nav>
