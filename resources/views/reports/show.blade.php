@@ -1,109 +1,196 @@
 @extends('layouts.app')
 
-@section('title', 'Report Details - Community Hub')
+@section('title', $ticket->subject . ' - Community Hub')
 
 @section('content')
-@php
-    // Same dataset as index page
-    $allReports = [
-        ['id' => 1, 'ticket_id' => 'RPT-2024-001', 'title' => 'Broken Streetlight on Main Street', 'category' => 'Broken Streetlights', 'status' => 'In Progress', 'priority' => 'High', 'location' => 'Main Street, Block 5', 'date' => '2 days ago', 'description' => 'Streetlight has been flickering and now completely out. Need immediate attention for safety.'],
-        ['id' => 2, 'ticket_id' => 'RPT-2024-002', 'title' => 'Large Pothole Near Community Center', 'category' => 'Road Issues', 'status' => 'Under Review', 'priority' => 'Normal', 'location' => 'Community Center Road', 'date' => '3 days ago', 'description' => 'Deep pothole causing vehicle damage. Located right before the community center entrance.'],
-        ['id' => 3, 'ticket_id' => 'RPT-2024-003', 'title' => 'Garbage Not Collected This Week', 'category' => 'Garbage/Cleanliness', 'status' => 'Completed', 'priority' => 'Normal', 'location' => 'Block 3, Barangay Road', 'date' => '1 week ago', 'description' => 'Garbage collection missed scheduled pickup. Trash accumulating.'],
-        ['id' => 4, 'ticket_id' => 'RPT-2024-004', 'title' => 'Flooding in Barangay Road After Rain', 'category' => 'Flooding/Drainage', 'status' => 'Open', 'priority' => 'High', 'location' => 'Barangay Road, Corner Street', 'date' => '1 week ago', 'description' => 'Water accumulates after heavy rain, blocking vehicle passage.'],
-        ['id' => 5, 'ticket_id' => 'RPT-2024-005', 'title' => 'Stray Dogs in Children\'s Park', 'category' => 'Stray Animals', 'status' => 'In Progress', 'priority' => 'Normal', 'location' => 'Children\'s Park Area', 'date' => '2 weeks ago', 'description' => 'Multiple stray dogs frequenting the park, causing concern for children safety.'],
-        ['id' => 6, 'ticket_id' => 'RPT-2024-006', 'title' => 'Noise Complaint - Late Night Construction', 'category' => 'Noise Complaints', 'status' => 'Open', 'priority' => 'Low', 'location' => 'Block 7, Residential Area', 'date' => '3 days ago', 'description' => 'Construction work happening past 10 PM, disturbing residents.'],
-        ['id' => 7, 'ticket_id' => 'RPT-2024-007', 'title' => 'Damaged Sidewalk Tiles', 'category' => 'Road Issues', 'status' => 'Open', 'priority' => 'Normal', 'location' => 'Block 2, Main Walkway', 'date' => '4 days ago', 'description' => 'Several sidewalk tiles are cracked and pose tripping hazard.'],
-        ['id' => 8, 'ticket_id' => 'RPT-2024-008', 'title' => 'Overflowing Drainage System', 'category' => 'Flooding/Drainage', 'status' => 'In Progress', 'priority' => 'High', 'location' => 'Block 4, Corner Street', 'date' => '5 days ago', 'description' => 'Drainage system overflowing during heavy rains, flooding nearby areas.'],
-        ['id' => 9, 'ticket_id' => 'RPT-2024-009', 'title' => 'Uncollected Trash Bins', 'category' => 'Garbage/Cleanliness', 'status' => 'Open', 'priority' => 'Normal', 'location' => 'Block 6, Residential Area', 'date' => '1 day ago', 'description' => 'Trash bins have not been emptied for over a week.'],
-        ['id' => 10, 'ticket_id' => 'RPT-2024-010', 'title' => 'Flickering Streetlight', 'category' => 'Broken Streetlights', 'status' => 'Under Review', 'priority' => 'Low', 'location' => 'Block 8, Park Entrance', 'date' => '6 days ago', 'description' => 'Streetlight flickers intermittently, needs maintenance check.'],
-        ['id' => 11, 'ticket_id' => 'RPT-2024-011', 'title' => 'Loud Music from Neighbor', 'category' => 'Noise Complaints', 'status' => 'Open', 'priority' => 'Low', 'location' => 'Block 1, Residential Area', 'date' => '2 days ago', 'description' => 'Excessive noise from neighbor playing loud music late at night.'],
-        ['id' => 12, 'ticket_id' => 'RPT-2024-012', 'title' => 'Suspicious Activity Reported', 'category' => 'Safety/Security', 'status' => 'In Progress', 'priority' => 'High', 'location' => 'Block 5, Community Center', 'date' => '1 day ago', 'description' => 'Reports of suspicious individuals loitering around community center.'],
-    ];
-    
-    // Find the report by ID
-    $report = collect($allReports)->firstWhere('id', (int)$id);
-    
-    // If report not found, redirect or show 404
-    if (!$report) {
-        abort(404, 'Report not found');
-    }
-@endphp
-
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" style="padding-top: 6rem !important; padding-bottom: 2rem;">
+<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8" style="padding-top: 6rem !important; padding-bottom: 2rem;">
     <!-- Back Button -->
     <div class="mb-6">
-        <a href="{{ route('reports.index') }}" class="inline-flex items-center space-x-2 text-gray-600 hover:text-gray-900">
+        <a href="{{ route('reports.index') }}" class="inline-flex items-center space-x-2 text-gray-600 hover:text-[#65B741] transition-colors">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
             </svg>
-            <span class="font-medium">Back to Reports</span>
+            <span>Back to Reports</span>
         </a>
     </div>
 
-    <!-- Report Details Card -->
-    <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-6 lg:p-8">
-        <!-- Header -->
-        <div class="mb-6 pb-6 border-b border-gray-200">
-            <div class="flex items-center gap-2 flex-wrap mb-4">
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800 border border-gray-200">
-                    {{ $report['category'] }}
-                </span>
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded text-xs font-medium
-                    @if($report['status'] === 'Open') bg-[#65B741]/10 text-[#65B741] border border-[#65B741]/20
-                    @elseif($report['status'] === 'In Progress') bg-[#FFB534]/10 text-[#FFB534] border border-[#FFB534]/20
-                    @elseif($report['status'] === 'Completed') bg-gray-100 text-gray-700 border border-gray-200
-                    @else bg-gray-100 text-gray-600 border border-gray-200 @endif">
-                    {{ $report['status'] }}
-                </span>
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded text-xs font-medium
-                    @if($report['priority'] === 'High') bg-red-50 text-red-700 border border-red-200
-                    @elseif($report['priority'] === 'Normal') bg-yellow-50 text-yellow-700 border border-yellow-200
-                    @else bg-gray-50 text-gray-600 border border-gray-200 @endif">
-                    {{ $report['priority'] }}
-                </span>
-                <span class="text-gray-400 font-mono text-xs">{{ $report['ticket_id'] }}</span>
-            </div>
-            <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">{{ $report['title'] }}</h1>
-            <p class="text-gray-600">Reported {{ $report['date'] }}</p>
-        </div>
-
-        <!-- Description -->
-        <div class="mb-6">
-            <h2 class="text-lg font-bold text-gray-900 mb-3">Description</h2>
-            <p class="text-gray-700 leading-relaxed text-base">{{ $report['description'] }}</p>
-        </div>
-
-        <!-- Details Grid -->
-        <div class="grid md:grid-cols-2 gap-6 mb-6">
-            <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
-                <h3 class="text-sm font-semibold text-gray-700 mb-2 uppercase tracking-wide">Location</h3>
-                <div class="flex items-center gap-2 text-gray-900">
-                    <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                    <span class="font-medium">{{ $report['location'] }}</span>
+    <!-- Report Header -->
+    <div class="bg-white p-6 lg:p-8 mb-6 rounded-lg border border-gray-200 shadow-sm border-l-4 
+        @if($ticket->status === 'open') border-[#65B741] 
+        @elseif($ticket->status === 'in_progress') border-[#FFB534] 
+        @elseif($ticket->status === 'resolved') border-gray-400 
+        @else border-gray-400 @endif">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
+            <div class="flex-1">
+                <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-3">{{ $ticket->subject }}</h1>
+                <div class="flex items-center gap-3 flex-wrap">
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold
+                        @if($ticket->status === 'open') bg-[#65B741]/10 text-[#65B741]
+                        @elseif($ticket->status === 'in_progress') bg-[#FFB534]/10 text-[#FFB534]
+                        @elseif($ticket->status === 'resolved') bg-gray-100 text-gray-700
+                        @else bg-gray-100 text-gray-600 @endif">
+                        {{ ucfirst(str_replace('_', ' ', $ticket->status)) }}
+                    </span>
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold
+                        @if($ticket->priority === 'urgent') bg-red-50 text-red-700
+                        @elseif($ticket->priority === 'high') bg-yellow-50 text-yellow-700
+                        @elseif($ticket->priority === 'medium') bg-blue-50 text-blue-700
+                        @else bg-gray-100 text-gray-600 @endif">
+                        {{ ucfirst($ticket->priority) }}
+                    </span>
+                    <span class="text-sm text-gray-500">#{{ substr($ticket->id, 0, 8) }}</span>
+                    <span class="text-sm text-gray-500">•</span>
+                    <span class="text-sm text-gray-500">{{ $ticket->created_at->format('M d, Y') }}</span>
                 </div>
             </div>
-            <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
-                <h3 class="text-sm font-semibold text-gray-700 mb-2 uppercase tracking-wide">Reported</h3>
-                <div class="flex items-center gap-2 text-gray-900">
-                    <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <span class="font-medium">{{ $report['date'] }}</span>
-                </div>
-            </div>
+            
+            @if($profile->isEmployee())
+            <form method="POST" action="{{ route('reports.update', $ticket->id) }}" class="flex-shrink-0">
+                @csrf
+                @method('PATCH')
+                <select name="status" onchange="this.form.submit()" class="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-gray-900 outline-none bg-white cursor-pointer">
+                    <option value="open" {{ $ticket->status === 'open' ? 'selected' : '' }}>Open</option>
+                    <option value="in_progress" {{ $ticket->status === 'in_progress' ? 'selected' : '' }}>In Progress</option>
+                    <option value="resolved" {{ $ticket->status === 'resolved' ? 'selected' : '' }}>Resolved</option>
+                    <option value="closed" {{ $ticket->status === 'closed' ? 'selected' : '' }}>Closed</option>
+                </select>
+            </form>
+            @endif
         </div>
 
-        <!-- Photo Section -->
-        <div class="border-t border-gray-200 pt-6">
-            <h2 class="text-lg font-bold text-gray-900 mb-4">Photo</h2>
-            <div class="bg-gray-100 rounded-lg overflow-hidden border border-gray-200">
-                <img src="https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=800" alt="Report photo" class="w-full h-auto object-cover">
+        @if($ticket->description)
+        <div class="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-100">
+            <p class="text-gray-900 leading-relaxed whitespace-pre-wrap">{{ $ticket->description }}</p>
+        </div>
+        @endif
+
+        @if($ticket->attachments->where('message_id', null)->count() > 0)
+        <div class="mt-4">
+            <p class="text-sm font-semibold text-gray-900 mb-3">Initial Attachments:</p>
+            <div class="flex flex-wrap gap-2">
+                @foreach($ticket->attachments->where('message_id', null) as $attachment)
+                <a href="{{ $attachment->file_url }}" target="_blank" class="inline-flex items-center space-x-2 px-4 py-2 bg-[#65B741]/10 hover:bg-[#65B741]/20 rounded-lg transition-all duration-200 group">
+                    @if($attachment->isImage())
+                    <svg class="w-5 h-5 text-[#65B741]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    @else
+                    <svg class="w-5 h-5 text-[#65B741]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                    </svg>
+                    @endif
+                    <span class="text-sm font-medium text-[#65B741] group-hover:underline">{{ $attachment->file_name }}</span>
+                </a>
+                @endforeach
             </div>
         </div>
+        @endif
+    </div>
+
+    <!-- Messages/Chat -->
+    <div class="bg-white p-6 lg:p-8 mb-6 rounded-lg border border-gray-200 shadow-sm">
+        <h2 class="text-xl font-bold text-gray-900 mb-6">Conversation</h2>
+        
+        <div class="space-y-6 max-h-[500px] overflow-y-auto mb-6 pr-2">
+            @forelse($ticket->messages as $message)
+            <div class="flex {{ $message->sender_id === $profile->id ? 'justify-end' : 'justify-start' }}">
+                <div class="max-w-[75%] sm:max-w-[65%]">
+                    <div class="flex items-center space-x-2 mb-2 {{ $message->sender_id === $profile->id ? 'justify-end' : 'justify-start' }}">
+                        <span class="text-sm font-semibold text-gray-900">{{ $message->sender->name }}</span>
+                        <span class="text-xs text-gray-500">{{ $message->created_at->diffForHumans() }}</span>
+                    </div>
+                    <div class="rounded-2xl p-4 {{ $message->sender_id === $profile->id ? 'bg-[#65B741] text-white rounded-tr-sm' : 'bg-gray-100 text-gray-900 rounded-tl-sm' }}">
+                    @if($message->content)
+                        <p class="mb-2 whitespace-pre-wrap leading-relaxed">{{ $message->content }}</p>
+                    @endif
+                    
+                    @if($message->attachments->count() > 0)
+                        <div class="mt-3 space-y-2 pt-3 border-t {{ $message->sender_id === $profile->id ? 'border-white/20' : 'border-gray-200' }}">
+                        @foreach($message->attachments as $attachment)
+                            <div class="{{ $message->sender_id === $profile->id ? 'bg-white/10' : 'bg-white' }} rounded-lg p-2">
+                            @if($attachment->isImage())
+                            <a href="{{ $attachment->file_url }}" target="_blank" class="block">
+                                    <img src="{{ $attachment->file_url }}" alt="{{ $attachment->file_name }}" class="max-w-xs rounded-lg hover:opacity-90 transition-opacity">
+                            </a>
+                            @else
+                                <a href="{{ $attachment->file_url }}" target="_blank" class="flex items-center space-x-2 {{ $message->sender_id === $profile->id ? 'text-white hover:text-white/80' : 'text-[#65B741] hover:text-[#4d8a32]' }} transition-colors">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                </svg>
+                                    <span class="text-sm font-medium">{{ $attachment->file_name }}</span>
+                            </a>
+                            @endif
+                        </div>
+                        @endforeach
+                    </div>
+                    @endif
+                    </div>
+                </div>
+            </div>
+            @empty
+            <div class="text-center py-12">
+                <div class="inline-block p-4 bg-gray-100 rounded-full mb-4">
+                    <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                    </svg>
+                </div>
+                <p class="text-gray-600">No messages yet. Start the conversation!</p>
+            </div>
+            @endforelse
+        </div>
+
+        <!-- Message Form -->
+        <form method="POST" action="{{ route('reports.messages.store', $ticket->id) }}" enctype="multipart/form-data" class="border-t border-gray-200 pt-6">
+            @csrf
+            
+            @if($errors->any())
+                <div class="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+                    <ul class="list-disc list-inside">
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+            
+            <div class="mb-4">
+                <textarea 
+                    name="content" 
+                    rows="3"
+                    class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-gray-900 outline-none resize-none bg-white"
+                    placeholder="Type your message..."
+                ></textarea>
+            </div>
+
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <label class="flex items-center space-x-2 cursor-pointer group">
+                    <input type="file" name="attachments[]" multiple class="hidden" id="message-attachments" accept="image/*,application/pdf,.doc,.docx" onchange="updateAttachmentLabel(this)">
+                    <span class="flex items-center space-x-2 px-4 py-2 border-2 border-gray-300 rounded-lg text-sm text-gray-600 hover:border-[#65B741] hover:text-[#65B741] hover:bg-[#65B741]/10 transition-all duration-200">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+                        </svg>
+                        <span id="attachment-label">Attach Files</span>
+                    </span>
+                </label>
+                <button 
+                    type="submit" 
+                    class="px-8 py-2 bg-gray-900 text-white font-semibold rounded-lg hover:bg-gray-800 w-full sm:w-auto"
+                >
+                    Send Message
+                </button>
+            </div>
+        </form>
     </div>
 </div>
-@endsection
 
+<script>
+function updateAttachmentLabel(input) {
+    const label = document.getElementById('attachment-label');
+    if (input.files.length > 0) {
+        label.textContent = `${input.files.length} file(s) selected`;
+    } else {
+        label.textContent = 'Attach Files';
+    }
+}
+</script>
+@endsection

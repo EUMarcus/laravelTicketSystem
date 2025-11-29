@@ -7,17 +7,15 @@ Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
-Route::get('/reports', function () {
-    return view('reports.index');
-})->name('reports.index');
-
-Route::get('/reports/create', function () {
-    return view('reports.create');
-})->name('reports.create');
-
-Route::get('/reports/{id}', function ($id) {
-    return view('reports.show', ['id' => $id]);
-})->name('reports.show');
+// Reports routes (using TicketController - keeping "reports" naming)
+Route::middleware('auth')->group(function () {
+    Route::get('/reports', [App\Http\Controllers\TicketController::class, 'index'])->name('reports.index');
+    Route::get('/reports/create', [App\Http\Controllers\TicketController::class, 'create'])->name('reports.create');
+    Route::post('/reports', [App\Http\Controllers\TicketController::class, 'store'])->name('reports.store');
+    Route::get('/reports/{ticket}', [App\Http\Controllers\TicketController::class, 'show'])->name('reports.show');
+    Route::patch('/reports/{ticket}', [App\Http\Controllers\TicketController::class, 'update'])->name('reports.update');
+    Route::post('/reports/{ticket}/messages', [App\Http\Controllers\MessageController::class, 'store'])->name('reports.messages.store');
+});
 
 Route::get('/suggestions', function () {
     return view('suggestions.index');
@@ -71,12 +69,9 @@ Route::post('/logout', [App\Http\Controllers\Auth\LoginController::class, 'logou
 Route::get('/register', [App\Http\Controllers\Auth\RegisterController::class, 'showRegistrationForm'])->name('register');
 Route::post('/register', [App\Http\Controllers\Auth\RegisterController::class, 'register']);
 
-// Ticket routes (require authentication)
+// Dashboard redirects to reports
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', function () {
-        return redirect()->route('tickets.index');
+        return redirect()->route('reports.index');
     })->name('dashboard');
-    
-    Route::resource('tickets', \App\Http\Controllers\TicketController::class);
-    Route::post('/tickets/{ticket}/messages', [\App\Http\Controllers\MessageController::class, 'store'])->name('tickets.messages.store');
 });

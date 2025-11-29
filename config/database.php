@@ -94,7 +94,7 @@ return [
             'charset' => env('DB_CHARSET', 'utf8'),
             'prefix' => '',
             'prefix_indexes' => true,
-            'search_path' => 'laravel', // Changed from 'public' to avoid conflicts with Supabase's public API
+            'search_path' => 'laravel,public,auth', // Our tables are in 'laravel' schema - search it first
             'sslmode' => env('DB_SSLMODE', 'prefer'),
         ],
 

@@ -42,12 +42,12 @@ class TicketController extends Controller
                 ->paginate(15);
         }
 
-        return view('tickets.index', compact('tickets', 'profile'));
+        return view('reports.index', compact('tickets', 'profile'));
     }
 
     public function create()
     {
-        return view('tickets.create');
+        return view('reports.create');
     }
 
     public function store(Request $request)
@@ -97,8 +97,8 @@ class TicketController extends Controller
             }
         }
 
-        return redirect()->route('tickets.show', $ticket->id)
-            ->with('success', 'Ticket created successfully!');
+        return redirect()->route('reports.show', $ticket->id)
+            ->with('success', 'Report created successfully!');
     }
 
     public function show(Ticket $ticket)
@@ -120,7 +120,7 @@ class TicketController extends Controller
             abort(403);
         }
 
-        return view('tickets.show', compact('ticket', 'profile'));
+        return view('reports.show', compact('ticket', 'profile'));
     }
 
     public function update(Request $request, Ticket $ticket)
@@ -137,7 +137,7 @@ class TicketController extends Controller
 
         $ticket->update($validated);
 
-        return back()->with('success', 'Ticket updated successfully!');
+        return back()->with('success', 'Report updated successfully!');
     }
 }
 

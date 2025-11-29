@@ -61,6 +61,18 @@
                     @enderror
                 </div>
 
+                <div>
+                    <label class="block text-xs font-semibold text-gray-900 mb-1">Account Type <span class="text-red-500">*</span></label>
+                    <select name="role" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-gray-900 outline-none bg-white" required>
+                        <option value="">Select account type</option>
+                        <option value="citizen" {{ old('role') == 'citizen' ? 'selected' : '' }}>Citizen</option>
+                        <option value="employee" {{ old('role') == 'employee' ? 'selected' : '' }}>Employee</option>
+                    </select>
+                    @error('role')
+                        <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
                 <div class="grid md:grid-cols-2 gap-3">
                     <div>
                         <label class="block text-xs font-semibold text-gray-900 mb-1">Password <span class="text-red-500">*</span></label>
