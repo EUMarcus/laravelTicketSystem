@@ -67,7 +67,7 @@
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                             </svg>
-                            <span>New Announcement</span>
+                            <span>Create Post</span>
                         </button>
                     </div>
                 </div>
@@ -171,12 +171,12 @@
 </div>
 
 <!-- Create Announcement Modal -->
-<div id="announcementModal" class="fixed inset-0 z-[9999] hidden items-center justify-center p-4" style="display: none; position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important;">
+<div id="announcementModal" class="fixed inset-0 z-[9999] hidden items-center justify-center p-4">
     <div class="bg-white rounded-lg shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto relative mx-auto my-auto z-10" style="max-width: 42rem; margin: auto;">
         <div class="p-6">
             <!-- Modal Header -->
             <div class="flex items-center justify-between mb-6">
-                <h2 class="text-2xl font-bold text-gray-900">Create New Announcement</h2>
+                <h2 class="text-2xl font-bold text-gray-900">Create New Post</h2>
                 <button onclick="closeAnnouncementModal()" class="text-gray-400 hover:text-gray-600">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -294,7 +294,7 @@
                         type="submit"
                         class="px-6 py-2.5 bg-[#65B741] text-white font-semibold rounded-lg hover:bg-[#4d8a32] transition-colors"
                     >
-                        Publish Announcement
+                        Publish Post
                     </button>
                 </div>
             </form>
@@ -320,17 +320,27 @@ function openAnnouncementModal() {
 
 function closeAnnouncementModal() {
     const modal = document.getElementById('announcementModal');
-    modal.classList.add('hidden');
-    modal.style.display = 'none';
-    document.body.style.overflow = 'auto';
-    // Reset form
-    document.getElementById('announcementForm').reset();
+    if (modal) {
+        modal.classList.add('hidden');
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+        // Reset form
+        const form = document.getElementById('announcementForm');
+        if (form) {
+            form.reset();
+        }
+    }
 }
 
 // Close modal when clicking outside
-document.getElementById('announcementModal').addEventListener('click', function(e) {
-    if (e.target === this) {
-        closeAnnouncementModal();
+document.addEventListener('DOMContentLoaded', function() {
+    const modal = document.getElementById('announcementModal');
+    if (modal) {
+        modal.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeAnnouncementModal();
+            }
+        });
     }
 });
 
@@ -338,7 +348,7 @@ document.getElementById('announcementModal').addEventListener('click', function(
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
         const modal = document.getElementById('announcementModal');
-        if (!modal.classList.contains('hidden')) {
+        if (modal && !modal.classList.contains('hidden')) {
             closeAnnouncementModal();
         }
     }

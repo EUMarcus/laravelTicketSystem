@@ -110,7 +110,7 @@ class AnnouncementController extends Controller
     {
         try {
             // Fetch announcement from Supabase
-            $announcements = $this->supabase->select('announcements', ['announce_id' => $id], 'announce_id,title,category,full_content,urgent,created_at,posted_by');
+            $announcements = $this->supabase->select('announcements', ['announce_id' => $id], 'announce_id,title,category,full_content,urgent,created_at,posted_by,start_date,end_date');
 
             if (empty($announcements)) {
                 abort(404, 'Announcement not found');
@@ -120,8 +120,20 @@ class AnnouncementController extends Controller
 
             // Format date
             $date = isset($announcement['created_at'])
-                ? \Carbon\Carbon::parse($announcement['created_at'])->format('M d, Y')
+                ? Carbon::parse($announcement['created_at'])->format('M d, Y')
                 : now()->format('M d, Y');
+
+            // Format start_date if provided
+            $startDate = null;
+            if (!empty($announcement['start_date'])) {
+                $startDate = Carbon::parse($announcement['start_date'])->format('M d, Y g:i A');
+            }
+
+            // Format end_date if provided
+            $endDate = null;
+            if (!empty($announcement['end_date'])) {
+                $endDate = Carbon::parse($announcement['end_date'])->format('M d, Y g:i A');
+            }
 
             // Transform to match view expectations
             $formattedAnnouncement = [
@@ -133,6 +145,8 @@ class AnnouncementController extends Controller
                 'content' => $announcement['full_content'],
                 'urgent' => $announcement['urgent'] ?? false,
                 'images' => [], // No images for now
+                'start_date' => $startDate,
+                'end_date' => $endDate,
             ];
 
             return view('announcements.show', ['announcement' => $formattedAnnouncement]);

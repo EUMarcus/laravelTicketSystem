@@ -33,6 +33,33 @@
             <p class="text-gray-600 text-sm">Published {{ $announcement['date'] }}</p>
         </div>
 
+        <!-- Event Dates (if provided) -->
+        @if(!empty($announcement['start_date']) || !empty($announcement['end_date']))
+        <div class="mb-6 pb-6 border-b border-gray-200">
+            <h3 class="font-semibold text-gray-900 mb-3 text-lg">Event Schedule</h3>
+            <div class="space-y-2">
+                @if(!empty($announcement['start_date']))
+                    <div class="flex items-center gap-2 text-gray-700">
+                        <svg class="w-5 h-5 text-[#65B741]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        <span class="font-medium">Starts:</span>
+                        <span>{{ $announcement['start_date'] }}</span>
+                    </div>
+                @endif
+                @if(!empty($announcement['end_date']))
+                    <div class="flex items-center gap-2 text-gray-700">
+                        <svg class="w-5 h-5 text-[#65B741]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        <span class="font-medium">Ends:</span>
+                        <span>{{ $announcement['end_date'] }}</span>
+                    </div>
+                @endif
+            </div>
+        </div>
+        @endif
+
         <!-- Content -->
         <div class="mb-6">
             <h3 class="font-semibold text-gray-900 mb-3 text-lg">Details</h3>
