@@ -51,7 +51,19 @@
                 <!-- Suggestion Form -->
                 <div class="bg-white p-6 rounded-lg border border-gray-200 shadow-sm mb-6">
                     <h2 class="text-xl font-bold text-gray-900 mb-6">Share Your Suggestion</h2>
-                    <form id="suggestionForm" class="space-y-5">
+                    
+                    @if($errors->any())
+                        <div class="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+                            <ul class="list-disc list-inside text-red-700 text-sm">
+                                @foreach($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+                    
+                    <form id="suggestionForm" method="POST" action="{{ route('suggestions.store') }}" class="space-y-5">
+                        @csrf
                         <div>
                             <label class="block text-sm font-semibold text-gray-900 mb-2">Category <span class="text-gray-400 font-normal">(Optional)</span></label>
                             <select id="suggestionCategory" name="category" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-gray-900 outline-none bg-white">
@@ -94,44 +106,19 @@
 
 @if(session('user'))
 <script>
-    // Set current user info
-    window.currentUserEmail = '{{ session("user")["email"] }}';
-    window.currentUserName = '{{ session("user")["name"] }}';
-</script>
-<script>
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('suggestionForm');
 
-    // Form submission
+    // Form validation before submission
     form.addEventListener('submit', function(e) {
-        e.preventDefault();
+        const title = document.getElementById('suggestionTitle').value.trim();
+        const description = document.getElementById('suggestionDescription').value.trim();
 
-        // Get form data
-        const category = document.getElementById('suggestionCategory').value;
-        const title = document.getElementById('suggestionTitle').value;
-        const description = document.getElementById('suggestionDescription').value;
-
-        // Save suggestion to localStorage
-        const suggestions = JSON.parse(localStorage.getItem('user_suggestions') || '[]');
-        const newSuggestion = {
-            id: 'SUG-' + Date.now() + '-' + Math.random().toString(36).substr(2, 3).toUpperCase(),
-            category: category || 'Other',
-            title: title,
-            description: description,
-            upvotes: 0,
-            comments: 0,
-            author: window.currentUserName || 'Unknown',
-            userEmail: window.currentUserEmail,
-            createdAt: new Date().toISOString(),
-            date: 'Just now'
-        };
-
-        suggestions.push(newSuggestion);
-        localStorage.setItem('user_suggestions', JSON.stringify(suggestions));
-
-        // Show success message and redirect
-        alert('Suggestion submitted successfully!');
-        window.location.href = '{{ route("suggestions.index") }}';
+        if (!title || !description) {
+            e.preventDefault();
+            alert('Please fill in all required fields.');
+            return false;
+        }
     });
 });
 </script>

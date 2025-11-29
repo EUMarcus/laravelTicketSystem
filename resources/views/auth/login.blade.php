@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="min-h-[calc(100vh-5rem)] flex items-center justify-center px-4 sm:px-6 lg:px-8" style="padding-top: 5rem !important;">
-    <div class="max-w-md w-full">
+    <div class="w-full" style="max-width: 450px;">
         <!-- Header -->
         <div class="text-center mb-6">
             <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-3">Welcome Back</h1>

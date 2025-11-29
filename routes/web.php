@@ -17,41 +17,22 @@ Route::middleware('auth')->group(function () {
     Route::post('/reports/{ticket}/messages', [App\Http\Controllers\MessageController::class, 'store'])->name('reports.messages.store');
 });
 
-Route::get('/suggestions', function () {
-    return view('suggestions.index');
-})->name('suggestions.index');
+Route::get('/suggestions', [App\Http\Controllers\SuggestionController::class, 'index'])->name('suggestions.index');
 
 Route::get('/suggestions/create', function () {
     return view('suggestions.create');
 })->name('suggestions.create');
 
-Route::get('/suggestions/{id}', function ($id) {
-    return view('suggestions.show', ['id' => $id]);
-})->name('suggestions.show');
+Route::post('/suggestions', [App\Http\Controllers\SuggestionController::class, 'store'])->name('suggestions.store');
 
-Route::get('/announcements', function () {
-    return view('announcements.index');
-})->name('announcements.index');
+Route::get('/suggestions/{id}', [App\Http\Controllers\SuggestionController::class, 'show'])->name('suggestions.show');
+Route::post('/suggestions/{id}/comments', [App\Http\Controllers\SuggestionController::class, 'storeComment'])->name('suggestions.comments.store');
 
-Route::get('/announcements/{id}', function ($id) {
-    return view('announcements.show', ['id' => $id]);
-})->name('announcements.show');
-    
-Route::get('/events', function () {
-    return view('events.index');
-})->name('events.index');
+Route::get('/announcements', [App\Http\Controllers\AnnouncementController::class, 'index'])->name('announcements.index');
 
-Route::get('/events/{id}', function ($id) {
-    return view('events.show', ['id' => $id]);
-})->name('events.show');
+Route::get('/announcements/{id}', [App\Http\Controllers\AnnouncementController::class, 'show'])->name('announcements.show');
 
-Route::get('/polls', function () {
-    return view('polls.index');
-})->name('polls.index');
-
-Route::get('/polls/{id}', function ($id) {
-    return view('polls.show', ['id' => $id]);
-})->name('polls.show');
+Route::post('/announcements', [App\Http\Controllers\AnnouncementController::class, 'store'])->name('announcements.store');
 
 Route::get('/faq', function () {
     return view('faq.index');
@@ -67,6 +48,16 @@ Route::middleware('auth')->group(function () {
         return view('staff.dashboard');
     })->name('staff.dashboard');
 });
+
+Route::middleware('auth')->group(function () {
+    Route::get('/staff/reports', [App\Http\Controllers\TicketController::class, 'index'])->name('staff.reports');
+});
+
+Route::get('/staff/suggestions', function () {
+    return view('staff.suggestions');
+})->name('staff.suggestions');
+
+Route::get('/staff/announcements', [App\Http\Controllers\AnnouncementController::class, 'index'])->name('staff.announcements');
 
 // Auth routes
 Route::get('/login', [App\Http\Controllers\Auth\LoginController::class, 'showLoginForm'])->name('login');

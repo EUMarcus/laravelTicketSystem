@@ -21,82 +21,23 @@
         </div>
     </div>
 
-    <!-- Sort Options -->
-    <div class="bg-white p-5 rounded-lg border border-gray-200 shadow-sm mb-6">
-        <div class="flex items-center gap-3 flex-wrap">
-            <span class="text-sm font-semibold text-gray-700 uppercase tracking-wide">Sort by:</span>
-            <a href="{{ route('suggestions.index', ['sort' => 'newest', 'page' => 1]) }}" class="px-4 py-2 rounded-lg text-sm font-semibold transition-colors {{ request('sort', 'newest') == 'newest' ? 'bg-gray-900 text-white' : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400' }}">
-                Newest
-            </a>
-            <a href="{{ route('suggestions.index', ['sort' => 'liked', 'page' => 1]) }}" class="px-4 py-2 rounded-lg text-sm font-semibold transition-colors {{ request('sort') == 'liked' ? 'bg-gray-900 text-white' : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400' }}">
-                Most Liked
-            </a>
-            <a href="{{ route('suggestions.index', ['sort' => 'discussed', 'page' => 1]) }}" class="px-4 py-2 rounded-lg text-sm font-semibold transition-colors {{ request('sort') == 'discussed' ? 'bg-gray-900 text-white' : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400' }}">
-                Most Discussed
-            </a>
-        </div>
-    </div>
-
     <!-- Section Separator -->
     <div class="mb-8 pt-6 border-t border-gray-200">
         <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Public Suggestions</h2>
         <p class="text-sm text-gray-600">Browse all community suggestions and ideas</p>
     </div>
 
+    <!-- Success Message -->
+    @if(session('success'))
+        <div class="mb-6">
+            <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg">
+                {{ session('success') }}
+            </div>
+        </div>
+    @endif
+
     <!-- Suggestions Grid -->
     <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
-        @php
-            // Generate a larger dataset for pagination
-            $allSuggestions = [
-                ['id' => 1, 'title' => 'Weekly Community Exercise Program', 'category' => 'Health', 'upvotes' => 45, 'comments' => 12, 'author' => 'Maria Santos', 'date' => '3 days ago', 'created_at' => '2024-12-10'],
-                ['id' => 2, 'title' => 'Install Solar-Powered Streetlights', 'category' => 'Infrastructure', 'upvotes' => 89, 'comments' => 23, 'author' => 'Anonymous', 'date' => '1 week ago', 'created_at' => '2024-12-03'],
-                ['id' => 3, 'title' => 'Monthly Barangay Festival', 'category' => 'Events', 'upvotes' => 156, 'comments' => 34, 'author' => 'Juan Dela Cruz', 'date' => '2 weeks ago', 'created_at' => '2024-11-26'],
-                ['id' => 4, 'title' => 'Free Computer Literacy Classes', 'category' => 'Education', 'upvotes' => 67, 'comments' => 15, 'author' => 'Ana Reyes', 'date' => '1 week ago', 'created_at' => '2024-12-03'],
-                ['id' => 5, 'title' => 'Community Garden Project', 'category' => 'Environment', 'upvotes' => 112, 'comments' => 28, 'author' => 'Pedro Martinez', 'date' => '5 days ago', 'created_at' => '2024-12-08'],
-                ['id' => 6, 'title' => 'Youth Sports Tournament', 'category' => 'Sports', 'upvotes' => 78, 'comments' => 19, 'author' => 'Anonymous', 'date' => '4 days ago', 'created_at' => '2024-12-09'],
-                ['id' => 7, 'title' => 'Community Library Expansion', 'category' => 'Education', 'upvotes' => 92, 'comments' => 21, 'author' => 'Liza Garcia', 'date' => '6 days ago', 'created_at' => '2024-12-07'],
-                ['id' => 8, 'title' => 'Recycling Program', 'category' => 'Environment', 'upvotes' => 134, 'comments' => 31, 'author' => 'Carlos Rivera', 'date' => '1 week ago', 'created_at' => '2024-12-03'],
-                ['id' => 9, 'title' => 'Senior Citizen Wellness Program', 'category' => 'Health', 'upvotes' => 56, 'comments' => 14, 'author' => 'Rosa Fernandez', 'date' => '2 days ago', 'created_at' => '2024-12-11'],
-                ['id' => 10, 'title' => 'Bike Lane Installation', 'category' => 'Infrastructure', 'upvotes' => 103, 'comments' => 26, 'author' => 'Miguel Torres', 'date' => '3 days ago', 'created_at' => '2024-12-10'],
-                ['id' => 11, 'title' => 'Community Market Day', 'category' => 'Events', 'upvotes' => 87, 'comments' => 18, 'author' => 'Carmen Lopez', 'date' => '4 days ago', 'created_at' => '2024-12-09'],
-                ['id' => 12, 'title' => 'Neighborhood Watch Program', 'category' => 'Safety', 'upvotes' => 145, 'comments' => 37, 'author' => 'Roberto Cruz', 'date' => '5 days ago', 'created_at' => '2024-12-08'],
-            ];
-
-            // Apply sorting
-            $sortBy = request('sort', 'newest');
-            $sortedSuggestions = $allSuggestions;
-            
-            if ($sortBy === 'liked') {
-                usort($sortedSuggestions, function($a, $b) {
-                    return $b['upvotes'] - $a['upvotes'];
-                });
-            } elseif ($sortBy === 'discussed') {
-                usort($sortedSuggestions, function($a, $b) {
-                    return $b['comments'] - $a['comments'];
-                });
-            } else {
-                // Newest (default) - already sorted by date
-                usort($sortedSuggestions, function($a, $b) {
-                    return strtotime($b['created_at']) - strtotime($a['created_at']);
-                });
-            }
-            
-            // Paginate
-            $perPage = 6;
-            $currentPage = (int)request('page', 1);
-            $total = count($sortedSuggestions);
-            $offset = ($currentPage - 1) * $perPage;
-            $paginatedSuggestions = array_slice($sortedSuggestions, $offset, $perPage);
-            
-            // Create paginator
-            $suggestions = new \Illuminate\Pagination\LengthAwarePaginator(
-                $paginatedSuggestions,
-                $total,
-                $perPage,
-                $currentPage,
-                ['path' => request()->url(), 'query' => request()->query()]
-            );
-        @endphp
 
         @if(count($suggestions) > 0)
         @foreach($suggestions as $suggestion)

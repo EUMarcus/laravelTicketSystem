@@ -3,31 +3,6 @@
 @section('title', 'Announcement Details - Community Hub')
 
 @section('content')
-@php
-    // Same dataset as index page
-    $allAnnouncements = [
-        ['id' => 1, 'title' => 'Community Clean-Up Day Scheduled', 'category' => 'Event', 'date' => 'Dec 5, 2024', 'summary' => 'Join us for a community-wide clean-up activity this coming Saturday. All residents are welcome to participate.', 'urgent' => false, 'content' => 'We are excited to announce our upcoming Community Clean-Up Day scheduled for Saturday, December 14, 2024, from 8:00 AM to 12:00 PM. This is a community-wide initiative to clean and beautify our barangay. All residents are warmly invited to participate in this activity. Together, we can make our community a cleaner and more beautiful place to live. What to bring: Gloves and protective gear, Garbage bags, Your enthusiasm and positive energy! Light refreshments will be provided. For more information, please contact the barangay office.', 'images' => ['https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800', 'https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=800', 'https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=800']],
-        ['id' => 2, 'title' => 'Health Advisory: Dengue Prevention', 'category' => 'Health', 'date' => 'Dec 3, 2024', 'summary' => 'Important reminders on preventing dengue. Keep your surroundings clean and eliminate stagnant water.', 'urgent' => true, 'content' => 'With the rainy season upon us, we need to be extra vigilant about dengue prevention. Please follow these important guidelines: 1. Eliminate all sources of stagnant water around your homes. 2. Clean and cover water containers regularly. 3. Use mosquito repellent and wear protective clothing. 4. Keep your surroundings clean and well-maintained. If you experience symptoms like high fever, severe headache, or body pain, seek medical attention immediately.', 'images' => ['https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=800', 'https://images.unsplash.com/photo-1584464491033-06628f3a6b7b?w=800', 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=800', 'https://images.unsplash.com/photo-1607613009820-a29f1a45b2a0?w=800']],
-        ['id' => 3, 'title' => 'Barangay Meeting This Saturday', 'category' => 'Meeting', 'date' => 'Dec 1, 2024', 'summary' => 'Monthly barangay meeting scheduled. All residents are encouraged to attend and voice their concerns.', 'urgent' => false, 'content' => 'Our monthly barangay meeting will be held this Saturday, December 7, 2024, at 2:00 PM in the barangay hall. All residents are encouraged to attend and participate in the discussion. Agenda items include: Community projects update, Budget allocation for next quarter, Safety and security concerns, Upcoming events and activities. Your voice matters! Please come and share your ideas and concerns.', 'images' => ['https://images.unsplash.com/photo-1552664730-d307ca884978?w=800', 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=800']],
-        ['id' => 4, 'title' => 'Free Medical Check-Up Available', 'category' => 'Health', 'date' => 'Nov 28, 2024', 'summary' => 'Free health screening for all community members. Blood pressure, BMI, and basic check-ups available.', 'urgent' => false, 'content' => 'We are pleased to announce free medical check-ups for all community members. Services include: Blood pressure monitoring, BMI calculation, Basic health consultation, Health education. The check-ups will be available every Tuesday and Thursday from 9:00 AM to 3:00 PM at the barangay health center. No appointment needed. First come, first served.', 'images' => ['https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=800', 'https://images.unsplash.com/photo-1559757175-0eb30cd8c063?w=800', 'https://images.unsplash.com/photo-1512678080530-7d7d8b1e0b0e?w=800']],
-        ['id' => 5, 'title' => 'New Year Festival Preparations', 'category' => 'Event', 'date' => 'Nov 25, 2024', 'summary' => 'Planning for the New Year community festival has started. Volunteers needed for organizing committee.', 'urgent' => false, 'content' => 'Planning for our annual New Year community festival has officially begun! We are looking for enthusiastic volunteers to join our organizing committee. Volunteer opportunities include: Event planning and coordination, Food and beverage committee, Entertainment and activities, Decorations and setup, Security and safety. If you are interested in volunteering, please contact the barangay office or attend our planning meeting this Friday at 6:00 PM.', 'images' => ['https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800', 'https://images.unsplash.com/photo-1478147427282-58a87a120781?w=800', 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=800', 'https://images.unsplash.com/photo-1511578314322-379afb476865?w=800']],
-        ['id' => 6, 'title' => 'Water Interruption Notice', 'category' => 'Service', 'date' => 'Nov 22, 2024', 'summary' => 'Water service will be interrupted on December 10 for pipe maintenance. Please store water.', 'urgent' => true, 'content' => 'Important Notice: Water service will be temporarily interrupted on December 10, 2024, from 8:00 AM to 4:00 PM for scheduled pipe maintenance and repairs. Affected areas: Main Street, Park Avenue, and surrounding blocks. Please store enough water for your household needs during this period. Water tankers will be available at the barangay hall for emergency water supply. We apologize for any inconvenience and appreciate your understanding.', 'images' => ['https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800']],
-        ['id' => 7, 'title' => 'Road Repair Schedule', 'category' => 'Infrastructure', 'date' => 'Nov 20, 2024', 'summary' => 'Main street will undergo repairs from December 15-20. Alternative routes will be provided.', 'urgent' => false, 'content' => 'Main Street will undergo road repairs from December 15-20, 2024. During this period, the road will be partially closed. Alternative routes: Use Park Avenue or Community Road. Please plan your travel accordingly and expect minor delays. We appreciate your patience as we work to improve our infrastructure.', 'images' => ['https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=800', 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800']],
-        ['id' => 8, 'title' => 'Holiday Safety Reminders', 'category' => 'Safety', 'date' => 'Nov 18, 2024', 'summary' => 'Important safety tips for the holiday season. Keep your homes secure and report suspicious activities.', 'urgent' => false, 'content' => 'As we approach the holiday season, please keep these safety reminders in mind: Secure your homes when leaving, Do not leave valuables in plain sight, Report suspicious activities immediately, Be cautious with fire hazards (candles, decorations), Keep emergency numbers handy. Let us work together to ensure a safe and happy holiday season for everyone.', 'images' => ['https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800']],
-        ['id' => 9, 'title' => 'Scholarship Program Applications', 'category' => 'Education', 'date' => 'Nov 15, 2024', 'summary' => 'Applications for community scholarship program are now open. Deadline: December 30, 2024.', 'urgent' => false, 'content' => 'The barangay scholarship program is now accepting applications for the academic year 2025-2026. Eligibility: Residents aged 16-25, High school graduates or current college students, Family income below specified threshold. Required documents: Application form, Transcript of records, Certificate of residency, Income tax return or certificate of indigency. Application deadline: December 30, 2024. Forms available at the barangay office.', 'images' => ['https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=800', 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800']],
-        ['id' => 10, 'title' => 'Garbage Collection Schedule Change', 'category' => 'Service', 'date' => 'Nov 12, 2024', 'summary' => 'Garbage collection will be moved to Tuesday and Friday starting next week.', 'urgent' => false, 'content' => 'Starting next week, garbage collection schedule will change to Tuesday and Friday (previously Monday and Thursday). Please adjust your schedule accordingly. Collection time remains the same: 6:00 AM to 12:00 PM. Please have your garbage ready and properly segregated.', 'images' => ['https://images.unsplash.com/photo-1530587191325-3db32d826c18?w=800']],
-        ['id' => 11, 'title' => 'Community Garden Opening', 'category' => 'Event', 'date' => 'Nov 10, 2024', 'summary' => 'Our new community garden is now open! Residents can register for their own plot.', 'urgent' => false, 'content' => 'Our new community garden is now officially open! Residents can register for their own gardening plot. Each plot measures 2x3 meters. Registration fee: P100 per month. Benefits: Fresh vegetables for your family, Community bonding, Environmental awareness. Registration is open at the barangay office. Limited slots available!', 'images' => ['https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=800', 'https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=800', 'https://images.unsplash.com/photo-1593113598332-cd288d649433?w=800']],
-        ['id' => 12, 'title' => 'Emergency Contact Numbers', 'category' => 'Safety', 'date' => 'Nov 8, 2024', 'summary' => 'Updated emergency contact numbers for barangay office, police, and fire department.', 'urgent' => true, 'content' => 'Please save these updated emergency contact numbers: Barangay Office: 123-4567, Police Station: 911, Fire Department: 117, Hospital: 123-7890, Emergency Hotline: 8888. Keep these numbers handy and share with family members. In case of emergency, call immediately.', 'images' => ['https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800']],
-    ];
-    
-    // Find the announcement by ID
-    $announcement = collect($allAnnouncements)->firstWhere('id', (int)$id);
-    
-    // If announcement not found, redirect or show 404
-    if (!$announcement) {
-        abort(404, 'Announcement not found');
-    }
-@endphp
 
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" style="padding-top: 6rem !important; padding-bottom: 2rem;">
     <!-- Back Button -->
@@ -57,6 +32,33 @@
             <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">{{ $announcement['title'] }}</h1>
             <p class="text-gray-600 text-sm">Published {{ $announcement['date'] }}</p>
         </div>
+
+        <!-- Event Dates (if provided) -->
+        @if(!empty($announcement['start_date']) || !empty($announcement['end_date']))
+        <div class="mb-6 pb-6 border-b border-gray-200">
+            <h3 class="font-semibold text-gray-900 mb-3 text-lg">Event Schedule</h3>
+            <div class="space-y-2">
+                @if(!empty($announcement['start_date']))
+                    <div class="flex items-center gap-2 text-gray-700">
+                        <svg class="w-5 h-5 text-[#65B741]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        <span class="font-medium">Starts:</span>
+                        <span>{{ $announcement['start_date'] }}</span>
+                    </div>
+                @endif
+                @if(!empty($announcement['end_date']))
+                    <div class="flex items-center gap-2 text-gray-700">
+                        <svg class="w-5 h-5 text-[#65B741]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        <span class="font-medium">Ends:</span>
+                        <span>{{ $announcement['end_date'] }}</span>
+                    </div>
+                @endif
+            </div>
+        </div>
+        @endif
 
         <!-- Content -->
         <div class="mb-6">

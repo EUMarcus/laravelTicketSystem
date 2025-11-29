@@ -197,8 +197,6 @@ document.addEventListener('DOMContentLoaded', function() {
             localStorage.removeItem('suggestion_user_name');
             localStorage.removeItem('suggestion_votes');
             localStorage.removeItem('suggestion_comments');
-            localStorage.removeItem('poll_votes');
-            localStorage.removeItem('poll_selected_options');
             localStorage.removeItem('user_suggestion_votes');
             
             // Logout (submit logout form)

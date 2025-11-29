@@ -116,4 +116,80 @@ class SupabaseService
     {
         return !empty($this->url) && !empty($this->serviceKey) && !empty($this->bucket);
     }
+
+    /**
+     * Insert data into a Supabase table
+     */
+    public function insert(string $table, array $data): array
+    {
+        if (!$this->isConfigured()) {
+            throw new Exception('Supabase is not configured. Please set SUPABASE_URL and SUPABASE_SERVICE_KEY in your .env file.');
+        }
+
+        $http = Http::withHeaders([
+            'Authorization' => 'Bearer ' . $this->serviceKey,
+            'Content-Type' => 'application/json',
+            'apikey' => $this->serviceKey,
+            'Prefer' => 'return=representation',
+        ]);
+
+        if (!$this->verifySsl) {
+            $http = $http->withoutVerifying();
+        }
+
+        $response = $http->post(
+            "{$this->url}/rest/v1/{$table}",
+            $data
+        );
+
+        if (!$response->successful()) {
+            $error = $response->json() ?? $response->body();
+            throw new Exception('Failed to insert data into Supabase: ' . json_encode($error));
+        }
+
+        $result = $response->json();
+        return is_array($result) && isset($result[0]) ? $result[0] : $result;
+    }
+
+    /**
+     * Select data from a Supabase table
+     */
+    public function select(string $table, array $filters = [], string $select = '*', string $orderBy = null, string $orderDirection = 'desc'): array
+    {
+        if (!$this->isConfigured()) {
+            throw new Exception('Supabase is not configured. Please set SUPABASE_URL and SUPABASE_SERVICE_KEY in your .env file.');
+        }
+
+        $http = Http::withHeaders([
+            'Authorization' => 'Bearer ' . $this->serviceKey,
+            'Content-Type' => 'application/json',
+            'apikey' => $this->serviceKey,
+            'Prefer' => 'return=representation',
+        ]);
+
+        if (!$this->verifySsl) {
+            $http = $http->withoutVerifying();
+        }
+
+        $url = "{$this->url}/rest/v1/{$table}?select={$select}";
+        
+        // Add filters as query parameters
+        foreach ($filters as $key => $value) {
+            $url .= "&{$key}=eq.{$value}";
+        }
+        
+        // Add ordering
+        if ($orderBy) {
+            $url .= "&order={$orderBy}.{$orderDirection}";
+        }
+
+        $response = $http->get($url);
+
+        if (!$response->successful()) {
+            $error = $response->json() ?? $response->body();
+            throw new Exception('Failed to select data from Supabase: ' . json_encode($error));
+        }
+
+        return $response->json() ?? [];
+    }
 }

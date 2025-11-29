@@ -44,6 +44,11 @@ class TicketController extends Controller
                 ->paginate(15);
         }
 
+        // Return staff view if accessing staff route
+        if (request()->routeIs('staff.reports')) {
+            return view('staff.reports', compact('tickets', 'profile'));
+        }
+
         return view('reports.index', compact('tickets', 'profile'));
     }
 
