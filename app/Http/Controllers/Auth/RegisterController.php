@@ -23,25 +23,30 @@ class RegisterController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'contact_number' => ['required', 'string', 'max:20'],
+            'voters_id' => ['required', 'string', 'size:22', 'regex:/^[A-Za-z0-9]{22}$/', 'unique:users,voters_id'],
+            'address' => ['required', 'string', 'max:255'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'contact' => ['nullable', 'string', 'max:255'],
-            'address' => ['nullable', 'string', 'max:500'],
+            'role' => ['required', 'in:citizen,employee'],
         ]);
 
         $userId = (string) Str::uuid();
         
         $user = User::create([
             'id' => $userId,
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'voters_id' => strtoupper($request->voters_id),
+            'contact_number' => $request->contact_number,
+            'address' => $request->address,
         ]);
 
-        // Create profile with same UUID as user (default to customer role)
+        // Create profile with same UUID as user
         Profile::create([
             'id' => $userId,
-            'role' => 'customer', // Default role - can be changed by admin later
-            'name' => $validated['name'],
+            'role' => $request->role === 'citizen' ? 'customer' : 'employee',
+            'name' => $request->name,
         ]);
 
         Auth::login($user);

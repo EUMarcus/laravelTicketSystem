@@ -37,12 +37,12 @@ class Profile extends Model
 
     public function isEmployee()
     {
-        return in_array($this->role, ['employee', 'admin']);
+        return $this->role === 'employee';
     }
 
-    public function isCustomer()
+    public function isCitizen()
     {
-        return $this->role === 'customer';
+        return $this->role === 'citizen';
     }
 }
 

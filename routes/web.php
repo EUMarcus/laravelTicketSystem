@@ -63,28 +63,20 @@ Route::get('/profile', function () {
     return view('profile.index');
 })->name('profile.index');
 
-// Authentication routes
-use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\Auth\RegisterController;
+// Auth routes
+Route::get('/login', [App\Http\Controllers\Auth\LoginController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [App\Http\Controllers\Auth\LoginController::class, 'login']);
+Route::post('/logout', [App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout');
 
-// Registration routes - accessible to everyone (logged in or not)
-Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
-Route::post('/register', [RegisterController::class, 'register']);
+Route::get('/register', [App\Http\Controllers\Auth\RegisterController::class, 'showRegistrationForm'])->name('register');
+Route::post('/register', [App\Http\Controllers\Auth\RegisterController::class, 'register']);
 
-// Login routes - only for guests
-Route::middleware('guest')->group(function () {
-    Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
-    Route::post('/login', [LoginController::class, 'login']);
-});
-
+// Ticket routes (require authentication)
 Route::middleware('auth')->group(function () {
-    Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
-    
     Route::get('/dashboard', function () {
         return redirect()->route('tickets.index');
     })->name('dashboard');
     
-    // Tickets
     Route::resource('tickets', \App\Http\Controllers\TicketController::class);
     Route::post('/tickets/{ticket}/messages', [\App\Http\Controllers\MessageController::class, 'store'])->name('tickets.messages.store');
 });

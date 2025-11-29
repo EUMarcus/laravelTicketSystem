@@ -12,12 +12,22 @@
                 <div class="w-40 h-2 bg-gradient-to-r from-[#65B741] via-[#65B741] to-transparent rounded-full mb-4"></div>
                 <p class="text-lg md:text-xl text-gray-600 max-w-2xl">Track and manage community issues</p>
             </div>
-            <a href="{{ route('reports.create') }}" class="inline-flex items-center gap-2 px-6 py-3 bg-gray-900 text-white font-semibold rounded-lg hover:bg-gray-800">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                </svg>
-                <span>New Report</span>
-            </a>
+            <div class="flex items-center gap-3">
+                @if(session('user'))
+                    <a href="{{ route('reports.index', ['my_reports' => 'true']) }}" class="inline-flex items-center gap-2 px-6 py-3 bg-white border-2 border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 hover:border-gray-400">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        <span>My Reports</span>
+                    </a>
+                @endif
+                <a href="{{ route('reports.create') }}" class="inline-flex items-center gap-2 px-6 py-3 bg-gray-900 text-white font-semibold rounded-lg hover:bg-gray-800">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                    <span>New Report</span>
+                </a>
+            </div>
         </div>
 
         <!-- Quick Stats -->
@@ -123,6 +133,17 @@
 
         <!-- Main Content -->
         <div class="lg:col-span-3">
+            @if(request('my_reports') && session('user'))
+                <div class="mb-4 flex items-center gap-2">
+                    <a href="{{ route('reports.index') }}" class="text-sm text-gray-600 hover:text-gray-900">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                        </svg>
+                    </a>
+                    <h2 class="text-lg font-bold text-gray-900">My Reports</h2>
+                </div>
+            @endif
+
             <!-- Reports Grid -->
             <div class="grid md:grid-cols-2 gap-4 mb-6">
                 @php
@@ -206,6 +227,16 @@
                             return strpos(strtolower($report['title']), $searchTerm) !== false ||
                                    strpos(strtolower($report['description']), $searchTerm) !== false ||
                                    strpos(strtolower($report['ticket_id']), $searchTerm) !== false;
+                        });
+                    }
+                    
+                    // Filter by user if "My Reports" is requested
+                    if (request('my_reports') && session('user')) {
+                        $userEmail = session('user')['email'];
+                        // For demo: show reports 1, 3, 5, 7, 9, 11 for jon@gmail.com and reports 2, 4, 6, 8, 10, 12 for makoy@gmail.com
+                        $userReportIds = $userEmail === 'jon@gmail.com' ? [1, 3, 5, 7, 9, 11] : [2, 4, 6, 8, 10, 12];
+                        $filteredReports = array_filter($filteredReports, function($report) use ($userReportIds) {
+                            return in_array($report['id'], $userReportIds);
                         });
                     }
                     

@@ -23,9 +23,45 @@ class LoginController extends Controller
             'password' => ['required'],
         ]);
 
-        if (Auth::attempt($credentials, $request->boolean('remember'))) {
-            $request->session()->regenerate();
-            return redirect()->intended(route('dashboard'));
+        // Frontend-only authentication (hardcoded users for development)
+        $validUsers = [
+            'jon@gmail.com' => [
+                'password' => '123456789',
+                'role' => 'citizen',
+                'name' => 'Jon',
+                'id' => 'temp_jon_123'
+            ],
+            'makoy@gmail.com' => [
+                'password' => '123456789',
+                'role' => 'employee',
+                'name' => 'Makoy',
+                'id' => 'temp_makoy_123'
+            ]
+        ];
+
+        $email = $credentials['email'];
+        $password = $credentials['password'];
+
+        // Check if user exists and password matches
+        if (isset($validUsers[$email]) && $validUsers[$email]['password'] === $password) {
+            $user = $validUsers[$email];
+            
+            // Store user data in session
+            $request->session()->put('user', [
+                'id' => $user['id'],
+                'name' => $user['name'],
+                'email' => $email,
+                'role' => $user['role']
+            ]);
+
+            // Redirect based on role
+            if ($user['role'] === 'employee') {
+                // Employee - redirect to reports page (or employee dashboard)
+                return redirect()->route('reports.index')->with('success', 'Welcome back, Staff!');
+            } else {
+                // Citizen - redirect to reports/create page (reporting page)
+                return redirect()->route('reports.create')->with('success', 'Welcome back!');
+            }
         }
 
         return back()->withErrors([
@@ -35,10 +71,13 @@ class LoginController extends Controller
 
     public function logout(Request $request)
     {
-        Auth::logout();
+        // Frontend-only logout
+        $request->session()->forget('user');
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect('/');
+        
+        // Return a response that will trigger localStorage clearing via JavaScript
+        return redirect('/')->with('logout', true);
     }
 }
 
