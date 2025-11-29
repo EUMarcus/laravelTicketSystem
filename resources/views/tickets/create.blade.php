@@ -5,17 +5,17 @@
 @section('content')
 <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="mb-8">
-        <h1 class="text-3xl font-bold text-kampay-text-warm dark:text-white">Create New Ticket</h1>
-        <p class="text-kampay-text-muted mt-2">Submit a support request and we'll get back to you</p>
+        <h1 class="text-3xl font-bold text-[#2d3748] mb-2">Create New Ticket</h1>
+        <p class="text-[#718096]">Submit a support request and we'll get back to you</p>
     </div>
 
-    <div class="bg-white dark:bg-kampay-bg-darker rounded-2xl shadow-xl p-8 kampay-splash">
-        <form method="POST" action="{{ route('tickets.store') }}" enctype="multipart/form-data">
+    <div class="card card-elevated p-8 animate-fade-in">
+        <form method="POST" action="{{ route('tickets.store') }}" enctype="multipart/form-data" class="space-y-6">
             @csrf
 
-            <div class="mb-6">
-                <label for="subject" class="block text-sm font-medium text-kampay-text-warm dark:text-white mb-2">
-                    Subject <span class="text-kampay-red">*</span>
+            <div>
+                <label for="subject" class="block text-sm font-semibold text-[#2d3748] mb-2">
+                    Subject <span class="text-[#dc2626]">*</span>
                 </label>
                 <input 
                     id="subject" 
@@ -24,20 +24,20 @@
                     value="{{ old('subject') }}" 
                     required 
                     autofocus
-                    class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-kampay-bg-dark focus:ring-2 focus:ring-kampay-teal focus:border-transparent dark:bg-kampay-bg-dark dark:text-white"
+                    class="input-modern"
                     placeholder="Brief description of your issue"
                 >
             </div>
 
-            <div class="mb-6">
-                <label for="priority" class="block text-sm font-medium text-kampay-text-warm dark:text-white mb-2">
-                    Priority <span class="text-kampay-red">*</span>
+            <div>
+                <label for="priority" class="block text-sm font-semibold text-[#2d3748] mb-2">
+                    Priority <span class="text-[#dc2626]">*</span>
                 </label>
                 <select 
                     id="priority" 
                     name="priority" 
                     required
-                    class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-kampay-bg-dark focus:ring-2 focus:ring-kampay-teal focus:border-transparent dark:bg-kampay-bg-dark dark:text-white"
+                    class="input-modern"
                 >
                     <option value="low" {{ old('priority') == 'low' ? 'selected' : '' }}>Low</option>
                     <option value="medium" {{ old('priority') == 'medium' ? 'selected' : '' }}>Medium</option>
@@ -46,51 +46,51 @@
                 </select>
             </div>
 
-            <div class="mb-6">
-                <label for="description" class="block text-sm font-medium text-kampay-text-warm dark:text-white mb-2">
+            <div>
+                <label for="description" class="block text-sm font-semibold text-[#2d3748] mb-2">
                     Description
                 </label>
                 <textarea 
                     id="description" 
                     name="description" 
                     rows="6"
-                    class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-kampay-bg-dark focus:ring-2 focus:ring-kampay-teal focus:border-transparent dark:bg-kampay-bg-dark dark:text-white"
+                    class="input-modern resize-none"
                     placeholder="Provide more details about your issue..."
                 >{{ old('description') }}</textarea>
             </div>
 
-            <div class="mb-6">
-                <label for="attachments" class="block text-sm font-medium text-kampay-text-warm dark:text-white mb-2">
+            <div>
+                <label for="attachments" class="block text-sm font-semibold text-[#2d3748] mb-2">
                     Attachments (Optional)
                 </label>
-                <div class="mt-2 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg hover:border-kampay-teal transition">
-                    <div class="space-y-1 text-center">
-                        <svg class="mx-auto h-12 w-12 text-kampay-text-muted" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                <div class="mt-2 flex justify-center px-6 pt-8 pb-8 border-2 border-dashed border-[#e2e8f0] rounded-modern hover:border-[#007E6E] transition bg-[#faf9f6]">
+                    <div class="space-y-3 text-center">
+                        <svg class="mx-auto h-12 w-12 text-[#718096]" stroke="currentColor" fill="none" viewBox="0 0 48 48">
                             <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                         </svg>
-                        <div class="flex text-sm text-kampay-text-muted">
-                            <label for="attachments" class="relative cursor-pointer bg-white dark:bg-kampay-bg-dark rounded-md font-medium text-kampay-teal hover:text-kampay-teal-dark focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-kampay-teal">
+                        <div class="flex text-sm text-[#718096] justify-center items-center gap-2">
+                            <label for="attachments" class="relative cursor-pointer font-semibold text-[#007E6E] hover:text-[#005a4f] transition">
                                 <span>Upload files</span>
                                 <input id="attachments" name="attachments[]" type="file" multiple class="sr-only" accept="image/*,application/pdf,.doc,.docx">
                             </label>
-                            <p class="pl-1">or drag and drop</p>
+                            <span>or drag and drop</span>
                         </div>
-                        <p class="text-xs text-kampay-text-muted">PNG, JPG, PDF up to 10MB</p>
+                        <p class="text-xs text-[#a0aec0]">PNG, JPG, PDF up to 10MB</p>
                     </div>
                 </div>
-                <div id="file-list" class="mt-4"></div>
+                <div id="file-list" class="mt-4 space-y-2"></div>
             </div>
 
-            <div class="flex justify-end space-x-4">
+            <div class="flex justify-end gap-4 pt-4 border-t border-[#e2e8f0]">
                 <a 
                     href="{{ route('tickets.index') }}" 
-                    class="px-6 py-3 border border-gray-300 dark:border-kampay-bg-dark rounded-lg text-kampay-text-warm dark:text-white hover:bg-gray-50 dark:hover:bg-kampay-bg-dark transition"
+                    class="px-6 py-3 border border-[#e2e8f0] rounded-modern text-[#4a5568] hover:bg-[#f5f3ed] transition font-medium"
                 >
                     Cancel
                 </a>
                 <button 
                     type="submit" 
-                    class="px-6 py-3 bg-gradient-to-r from-kampay-teal to-kampay-teal-dark hover:from-kampay-teal-dark hover:to-kampay-teal text-white font-semibold rounded-lg transition-all duration-200 transform hover:scale-105"
+                    class="btn-primary px-8 py-3"
                 >
                     Create Ticket
                 </button>
@@ -106,15 +106,18 @@
         
         Array.from(e.target.files).forEach(file => {
             const div = document.createElement('div');
-            div.className = 'flex items-center justify-between p-2 bg-kampay-teal-light rounded mb-2';
+            div.className = 'flex items-center justify-between p-3 bg-[#007E6E]/10 rounded-modern border border-[#007E6E]/20';
             div.innerHTML = `
-                <span class="text-sm text-kampay-teal-dark">${file.name}</span>
-                <span class="text-xs text-kampay-text-muted">${(file.size / 1024).toFixed(2)} KB</span>
+                <div class="flex items-center gap-3">
+                    <svg class="w-5 h-5 text-[#007E6E]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    <span class="text-sm font-medium text-[#2d3748]">${file.name}</span>
+                </div>
+                <span class="text-xs text-[#718096]">${(file.size / 1024).toFixed(2)} KB</span>
             `;
             fileList.appendChild(div);
         });
     });
 </script>
 @endsection
-
-

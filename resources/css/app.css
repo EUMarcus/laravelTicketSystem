@@ -6,110 +6,309 @@
 @source '../**/*.js';
 
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
-    --font-kampay: 'Kalam', cursive;
+    --font-sans: 'Manrope', 'Segoe UI', system-ui, -apple-system, sans-serif;
+    --font-kampay: 'Manrope', sans-serif;
 
-    /* Kampay Brand Colors - Primary */
-    --color-kampay-teal: #00d4aa;
-    --color-kampay-teal-dark: #00a685;
-    --color-kampay-teal-light: #80e9d4;
+    /* New Color Palette - Primary Colors */
+    --color-primary-teal: #007E6E;
+    --color-primary-teal-dark: #005a4f;
+    --color-primary-teal-light: #00a693;
+    --color-primary-teal-lighter: #b3e5e0;
     
-    /* Kampay Red */
-    --color-kampay-red: #dc2626;
-    --color-kampay-red-dark: #b91c1c;
-    --color-kampay-red-light: #f87171;
+    /* Secondary Colors */
+    --color-cream: #E7DEAF;
+    --color-cream-dark: #d4c896;
+    --color-cream-light: #f5f0d3;
     
-    /* Kampay Yellow/Orange */
-    --color-kampay-yellow-orange: #ffb347;
-    --color-kampay-yellow: #ffd700;
-    --color-kampay-orange: #ff7043;
+    /* Accent Colors */
+    --color-beige: #D7C097;
+    --color-beige-dark: #c4ad7f;
+    --color-beige-light: #ead8b8;
+    
+    --color-green: #73AF6F;
+    --color-green-dark: #5a8a57;
+    --color-green-light: #8fc28b;
     
     /* Backgrounds */
-    --color-kampay-bg-warm: #fff9e6;
-    --color-kampay-bg-cream: #faf9f6;
-    --color-kampay-bg-dark: #1e3a47;
-    --color-kampay-bg-darker: #162d38;
+    --color-bg-primary: #ffffff;
+    --color-bg-secondary: #f8f7f4;
+    --color-bg-warm: #faf9f6;
+    --color-bg-cream: #f5f3ed;
     
-    /* Accents */
-    --color-kampay-blue: #00b4d8;
-    --color-kampay-blue-light: #4fc3f7;
+    /* Dark Mode */
+    --color-bg-dark: #1a1f2e;
+    --color-bg-darker: #141824;
     
-    /* Text */
-    --color-kampay-text-warm: #5d4037;
-    --color-kampay-text-muted: #a1a09a;
+    /* Text Colors */
+    --color-text-primary: #2d3748;
+    --color-text-secondary: #4a5568;
+    --color-text-muted: #718096;
+    --color-text-light: #a0aec0;
+    
+    /* Status Colors */
+    --color-status-open: #007E6E;
+    --color-status-progress: #E7DEAF;
+    --color-status-resolved: #73AF6F;
+    --color-status-closed: #9ca3af;
+    
+    /* Priority Colors */
+    --color-priority-low: #9ca3af;
+    --color-priority-medium: #007E6E;
+    --color-priority-high: #D7C097;
+    --color-priority-urgent: #dc2626;
+    
+    /* Semantic Colors */
+    --color-success: #73AF6F;
+    --color-error: #dc2626;
+    --color-warning: #D7C097;
+    --color-info: #007E6E;
 }
 
-/* Custom Kampay Styles */
-.kampay-splash {
-    position: relative;
-    overflow: hidden;
-}
-
-.kampay-splash::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle, rgba(0, 212, 170, 0.1) 0%, transparent 70%);
-    animation: splash-pulse 3s ease-in-out infinite;
-    pointer-events: none;
-}
-
-@keyframes splash-pulse {
-    0%, 100% {
-        transform: scale(1);
-        opacity: 0.3;
-    }
-    50% {
-        transform: scale(1.1);
-        opacity: 0.6;
-    }
-}
-
-/* Smooth transitions */
+/* Modern Design System */
 * {
-    transition: background-color 0.2s ease, color 0.2s ease;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Kampay Creative Fonts */
+body {
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Card Styles */
+.card {
+    background: var(--color-bg-primary);
+    border-radius: 1rem;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    transform: translateY(-2px);
+}
+
+.card-elevated {
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Button Styles */
+.btn-primary {
+    background: linear-gradient(135deg, var(--color-primary-teal) 0%, var(--color-primary-teal-light) 100%);
+    color: white;
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.75rem;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, var(--color-primary-teal-dark) 0%, var(--color-primary-teal) 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 126, 110, 0.3);
+}
+
+.btn-secondary {
+    background: var(--color-cream);
+    color: var(--color-text-primary);
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.75rem;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-secondary:hover {
+    background: var(--color-cream-dark);
+    transform: translateY(-1px);
+}
+
+/* Input Styles */
+.input-modern {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 0.75rem;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+    background: var(--color-bg-primary);
+}
+
+.input-modern:focus {
+    outline: none;
+    border-color: var(--color-primary-teal);
+    box-shadow: 0 0 0 3px rgba(0, 126, 110, 0.1);
+}
+
+/* Badge Styles */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.375rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+.badge-status-open {
+    background: rgba(0, 126, 110, 0.1);
+    color: var(--color-primary-teal);
+}
+
+.badge-status-progress {
+    background: rgba(231, 222, 175, 0.3);
+    color: var(--color-beige-dark);
+}
+
+.badge-status-resolved {
+    background: rgba(115, 175, 111, 0.1);
+    color: var(--color-green);
+}
+
+.badge-priority-low {
+    background: rgba(156, 163, 175, 0.1);
+    color: #6b7280;
+}
+
+.badge-priority-medium {
+    background: rgba(0, 126, 110, 0.1);
+    color: var(--color-primary-teal);
+}
+
+.badge-priority-high {
+    background: rgba(215, 192, 151, 0.2);
+    color: var(--color-beige-dark);
+}
+
+.badge-priority-urgent {
+    background: rgba(220, 38, 38, 0.1);
+    color: #dc2626;
+}
+
+/* Gradient Backgrounds */
+.gradient-primary {
+    background: linear-gradient(135deg, var(--color-primary-teal) 0%, var(--color-primary-teal-light) 100%);
+}
+
+.gradient-soft {
+    background: linear-gradient(135deg, var(--color-cream) 0%, var(--color-beige-light) 100%);
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.animate-slide-in {
+    animation: slideIn 0.3s ease-out;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--color-bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--color-beige);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--color-beige-dark);
+}
+
+/* Brand Logo */
 .kampay-brand {
-    font-family: 'Kalam', cursive;
     font-weight: 700;
     letter-spacing: -0.02em;
-    text-shadow: 
-        2px 2px 0px rgba(0, 212, 170, 0.2),
-        4px 4px 8px rgba(0, 0, 0, 0.1);
-    transform: rotate(-0.5deg);
-    display: inline-block;
-    background: linear-gradient(135deg, #00d4aa 0%, #00a685 50%, #00d4aa 100%);
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.1));
+    color: var(--color-primary-teal);
 }
 
-.kampay-brand-light {
-    font-family: 'Pacifico', cursive;
-    font-weight: 400;
+/* Utility Classes */
+.shadow-soft {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
-/* Alternative painted font style */
-.kampay-brand-painted {
-    font-family: 'Caveat', cursive;
-    font-weight: 700;
-    font-size: 1.5em;
-    letter-spacing: 0.05em;
-    text-shadow: 
-        2px 2px 0px rgba(255, 255, 255, 0.3),
-        3px 3px 0px rgba(0, 212, 170, 0.4),
-        4px 4px 8px rgba(0, 0, 0, 0.15);
-    transform: rotate(-1deg);
-    display: inline-block;
-    background: linear-gradient(135deg, #00d4aa 0%, #00a685 100%);
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+.shadow-medium {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+.rounded-modern {
+    border-radius: 1rem;
+}
+
+.rounded-modern-lg {
+    border-radius: 1.5rem;
+}
+
+/* Pagination Styling */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 2rem;
+}
+
+.pagination a,
+.pagination span {
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.pagination a {
+    color: var(--color-text-secondary);
+    background: var(--color-bg-primary);
+    border: 1px solid var(--color-beige-light);
+}
+
+.pagination a:hover {
+    background: var(--color-primary-teal);
+    color: white;
+    border-color: var(--color-primary-teal);
+}
+
+.pagination .active span {
+    background: var(--color-primary-teal);
+    color: white;
+    border-color: var(--color-primary-teal);
+}
+
+.pagination .disabled span {
+    color: var(--color-text-light);
+    background: var(--color-bg-secondary);
+    cursor: not-allowed;
 }
