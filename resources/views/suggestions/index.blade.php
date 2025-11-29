@@ -37,6 +37,12 @@
         </div>
     </div>
 
+    <!-- Section Separator -->
+    <div class="mb-8 pt-6 border-t border-gray-200">
+        <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Public Suggestions</h2>
+        <p class="text-sm text-gray-600">Browse all community suggestions and ideas</p>
+    </div>
+
     <!-- Suggestions Grid -->
     <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
         @php

@@ -32,6 +32,12 @@
 
     </div>
 
+    <!-- Section Separator -->
+    <div class="mb-8 pt-6 border-t border-gray-200">
+        <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Public Reports</h2>
+        <p class="text-sm text-gray-600">Browse all community reports and issues</p>
+    </div>
+
     <!-- Regular Reports - With Sidebar -->
     <div class="grid lg:grid-cols-4 gap-6">
         <!-- Sidebar Filters -->
