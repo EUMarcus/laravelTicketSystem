@@ -65,7 +65,6 @@
                     ['route' => 'reports.index', 'title' => 'Submit Reports', 'desc' => 'Report community issues and track their progress', 'color' => '65B741'],
                     ['route' => 'suggestions.index', 'title' => 'Share Suggestions', 'desc' => 'Share ideas and participate in community discussions', 'color' => 'FFB534'],
                     ['route' => 'announcements.index', 'title' => 'Announcements', 'desc' => 'Stay updated with important community news', 'color' => '65B741'],
-                    ['route' => 'polls.index', 'title' => 'Community Polls', 'desc' => 'Participate in community decisions and votes', 'color' => '65B741'],
                     ['route' => 'faq.index', 'title' => 'FAQ', 'desc' => 'Find answers to frequently asked questions', 'color' => 'FFB534'],
                 ];
             @endphp

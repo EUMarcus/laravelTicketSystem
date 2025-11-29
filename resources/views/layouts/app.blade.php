@@ -32,7 +32,6 @@
                     <a href="{{ route('reports.index') }}" class="px-4 py-2 text-sm font-medium {{ request()->routeIs('reports.*') ? 'text-[#65B741] bg-[#65B741]/10' : 'text-gray-600' }} hover:text-[#65B741] hover:bg-[#65B741]/10 rounded-lg transition-colors">Reports</a>
                     <a href="{{ route('suggestions.index') }}" class="px-4 py-2 text-sm font-medium {{ request()->routeIs('suggestions.*') ? 'text-[#65B741] bg-[#65B741]/10' : 'text-gray-600' }} hover:text-[#65B741] hover:bg-[#65B741]/10 rounded-lg transition-colors">Suggestions</a>
                     <a href="{{ route('announcements.index') }}" class="px-4 py-2 text-sm font-medium {{ request()->routeIs('announcements.*') ? 'text-[#65B741] bg-[#65B741]/10' : 'text-gray-600' }} hover:text-[#65B741] hover:bg-[#65B741]/10 rounded-lg transition-colors">News & Events</a>
-                    <a href="{{ route('polls.index') }}" class="px-4 py-2 text-sm font-medium {{ request()->routeIs('polls.*') ? 'text-[#65B741] bg-[#65B741]/10' : 'text-gray-600' }} hover:text-[#65B741] hover:bg-[#65B741]/10 rounded-lg transition-colors">Polls</a>
                     <a href="{{ route('faq.index') }}" class="px-4 py-2 text-sm font-medium {{ request()->routeIs('faq.*') ? 'text-[#65B741] bg-[#65B741]/10' : 'text-gray-600' }} hover:text-[#65B741] hover:bg-[#65B741]/10 rounded-lg transition-colors">FAQ</a>
                 </div>
                 @endif
@@ -94,7 +93,6 @@
                 <a href="{{ route('reports.index') }}" class="block px-4 py-2 text-sm font-medium {{ request()->routeIs('reports.*') ? 'text-[#65B741] bg-[#65B741]/10' : 'text-gray-600' }} hover:text-[#65B741] hover:bg-[#65B741]/10 rounded-lg">Reports</a>
                 <a href="{{ route('suggestions.index') }}" class="block px-4 py-2 text-sm font-medium {{ request()->routeIs('suggestions.*') ? 'text-[#65B741] bg-[#65B741]/10' : 'text-gray-600' }} hover:text-[#65B741] hover:bg-[#65B741]/10 rounded-lg">Suggestions</a>
                 <a href="{{ route('announcements.index') }}" class="block px-4 py-2 text-sm font-medium {{ request()->routeIs('announcements.*') ? 'text-[#65B741] bg-[#65B741]/10' : 'text-gray-600' }} hover:text-[#65B741] hover:bg-[#65B741]/10 rounded-lg">News & Events</a>
-                <a href="{{ route('polls.index') }}" class="block px-4 py-2 text-sm font-medium {{ request()->routeIs('polls.*') ? 'text-[#65B741] bg-[#65B741]/10' : 'text-gray-600' }} hover:text-[#65B741] hover:bg-[#65B741]/10 rounded-lg">Polls</a>
                 <a href="{{ route('faq.index') }}" class="block px-4 py-2 text-sm font-medium {{ request()->routeIs('faq.*') ? 'text-[#65B741] bg-[#65B741]/10' : 'text-gray-600' }} hover:text-[#65B741] hover:bg-[#65B741]/10 rounded-lg">FAQ</a>
                 <div class="border-t border-gray-200 mt-2 pt-2 space-y-1">
                     @if(session('user'))
@@ -223,7 +221,6 @@
                     <h3 class="font-bold text-gray-900 mb-4 text-sm uppercase tracking-wide">Resources</h3>
                     <ul class="space-y-3">
                         <li><a href="{{ route('announcements.index') }}" class="text-sm text-gray-600 hover:text-[#65B741] transition-colors">Announcements</a></li>
-                        <li><a href="{{ route('polls.index') }}" class="text-sm text-gray-600 hover:text-[#65B741] transition-colors">Community Polls</a></li>
                         <li><a href="#" class="text-sm text-gray-600 hover:text-[#65B741] transition-colors">Contact Us</a></li>
                         <li><a href="#" class="text-sm text-gray-600 hover:text-[#65B741] transition-colors">About</a></li>
                     </ul>
@@ -310,10 +307,6 @@
             localStorage.removeItem('suggestion_user_name');
             localStorage.removeItem('suggestion_votes');
             localStorage.removeItem('suggestion_comments');
-            localStorage.removeItem('poll_votes');
-            localStorage.removeItem('poll_selected_options');
-            localStorage.removeItem('user_poll_votes');
-            localStorage.removeItem('user_poll_selected_options');
             localStorage.removeItem('user_suggestion_votes');
             localStorage.removeItem('user_suggestions');
             
@@ -338,10 +331,6 @@
             localStorage.removeItem('suggestion_user_name');
             localStorage.removeItem('suggestion_votes');
             localStorage.removeItem('suggestion_comments');
-            localStorage.removeItem('poll_votes');
-            localStorage.removeItem('poll_selected_options');
-            localStorage.removeItem('user_poll_votes');
-            localStorage.removeItem('user_poll_selected_options');
             localStorage.removeItem('user_suggestion_votes');
             localStorage.removeItem('user_suggestions');
             

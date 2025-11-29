@@ -43,15 +43,6 @@ Route::get('/announcements', [App\Http\Controllers\AnnouncementController::class
 Route::get('/announcements/{id}', [App\Http\Controllers\AnnouncementController::class, 'show'])->name('announcements.show');
 
 Route::post('/announcements', [App\Http\Controllers\AnnouncementController::class, 'store'])->name('announcements.store');
-    
-
-Route::get('/polls', function () {
-    return view('polls.index');
-})->name('polls.index');
-
-Route::get('/polls/{id}', function ($id) {
-    return view('polls.show', ['id' => $id]);
-})->name('polls.show');
 
 Route::get('/faq', function () {
     return view('faq.index');
@@ -75,11 +66,6 @@ Route::get('/staff/suggestions', function () {
 })->name('staff.suggestions');
 
 Route::get('/staff/announcements', [App\Http\Controllers\AnnouncementController::class, 'index'])->name('staff.announcements');
-
-
-Route::get('/staff/polls', function () {
-    return view('staff.polls');
-})->name('staff.polls');
 
 // Auth routes
 Route::get('/login', [App\Http\Controllers\Auth\LoginController::class, 'showLoginForm'])->name('login');
