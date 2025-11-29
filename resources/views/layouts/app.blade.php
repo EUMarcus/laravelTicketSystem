@@ -8,7 +8,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
     <body class="bg-white min-h-screen font-sans" style="background-color: #ffffff !important; overflow-x: hidden !important; overflow-y: auto !important; max-width: 100vw !important; width: 100% !important;">
