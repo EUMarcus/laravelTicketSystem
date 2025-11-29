@@ -46,12 +46,6 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                     </svg>
             </a>
-            <a href="{{ route('events.index') }}" class="inline-flex items-center gap-2 px-8 py-3.5 bg-white/10 backdrop-blur-md border-2 border-white/30 text-white font-bold rounded-lg hover:bg-white/20">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                <span>Calendar of Activities</span>
-            </a>
         </div>
     </div>
 </section>
@@ -71,7 +65,6 @@
                     ['route' => 'reports.index', 'title' => 'Submit Reports', 'desc' => 'Report community issues and track their progress', 'color' => '65B741'],
                     ['route' => 'suggestions.index', 'title' => 'Share Suggestions', 'desc' => 'Share ideas and participate in community discussions', 'color' => 'FFB534'],
                     ['route' => 'announcements.index', 'title' => 'Announcements', 'desc' => 'Stay updated with important community news', 'color' => '65B741'],
-                    ['route' => 'events.index', 'title' => 'Events & Calendar', 'desc' => 'View upcoming community events and activities', 'color' => '65B741'],
                     ['route' => 'polls.index', 'title' => 'Community Polls', 'desc' => 'Participate in community decisions and votes', 'color' => '65B741'],
                     ['route' => 'faq.index', 'title' => 'FAQ', 'desc' => 'Find answers to frequently asked questions', 'color' => 'FFB534'],
                 ];
@@ -208,7 +201,7 @@
                 ];
             @endphp
             @foreach($events as $index => $event)
-            <a href="{{ route('events.show', $event['id']) }}" class="block bg-white rounded-lg border border-gray-200 shadow-sm hover:border-gray-300 hover:shadow-md overflow-hidden group">
+            <a href="{{ route('announcements.show', $event['id']) }}" class="block bg-white rounded-lg border border-gray-200 shadow-sm hover:border-gray-300 hover:shadow-md overflow-hidden group">
                 <!-- Event Image -->
                 <div class="relative h-48 overflow-hidden">
                     <img src="{{ $event['image'] }}" alt="{{ $event['title'] }}" class="w-full h-full object-cover">
@@ -237,8 +230,8 @@
         </div>
 
         <div class="text-center mt-10">
-            <a href="{{ route('events.index') }}" class="inline-flex items-center gap-2 text-gray-900 font-bold text-base hover:text-gray-700">
-                <span>View All Events</span>
+            <a href="{{ route('announcements.index') }}" class="inline-flex items-center gap-2 text-gray-900 font-bold text-base hover:text-gray-700">
+                <span>View All News & Events</span>
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                 </svg>

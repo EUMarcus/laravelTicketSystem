@@ -45,13 +45,6 @@ Route::get('/announcements/{id}', [App\Http\Controllers\AnnouncementController::
 
 Route::post('/announcements', [App\Http\Controllers\AnnouncementController::class, 'store'])->name('announcements.store');
     
-Route::get('/events', function () {
-    return view('events.index');
-})->name('events.index');
-
-Route::get('/events/{id}', function ($id) {
-    return view('events.show', ['id' => $id]);
-})->name('events.show');
 
 Route::get('/polls', function () {
     return view('polls.index');
@@ -84,9 +77,6 @@ Route::get('/staff/suggestions', function () {
 
 Route::get('/staff/announcements', [App\Http\Controllers\AnnouncementController::class, 'index'])->name('staff.announcements');
 
-Route::get('/staff/events', function () {
-    return view('staff.events');
-})->name('staff.events');
 
 Route::get('/staff/polls', function () {
     return view('staff.polls');

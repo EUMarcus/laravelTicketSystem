@@ -21,7 +21,7 @@
             
             <!-- Title Section -->
             <div class="text-center">
-                <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4">Announcements</h1>
+                   <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4">News & Events</h1>
                 <div class="w-40 h-2 bg-gradient-to-r from-[#65B741] via-[#65B741] to-transparent rounded-full mb-4 mx-auto"></div>
                 <p class="text-lg md:text-xl text-gray-600">Stay informed with the latest community updates and important notices</p>
             </div>

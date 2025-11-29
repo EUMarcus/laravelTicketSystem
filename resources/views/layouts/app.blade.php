@@ -31,8 +31,7 @@
                     <a href="{{ route('home') }}" class="px-4 py-2 text-sm font-medium {{ request()->routeIs('home') ? 'text-[#65B741] bg-[#65B741]/10' : 'text-gray-600' }} hover:text-[#65B741] hover:bg-[#65B741]/10 rounded-lg transition-colors">Home</a>
                     <a href="{{ route('reports.index') }}" class="px-4 py-2 text-sm font-medium {{ request()->routeIs('reports.*') ? 'text-[#65B741] bg-[#65B741]/10' : 'text-gray-600' }} hover:text-[#65B741] hover:bg-[#65B741]/10 rounded-lg transition-colors">Reports</a>
                     <a href="{{ route('suggestions.index') }}" class="px-4 py-2 text-sm font-medium {{ request()->routeIs('suggestions.*') ? 'text-[#65B741] bg-[#65B741]/10' : 'text-gray-600' }} hover:text-[#65B741] hover:bg-[#65B741]/10 rounded-lg transition-colors">Suggestions</a>
-                    <a href="{{ route('announcements.index') }}" class="px-4 py-2 text-sm font-medium {{ request()->routeIs('announcements.*') ? 'text-[#65B741] bg-[#65B741]/10' : 'text-gray-600' }} hover:text-[#65B741] hover:bg-[#65B741]/10 rounded-lg transition-colors">Announcements</a>
-                    <a href="{{ route('events.index') }}" class="px-4 py-2 text-sm font-medium {{ request()->routeIs('events.*') ? 'text-[#65B741] bg-[#65B741]/10' : 'text-gray-600' }} hover:text-[#65B741] hover:bg-[#65B741]/10 rounded-lg transition-colors">Events</a>
+                    <a href="{{ route('announcements.index') }}" class="px-4 py-2 text-sm font-medium {{ request()->routeIs('announcements.*') ? 'text-[#65B741] bg-[#65B741]/10' : 'text-gray-600' }} hover:text-[#65B741] hover:bg-[#65B741]/10 rounded-lg transition-colors">News & Events</a>
                     <a href="{{ route('polls.index') }}" class="px-4 py-2 text-sm font-medium {{ request()->routeIs('polls.*') ? 'text-[#65B741] bg-[#65B741]/10' : 'text-gray-600' }} hover:text-[#65B741] hover:bg-[#65B741]/10 rounded-lg transition-colors">Polls</a>
                     <a href="{{ route('faq.index') }}" class="px-4 py-2 text-sm font-medium {{ request()->routeIs('faq.*') ? 'text-[#65B741] bg-[#65B741]/10' : 'text-gray-600' }} hover:text-[#65B741] hover:bg-[#65B741]/10 rounded-lg transition-colors">FAQ</a>
                 </div>
@@ -94,8 +93,7 @@
                 <a href="{{ route('home') }}" class="block px-4 py-2 text-sm font-medium {{ request()->routeIs('home') ? 'text-[#65B741] bg-[#65B741]/10' : 'text-gray-600' }} hover:text-[#65B741] hover:bg-[#65B741]/10 rounded-lg">Home</a>
                 <a href="{{ route('reports.index') }}" class="block px-4 py-2 text-sm font-medium {{ request()->routeIs('reports.*') ? 'text-[#65B741] bg-[#65B741]/10' : 'text-gray-600' }} hover:text-[#65B741] hover:bg-[#65B741]/10 rounded-lg">Reports</a>
                 <a href="{{ route('suggestions.index') }}" class="block px-4 py-2 text-sm font-medium {{ request()->routeIs('suggestions.*') ? 'text-[#65B741] bg-[#65B741]/10' : 'text-gray-600' }} hover:text-[#65B741] hover:bg-[#65B741]/10 rounded-lg">Suggestions</a>
-                <a href="{{ route('announcements.index') }}" class="block px-4 py-2 text-sm font-medium {{ request()->routeIs('announcements.*') ? 'text-[#65B741] bg-[#65B741]/10' : 'text-gray-600' }} hover:text-[#65B741] hover:bg-[#65B741]/10 rounded-lg">Announcements</a>
-                <a href="{{ route('events.index') }}" class="block px-4 py-2 text-sm font-medium {{ request()->routeIs('events.*') ? 'text-[#65B741] bg-[#65B741]/10' : 'text-gray-600' }} hover:text-[#65B741] hover:bg-[#65B741]/10 rounded-lg">Events</a>
+                <a href="{{ route('announcements.index') }}" class="block px-4 py-2 text-sm font-medium {{ request()->routeIs('announcements.*') ? 'text-[#65B741] bg-[#65B741]/10' : 'text-gray-600' }} hover:text-[#65B741] hover:bg-[#65B741]/10 rounded-lg">News & Events</a>
                 <a href="{{ route('polls.index') }}" class="block px-4 py-2 text-sm font-medium {{ request()->routeIs('polls.*') ? 'text-[#65B741] bg-[#65B741]/10' : 'text-gray-600' }} hover:text-[#65B741] hover:bg-[#65B741]/10 rounded-lg">Polls</a>
                 <a href="{{ route('faq.index') }}" class="block px-4 py-2 text-sm font-medium {{ request()->routeIs('faq.*') ? 'text-[#65B741] bg-[#65B741]/10' : 'text-gray-600' }} hover:text-[#65B741] hover:bg-[#65B741]/10 rounded-lg">FAQ</a>
                 <div class="border-t border-gray-200 mt-2 pt-2 space-y-1">
@@ -216,7 +214,6 @@
                     <ul class="space-y-3">
                         <li><a href="{{ route('reports.index') }}" class="text-sm text-gray-600 hover:text-[#65B741] transition-colors">Submit Report</a></li>
                         <li><a href="{{ route('suggestions.index') }}" class="text-sm text-gray-600 hover:text-[#65B741] transition-colors">Give Suggestion</a></li>
-                        <li><a href="{{ route('events.index') }}" class="text-sm text-gray-600 hover:text-[#65B741] transition-colors">View Events</a></li>
                         <li><a href="{{ route('faq.index') }}" class="text-sm text-gray-600 hover:text-[#65B741] transition-colors">FAQs</a></li>
                     </ul>
                 </div>
