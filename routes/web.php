@@ -46,6 +46,8 @@ Route::get('/announcements', function () {
 Route::get('/announcements/{id}', function ($id) {
     return view('announcements.show', ['id' => $id]);
 })->name('announcements.show');
+
+Route::post('/announcements', [App\Http\Controllers\AnnouncementController::class, 'store'])->name('announcements.store');
     
 Route::get('/events', function () {
     return view('events.index');
