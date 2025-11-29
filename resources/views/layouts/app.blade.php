@@ -38,8 +38,16 @@
 
                 <!-- Auth Buttons & Mobile Menu -->
                 <div class="flex items-center space-x-3">
-                    <a href="{{ route('login') }}" class="hidden md:block px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 rounded-lg hover:bg-gray-50 transition-colors">Login</a>
-                    <a href="{{ route('register') }}" class="hidden md:block px-5 py-2 text-sm font-semibold bg-[#65B741] text-white rounded-lg hover:bg-[#4d8a32] transition-colors">Register</a>
+                    @if(session('user'))
+                        <span class="hidden md:block text-sm text-gray-600">{{ session('user')['name'] }}</span>
+                        <form method="POST" action="{{ route('logout') }}" class="hidden md:block">
+                            @csrf
+                            <button type="submit" class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 rounded-lg hover:bg-gray-50 transition-colors">Logout</button>
+                        </form>
+                    @else
+                        <a href="{{ route('login') }}" class="hidden md:block px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 rounded-lg hover:bg-gray-50 transition-colors">Login</a>
+                        <a href="{{ route('register') }}" class="hidden md:block px-5 py-2 text-sm font-semibold bg-[#65B741] text-white rounded-lg hover:bg-[#4d8a32] transition-colors">Register</a>
+                    @endif
                     <!-- Mobile menu button -->
                     <button id="mobile-menu-button" class="md:hidden p-2 rounded-lg hover:bg-gray-100 text-gray-600">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -236,6 +244,17 @@
             
             lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
         });
+
+        // Clear localStorage on logout
+        @if(session('logout'))
+            // Clear all TemporaryAuth related localStorage data
+            localStorage.removeItem('suggestion_user_id');
+            localStorage.removeItem('suggestion_user_name');
+            localStorage.removeItem('suggestion_votes');
+            localStorage.removeItem('suggestion_comments');
+            localStorage.removeItem('poll_votes');
+            localStorage.removeItem('poll_selected_options');
+        @endif
     </script>
 </body>
 </html>
