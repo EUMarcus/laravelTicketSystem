@@ -47,7 +47,7 @@
                                 </div>
                                 <span>{{ session('user')['name'] }}</span>
                             </a>
-                            <form method="POST" action="{{ route('logout') }}">
+                            <form method="POST" action="{{ route('logout') }}" id="logoutFormDesktop" onsubmit="handleLogout(event)">
                                 @csrf
                                 <button type="submit" class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 rounded-lg">
                                     Logout
@@ -98,7 +98,7 @@
                                 </div>
                                 <span>{{ session('user')['name'] }}</span>
                             </a>
-                            <form method="POST" action="{{ route('logout') }}">
+                            <form method="POST" action="{{ route('logout') }}" id="logoutFormMobile" onsubmit="handleLogout(event)">
                                 @csrf
                                 <button type="submit" class="w-full text-left px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 rounded-lg">
                                     Logout
@@ -302,15 +302,59 @@
             lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
         });
 
-        // Clear localStorage on logout
-        @if(session('logout'))
-            // Clear all TemporaryAuth related localStorage data
+        // Handle logout - clear all localStorage data
+        window.handleLogout = function(e) {
+            e.preventDefault();
+            
+            // Clear all authentication and user-related localStorage data
+            localStorage.removeItem('user_reports');
+            localStorage.removeItem('report_chat_messages');
             localStorage.removeItem('suggestion_user_id');
             localStorage.removeItem('suggestion_user_name');
             localStorage.removeItem('suggestion_votes');
             localStorage.removeItem('suggestion_comments');
             localStorage.removeItem('poll_votes');
             localStorage.removeItem('poll_selected_options');
+            localStorage.removeItem('user_poll_votes');
+            localStorage.removeItem('user_poll_selected_options');
+            localStorage.removeItem('user_suggestion_votes');
+            localStorage.removeItem('user_suggestions');
+            
+            // Clear dynamic keys (suggestion_comments_*, user_suggestion_*, suggestion_votes_*)
+            for (let i = localStorage.length - 1; i >= 0; i--) {
+                const key = localStorage.key(i);
+                if (key && (key.startsWith('suggestion_comments_') || key.startsWith('user_suggestion_') || key.startsWith('suggestion_votes_'))) {
+                    localStorage.removeItem(key);
+                }
+            }
+            
+            // Submit the form to logout from session
+            e.target.closest('form').submit();
+        };
+
+        // Clear localStorage on logout (if redirected from logout)
+        @if(session('logout'))
+            // Clear all authentication and user-related localStorage data
+            localStorage.removeItem('user_reports');
+            localStorage.removeItem('report_chat_messages');
+            localStorage.removeItem('suggestion_user_id');
+            localStorage.removeItem('suggestion_user_name');
+            localStorage.removeItem('suggestion_votes');
+            localStorage.removeItem('suggestion_comments');
+            localStorage.removeItem('poll_votes');
+            localStorage.removeItem('poll_selected_options');
+            localStorage.removeItem('user_poll_votes');
+            localStorage.removeItem('user_poll_selected_options');
+            localStorage.removeItem('user_suggestion_votes');
+            localStorage.removeItem('user_suggestions');
+            
+            // Clear dynamic keys (suggestion_comments_*, user_suggestion_*, suggestion_votes_*)
+            for (let i = localStorage.length - 1; i >= 0; i--) {
+                const key = localStorage.key(i);
+                if (key && (key.startsWith('suggestion_comments_') || key.startsWith('user_suggestion_') || key.startsWith('suggestion_votes_'))) {
+                    localStorage.removeItem(key);
+                }
+            }
         @endif
 
         // Success Modal Functions

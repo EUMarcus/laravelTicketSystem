@@ -141,18 +141,36 @@
 
         <!-- Voting Section -->
         <div id="votingSection" class="mb-6">
-            <h3 class="font-semibold text-gray-900 mb-4 text-lg">Cast Your Vote</h3>
-            <form id="pollForm" class="space-y-3">
-                @foreach($poll['options'] as $option)
-                    <label class="flex items-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-gray-300 hover:bg-gray-50 transition-colors poll-option" data-option-id="{{ $option['id'] }}">
-                        <input type="radio" name="poll_option" value="{{ $option['id'] }}" class="w-5 h-5 text-gray-900 border-gray-300 focus:ring-gray-900" required>
-                        <span class="ml-4 text-gray-900 font-medium flex-1">{{ $option['text'] }}</span>
-            </label>
-                @endforeach
-                <button type="submit" class="w-full mt-6 py-3 bg-gray-900 text-white font-semibold rounded-lg hover:bg-gray-800">
-                    Submit Vote
-                </button>
-            </form>
+            @if(session('user'))
+                <h3 class="font-semibold text-gray-900 mb-4 text-lg">Cast Your Vote</h3>
+                <form id="pollForm" class="space-y-3">
+                    @foreach($poll['options'] as $option)
+                        <label class="flex items-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-gray-300 hover:bg-gray-50 transition-colors poll-option" data-option-id="{{ $option['id'] }}">
+                            <input type="radio" name="poll_option" value="{{ $option['id'] }}" class="w-5 h-5 text-gray-900 border-gray-300 focus:ring-gray-900" required>
+                            <span class="ml-4 text-gray-900 font-medium flex-1">{{ $option['text'] }}</span>
+                        </label>
+                    @endforeach
+                    <button type="submit" class="w-full mt-6 py-3 bg-gray-900 text-white font-semibold rounded-lg hover:bg-gray-800">
+                        Submit Vote
+                    </button>
+                </form>
+            @else
+                <div class="text-center py-8 border-2 border-dashed border-gray-200 rounded-lg">
+                    <svg class="w-16 h-16 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Login Required to Vote</h3>
+                    <p class="text-gray-600 mb-6">Please log in to participate in this poll and cast your vote.</p>
+                    <div class="flex items-center justify-center gap-3">
+                        <a href="{{ route('login') }}" class="px-6 py-2.5 bg-gray-900 text-white font-semibold rounded-lg hover:bg-gray-800">
+                            Login
+                        </a>
+                        <a href="{{ route('register') }}" class="px-6 py-2.5 bg-[#65B741] text-white font-semibold rounded-lg hover:bg-[#4d8a32]">
+                            Register
+                        </a>
+                    </div>
+                </div>
+            @endif
         </div>
 
         <!-- Results Section (Hidden initially) -->
@@ -195,39 +213,52 @@
     </div>
 </div>
 
+@if(session('user'))
 <script>
-// Poll Voting System (using same TemporaryAuth as suggestions - no login required)
+    // Set current user info for PollVoting
+    window.currentUserEmail = '{{ session("user")["email"] }}';
+    window.currentUserName = '{{ session("user")["name"] }}';
+@endif
+<script>
+// Poll Voting System (requires authentication like suggestions)
 class PollVoting {
     constructor() {
-        // Use same user ID system as suggestions
-        this.userIdKey = 'suggestion_user_id';
-        this.pollVotesKey = 'poll_votes';
-        this.pollSelectedOptionsKey = 'poll_selected_options';
+        // Use user email-based keys (like suggestions)
+        this.pollVotesKey = 'user_poll_votes';
+        this.pollSelectedOptionsKey = 'user_poll_selected_options';
     }
 
-    getUserId() {
-        let userId = localStorage.getItem(this.userIdKey);
-        if (!userId) {
-            userId = 'temp_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-            localStorage.setItem(this.userIdKey, userId);
-        }
-        return userId;
+    getCurrentUserEmail() {
+        return window.currentUserEmail || null;
     }
 
     hasVoted(pollId) {
+        const userEmail = this.getCurrentUserEmail();
+        if (!userEmail) return false;
+        
         const votes = this.getPollVotes();
-        return votes.includes(pollId.toString());
+        const voteKey = `${userEmail}_${pollId}`;
+        return votes.hasOwnProperty(voteKey);
     }
 
     recordVote(pollId, optionId) {
+        const userEmail = this.getCurrentUserEmail();
+        if (!userEmail) {
+            alert('Please log in to vote');
+            return false;
+        }
+        
         const votes = this.getPollVotes();
-        if (!votes.includes(pollId.toString())) {
-            votes.push(pollId.toString());
+        const voteKey = `${userEmail}_${pollId}`;
+        
+        if (!votes.hasOwnProperty(voteKey)) {
+            votes[voteKey] = true;
             localStorage.setItem(this.pollVotesKey, JSON.stringify(votes));
             
             // Store the selected option
             const selectedOptions = this.getSelectedOptions();
-            selectedOptions[pollId] = optionId;
+            const optionKey = `${userEmail}_${pollId}`;
+            selectedOptions[optionKey] = optionId;
             localStorage.setItem(this.pollSelectedOptionsKey, JSON.stringify(selectedOptions));
             return true;
         }
@@ -236,16 +267,26 @@ class PollVoting {
 
     getPollVotes() {
         const votes = localStorage.getItem(this.pollVotesKey);
-        return votes ? JSON.parse(votes) : [];
+        return votes ? JSON.parse(votes) : {};
     }
 
     getSelectedOptions() {
         const options = localStorage.getItem(this.pollSelectedOptionsKey);
         return options ? JSON.parse(options) : {};
     }
+
+    getSelectedOption(pollId) {
+        const userEmail = this.getCurrentUserEmail();
+        if (!userEmail) return null;
+        
+        const selectedOptions = this.getSelectedOptions();
+        const optionKey = `${userEmail}_${pollId}`;
+        return selectedOptions[optionKey] || null;
+    }
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+    @if(session('user'))
     const pollVoting = new PollVoting();
     const pollId = {{ $poll['id'] }};
     const pollForm = document.getElementById('pollForm');
@@ -259,8 +300,7 @@ document.addEventListener('DOMContentLoaded', function() {
         resultsSection.classList.remove('hidden');
         
         // Highlight the user's selected option
-        const selectedOptions = pollVoting.getSelectedOptions();
-        const selectedOptionId = selectedOptions[pollId];
+        const selectedOptionId = pollVoting.getSelectedOption(pollId);
         if (selectedOptionId) {
             const selectedOptionElement = document.querySelector(`.poll-result[data-option-id="${selectedOptionId}"]`);
             if (selectedOptionElement) {
@@ -269,10 +309,17 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Handle form submission (no login required - same as suggestions)
+    // Handle form submission (requires authentication)
     if (pollForm) {
         pollForm.addEventListener('submit', function(e) {
             e.preventDefault();
+            
+            const userEmail = window.currentUserEmail;
+            if (!userEmail) {
+                alert('Please log in to vote');
+                window.location.href = '{{ route("login") }}';
+                return;
+            }
             
             const selectedOption = document.querySelector('input[name="poll_option"]:checked');
             if (!selectedOption) {
@@ -282,7 +329,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             const optionId = selectedOption.value;
             
-            // Record vote (no login required - uses localStorage like suggestions)
+            // Record vote (requires authentication)
             if (pollVoting.recordVote(pollId, optionId)) {
                 // Hide voting form, show results
                 votingSection.classList.add('hidden');
@@ -307,6 +354,15 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+    @else
+    // If not authenticated, results section should be visible by default
+    const votingSection = document.getElementById('votingSection');
+    const resultsSection = document.getElementById('resultsSection');
+    if (votingSection && resultsSection) {
+        // Keep voting section visible (showing login prompt)
+        // Results section can remain visible too
+    }
+    @endif
 });
 </script>
 @endsection
