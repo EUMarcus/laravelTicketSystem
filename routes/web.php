@@ -27,13 +27,13 @@ Route::get('/reports/{id}', function ($id) {
     return view('reports.show', ['id' => $id]);
 })->name('reports.show');
 
-Route::get('/suggestions', function () {
-    return view('suggestions.index');
-})->name('suggestions.index');
+Route::get('/suggestions', [App\Http\Controllers\SuggestionController::class, 'index'])->name('suggestions.index');
 
 Route::get('/suggestions/create', function () {
     return view('suggestions.create');
 })->name('suggestions.create');
+
+Route::post('/suggestions', [App\Http\Controllers\SuggestionController::class, 'store'])->name('suggestions.store');
 
 Route::get('/suggestions/{id}', function ($id) {
     return view('suggestions.show', ['id' => $id]);
