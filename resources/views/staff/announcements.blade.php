@@ -210,8 +210,8 @@
 </div>
 
 <!-- Create Announcement Modal -->
-<div id="announcementModal" class="fixed inset-0 z-[9999] hidden items-center justify-center p-4" style="background-color: rgba(0, 0, 0, 0.5); backdrop-filter: blur(2px); display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;">
-    <div class="bg-white rounded-lg shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto relative mx-auto my-auto" style="max-width: 42rem; margin: auto;">
+<div id="announcementModal" class="fixed inset-0 z-[9999] hidden items-center justify-center p-4" style="display: none; position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important;">
+    <div class="bg-white rounded-lg shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto relative mx-auto my-auto z-10" style="max-width: 42rem; margin: auto;">
         <div class="p-6">
             <!-- Modal Header -->
             <div class="flex items-center justify-between mb-6">
@@ -224,7 +224,7 @@
             </div>
 
             <!-- Form -->
-            <form id="announcementForm" method="POST" action="{{ route('announcements.store') }}" enctype="multipart/form-data" class="space-y-6">
+            <form id="announcementForm" method="POST" action="{{ route('announcements.store') }}" class="space-y-6">
                 @csrf
                 
                 <!-- Title -->
@@ -265,21 +265,6 @@
                     </select>
                 </div>
 
-                <!-- Summary -->
-                <div>
-                    <label for="summary" class="block text-sm font-semibold text-gray-900 mb-2">
-                        Summary <span class="text-red-500">*</span>
-                    </label>
-                    <textarea 
-                        id="summary" 
-                        name="summary" 
-                        rows="3"
-                        required
-                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#65B741] focus:border-[#65B741] outline-none resize-none"
-                        placeholder="Brief summary of the announcement"
-                    ></textarea>
-                </div>
-
                 <!-- Content -->
                 <div>
                     <label for="content" class="block text-sm font-semibold text-gray-900 mb-2">
@@ -293,28 +278,6 @@
                         class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#65B741] focus:border-[#65B741] outline-none resize-none"
                         placeholder="Enter the full announcement content"
                     ></textarea>
-                </div>
-
-                <!-- Photo Upload -->
-                <div>
-                    <label for="images" class="block text-sm font-semibold text-gray-900 mb-2">
-                        Photos (Optional)
-                    </label>
-                    <input 
-                        type="file" 
-                        id="images" 
-                        name="images[]" 
-                        multiple
-                        accept="image/*"
-                        onchange="previewImages(this)"
-                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#65B741] focus:border-[#65B741] outline-none file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-[#65B741] file:text-white hover:file:bg-[#4d8a32] file:cursor-pointer"
-                    >
-                    <p class="mt-1 text-xs text-gray-500">You can select multiple images. Supported formats: JPG, PNG, GIF</p>
-                    
-                    <!-- Image Preview -->
-                    <div id="imagePreview" class="mt-4 grid grid-cols-2 md:grid-cols-3 gap-4 hidden">
-                        <!-- Preview images will be inserted here -->
-                    </div>
                 </div>
 
                 <!-- Urgent Checkbox -->
@@ -357,6 +320,14 @@ function openAnnouncementModal() {
     const modal = document.getElementById('announcementModal');
     modal.classList.remove('hidden');
     modal.style.display = 'flex';
+    modal.style.backgroundColor = 'rgba(0, 0, 0, 0.75)';
+    modal.style.backdropFilter = 'blur(4px)';
+    modal.style.position = 'fixed';
+    modal.style.top = '0';
+    modal.style.left = '0';
+    modal.style.right = '0';
+    modal.style.bottom = '0';
+    modal.style.zIndex = '9999';
     document.body.style.overflow = 'hidden';
 }
 
@@ -367,55 +338,6 @@ function closeAnnouncementModal() {
     document.body.style.overflow = 'auto';
     // Reset form
     document.getElementById('announcementForm').reset();
-    // Clear image preview
-    document.getElementById('imagePreview').innerHTML = '';
-    document.getElementById('imagePreview').classList.add('hidden');
-}
-
-function previewImages(input) {
-    const preview = document.getElementById('imagePreview');
-    preview.innerHTML = '';
-    
-    if (input.files && input.files.length > 0) {
-        preview.classList.remove('hidden');
-        
-        Array.from(input.files).forEach((file, index) => {
-            if (file.type.startsWith('image/')) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const div = document.createElement('div');
-                    div.className = 'relative group';
-                    div.innerHTML = `
-                        <img src="${e.target.result}" alt="Preview ${index + 1}" class="w-full h-32 object-cover rounded-lg border border-gray-200">
-                        <button type="button" onclick="removeImage(${index})" class="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </button>
-                    `;
-                    preview.appendChild(div);
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-    } else {
-        preview.classList.add('hidden');
-    }
-}
-
-function removeImage(index) {
-    const input = document.getElementById('images');
-    const dt = new DataTransfer();
-    const files = Array.from(input.files);
-    
-    files.forEach((file, i) => {
-        if (i !== index) {
-            dt.items.add(file);
-        }
-    });
-    
-    input.files = dt.files;
-    previewImages(input);
 }
 
 // Close modal when clicking outside

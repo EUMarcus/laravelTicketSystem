@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\Storage;
 
 class AnnouncementController extends Controller
 {
@@ -18,35 +17,29 @@ class AnnouncementController extends Controller
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
             'category' => ['required', 'string', 'in:Event,Health,Meeting,Service,Infrastructure,Safety,Education,Other'],
-            'summary' => ['required', 'string', 'max:500'],
             'content' => ['required', 'string'],
             'urgent' => ['nullable', 'boolean'],
-            'images.*' => ['nullable', 'image', 'mimes:jpeg,jpg,png,gif', 'max:5120'], // 5MB max per image
         ]);
-
-        // Handle image uploads
-        $imagePaths = [];
-        if ($request->hasFile('images')) {
-            foreach ($request->file('images') as $image) {
-                // Store in public/announcements directory
-                $path = $image->store('announcements', 'public');
-                $imagePaths[] = Storage::url($path);
-            }
-        }
 
         // Since this is a frontend-only app with hardcoded data,
         // we'll store the announcement in session for now
         // In a real app, you'd save this to a database
+        
+        // Auto-generate summary from content (first 150 characters)
+        $summary = mb_substr(strip_tags($validated['content']), 0, 150);
+        if (mb_strlen($validated['content']) > 150) {
+            $summary .= '...';
+        }
         
         $announcement = [
             'id' => time(), // Simple ID generation
             'title' => $validated['title'],
             'category' => $validated['category'],
             'date' => now()->format('M d, Y'),
-            'summary' => $validated['summary'],
+            'summary' => $summary,
             'content' => $validated['content'],
             'urgent' => $request->has('urgent') && $request->urgent == '1',
-            'images' => $imagePaths, // Store image paths
+            'images' => [], // No images
         ];
 
         // Store in session (in a real app, save to database)
