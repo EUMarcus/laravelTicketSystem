@@ -40,7 +40,7 @@
             </p>
         
         <div class="flex flex-col sm:flex-row justify-center items-center gap-4" style="opacity: 1 !important; visibility: visible !important; transform: translateY(0) !important;">
-            <a href="{{ route('reports.index') }}" class="inline-flex items-center gap-2 px-8 py-3.5 bg-gray-900 text-white font-bold rounded-lg shadow-lg hover:bg-gray-800">
+            <a href="{{ route('about') }}" class="inline-flex items-center gap-2 px-8 py-3.5 bg-gray-900 text-white font-bold rounded-lg shadow-lg hover:bg-gray-800">
                 <span>Know More</span>
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />

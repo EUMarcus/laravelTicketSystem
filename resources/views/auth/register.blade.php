@@ -101,7 +101,7 @@
                 <div class="flex items-start pt-1">
                     <input type="checkbox" id="terms" class="w-4 h-4 text-gray-900 border-gray-300 rounded focus:ring-gray-900 mt-0.5 flex-shrink-0" required>
                     <label for="terms" class="ml-2 text-xs text-gray-600 leading-tight">
-                        I agree to the <a href="#" class="text-[#65B741] hover:text-[#4d8a32] font-medium">Terms of Service</a> and <a href="#" class="text-[#65B741] hover:text-[#4d8a32] font-medium">Privacy Policy</a>
+                        I agree to the <a href="{{ route('terms-of-service') }}" target="_blank" class="text-[#65B741] hover:text-[#4d8a32] font-medium">Terms of Service</a> and <a href="{{ route('privacy-policy') }}" target="_blank" class="text-[#65B741] hover:text-[#4d8a32] font-medium">Privacy Policy</a>
                     </label>
                 </div>
 
