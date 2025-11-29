@@ -15,6 +15,14 @@ Route::get('/reports/create', function () {
     return view('reports.create');
 })->name('reports.create');
 
+Route::get('/reports/my-reports', function () {
+    return view('reports.my-reports');
+})->name('reports.my-reports');
+
+Route::get('/reports/my-reports/{id}', function ($id) {
+    return view('reports.my-report-details', ['id' => $id]);
+})->name('reports.my-report-details');
+
 Route::get('/reports/{id}', function ($id) {
     return view('reports.show', ['id' => $id]);
 })->name('reports.show');

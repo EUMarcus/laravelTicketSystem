@@ -51,64 +51,61 @@
                 <!-- Report Form -->
                 <div class="bg-white p-6 rounded-lg border border-gray-200 shadow-sm mb-6">
                     <h2 class="text-xl font-bold text-gray-900 mb-6">Create New Report</h2>
-                    <form class="space-y-5">
+                    <form id="reportForm" class="space-y-5">
                         <div>
                             <label class="block text-sm font-semibold text-gray-900 mb-2">Category <span class="text-red-500">*</span></label>
-                            <select class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-gray-900 outline-none bg-white" required>
+                            <select id="reportCategory" name="category" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-gray-900 outline-none bg-white" required>
                                 <option value="">Select Category</option>
-                                <option value="road">Road Issues (potholes, cracks)</option>
-                                <option value="flooding">Flooding/Drainage Problems</option>
-                                <option value="streetlights">Broken Streetlights</option>
-                                <option value="garbage">Garbage/Cleanliness Issues</option>
-                                <option value="noise">Noise Complaints</option>
-                                <option value="safety">Safety/Security Concerns</option>
-                                <option value="lost">Lost & Found</option>
-                                <option value="animals">Stray Animals</option>
-                                <option value="other">Other Community Issues</option>
+                                <option value="Road Issues">Road Issues (potholes, cracks)</option>
+                                <option value="Flooding/Drainage">Flooding/Drainage Problems</option>
+                                <option value="Broken Streetlights">Broken Streetlights</option>
+                                <option value="Garbage/Cleanliness">Garbage/Cleanliness Issues</option>
+                                <option value="Noise Complaints">Noise Complaints</option>
+                                <option value="Safety/Security">Safety/Security Concerns</option>
+                                <option value="Lost & Found">Lost & Found</option>
+                                <option value="Stray Animals">Stray Animals</option>
+                                <option value="Other">Other Community Issues</option>
                             </select>
                         </div>
 
                         <div>
                             <label class="block text-sm font-semibold text-gray-900 mb-2">Title <span class="text-red-500">*</span></label>
-                            <input type="text" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-gray-900 outline-none bg-white" placeholder="Brief description of the issue" required>
+                            <input type="text" id="reportTitle" name="title" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-gray-900 outline-none bg-white" placeholder="Brief description of the issue" required>
                         </div>
 
                         <div>
                             <label class="block text-sm font-semibold text-gray-900 mb-2">Description</label>
-                            <textarea rows="5" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-gray-900 outline-none resize-none bg-white" placeholder="Provide more details about the issue..."></textarea>
+                            <textarea id="reportDescription" name="description" rows="5" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-gray-900 outline-none resize-none bg-white" placeholder="Provide more details about the issue..."></textarea>
                         </div>
 
                         <div>
                             <label class="block text-sm font-semibold text-gray-900 mb-2">Location</label>
-                            <input type="text" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-gray-900 outline-none bg-white" placeholder="Street name, block, or landmark">
+                            <input type="text" id="reportLocation" name="location" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-gray-900 outline-none bg-white" placeholder="Street name, block, or landmark">
                         </div>
 
                         <div>
-                            <label class="block text-sm font-semibold text-gray-900 mb-2">Photo Upload</label>
-                            <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors bg-gray-50">
+                            <label class="block text-sm font-semibold text-gray-900 mb-2">Photos/Attachments</label>
+                            <div id="photoUploadArea" class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors bg-gray-50 cursor-pointer">
+                                <input type="file" id="reportPhotos" name="photos[]" accept="image/*,.pdf,.doc,.docx" multiple class="hidden">
                                 <svg class="w-10 h-10 mx-auto mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                 </svg>
                                 <p class="text-gray-600 mb-1 font-medium text-sm">Click to upload or drag and drop</p>
-                                <p class="text-xs text-gray-500">PNG, JPG up to 10MB</p>
+                                <p class="text-xs text-gray-500">Images, PDF, DOC up to 10MB each</p>
+                                <p class="text-xs text-gray-400 mt-1">You can upload multiple files</p>
+                                <div id="photoPreview" class="hidden mt-4">
+                                    <div id="photoPreviewGrid" class="grid grid-cols-2 md:grid-cols-3 gap-3"></div>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="grid md:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm font-semibold text-gray-900 mb-2">Priority</label>
-                                <select class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-gray-900 outline-none bg-white">
-                                    <option value="low">Low</option>
-                                    <option value="normal" selected>Normal</option>
-                                    <option value="high">High</option>
-                                </select>
-                            </div>
-                            <div class="flex items-center">
-                                <label class="flex items-center cursor-pointer">
-                                    <input type="checkbox" class="w-4 h-4 text-gray-900 border-gray-300 rounded focus:ring-gray-900">
-                                    <span class="ml-2 text-sm text-gray-700">Submit as Anonymous</span>
-                                </label>
-                            </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-900 mb-2">Priority</label>
+                            <select id="reportPriority" name="priority" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-gray-900 outline-none bg-white">
+                                <option value="Low">Low</option>
+                                <option value="Normal" selected>Normal</option>
+                                <option value="High">High</option>
+                            </select>
                         </div>
 
                         <div class="flex gap-4 pt-4 border-t border-gray-200">
@@ -125,4 +122,148 @@
         </div>
     </div>
 </div>
+
+@if(session('user'))
+<script>
+    // Set current user info for ReportManager
+    window.currentUserEmail = '{{ session("user")["email"] }}';
+    window.currentUserName = '{{ session("user")["name"] }}';
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('reportForm');
+    const photoUploadArea = document.getElementById('photoUploadArea');
+    const photoInput = document.getElementById('reportPhotos');
+    const photoPreview = document.getElementById('photoPreview');
+    const photoPreviewGrid = document.getElementById('photoPreviewGrid');
+    let selectedFiles = [];
+
+    // Photo upload preview
+    photoUploadArea.addEventListener('click', () => photoInput.click());
+    
+    photoInput.addEventListener('change', function(e) {
+        const files = Array.from(e.target.files);
+        selectedFiles = files;
+        updatePreview();
+    });
+
+    function updatePreview() {
+        photoPreviewGrid.innerHTML = '';
+        
+        if (selectedFiles.length === 0) {
+            photoPreview.classList.add('hidden');
+            return;
+        }
+
+        photoPreview.classList.remove('hidden');
+        
+        selectedFiles.forEach((file, index) => {
+            const fileDiv = document.createElement('div');
+            fileDiv.className = 'relative group';
+            
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    fileDiv.innerHTML = `
+                        <div class="relative">
+                            <img src="${e.target.result}" alt="Preview" class="w-full h-24 object-cover rounded-lg border border-gray-200">
+                            <button type="button" onclick="removeFile(${index})" class="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+                        <p class="text-xs text-gray-600 mt-1 truncate" title="${file.name}">${file.name}</p>
+                    `;
+                    photoPreviewGrid.appendChild(fileDiv);
+                };
+                reader.readAsDataURL(file);
+            } else {
+                fileDiv.innerHTML = `
+                    <div class="relative">
+                        <div class="w-full h-24 bg-gray-100 rounded-lg border border-gray-200 flex items-center justify-center">
+                            <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                        </div>
+                        <button type="button" onclick="removeFile(${index})" class="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                    <p class="text-xs text-gray-600 mt-1 truncate" title="${file.name}">${file.name}</p>
+                `;
+                photoPreviewGrid.appendChild(fileDiv);
+            }
+        });
+    }
+
+    window.removeFile = function(index) {
+        selectedFiles.splice(index, 1);
+        
+        // Update the file input
+        const dt = new DataTransfer();
+        selectedFiles.forEach(file => dt.items.add(file));
+        photoInput.files = dt.files;
+        
+        updatePreview();
+    };
+
+    // Form submission
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const reportManager = new ReportManager();
+        
+        // Get form data
+        const category = document.getElementById('reportCategory').value;
+        const title = document.getElementById('reportTitle').value;
+        const description = document.getElementById('reportDescription').value;
+        const location = document.getElementById('reportLocation').value;
+        const priority = document.getElementById('reportPriority').value;
+        
+        // Convert all files to base64
+        if (selectedFiles.length > 0) {
+            const filePromises = Array.from(selectedFiles).map(file => {
+                return new Promise((resolve) => {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        resolve({
+                            name: file.name,
+                            type: file.type,
+                            size: file.size,
+                            data: e.target.result
+                        });
+                    };
+                    reader.readAsDataURL(file);
+                });
+            });
+
+            Promise.all(filePromises).then(filesData => {
+                submitReport(filesData);
+            });
+        } else {
+            submitReport([]);
+        }
+
+        function submitReport(filesData) {
+            const reportData = {
+                category: category,
+                title: title,
+                description: description,
+                location: location,
+                priority: priority,
+                photos: filesData
+            };
+
+            const newReport = reportManager.saveReport(reportData);
+            
+            // Redirect to report details page
+            window.location.href = `/reports/${newReport.id}`;
+        }
+    });
+});
+</script>
+@endif
 @endsection

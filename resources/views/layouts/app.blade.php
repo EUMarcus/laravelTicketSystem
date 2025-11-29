@@ -106,15 +106,23 @@
                 background-color: #ffffff !important;
             }
         </style>
-        <!-- Flash Messages -->
+        <!-- Success Modal -->
         @if(session('success'))
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6" style="position: relative; z-index: 50;">
-                <div class="alert alert-success animate-slide-in" data-aos="fade-down">
-                    <div class="flex items-center space-x-2">
-                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <div id="successModal" class="fixed inset-0 z-50 flex items-center justify-center" style="background-color: rgba(0, 0, 0, 0.5); backdrop-filter: blur(2px);">
+                <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 transform transition-all">
+                    <div class="p-6">
+                        <div class="flex items-center justify-center mb-4">
+                            <div class="w-16 h-16 bg-[#65B741]/10 rounded-full flex items-center justify-center">
+                                <svg class="w-8 h-8 text-[#65B741]" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                         </svg>
-                        <span>{{ session('success') }}</span>
+                            </div>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 text-center mb-2">Success!</h3>
+                        <p class="text-gray-600 text-center mb-6">{{ session('success') }}</p>
+                        <button onclick="closeSuccessModal()" class="w-full px-6 py-3 bg-[#65B741] text-white font-semibold rounded-lg hover:bg-[#4d8a32] transition-colors">
+                            Okay
+                        </button>
             </div>
                 </div>
             </div>
@@ -217,7 +225,7 @@
         if (mobileMenuButton && mobileMenu) {
             mobileMenuButton.addEventListener('click', function() {
                 mobileMenu.classList.toggle('hidden');
-            });
+        });
         }
 
         // Hide/show navbar on scroll
@@ -254,6 +262,28 @@
             localStorage.removeItem('suggestion_comments');
             localStorage.removeItem('poll_votes');
             localStorage.removeItem('poll_selected_options');
+        @endif
+
+        // Success Modal Functions
+        function closeSuccessModal() {
+            const modal = document.getElementById('successModal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        // Close modal when clicking outside
+        @if(session('success'))
+            document.addEventListener('DOMContentLoaded', function() {
+                const modal = document.getElementById('successModal');
+                if (modal) {
+                    modal.addEventListener('click', function(e) {
+                        if (e.target === modal) {
+                            closeSuccessModal();
+                        }
+                    });
+                }
+            });
         @endif
     </script>
 </body>

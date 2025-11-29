@@ -1,4 +1,10 @@
 import './bootstrap';
+import ReportManager from './report-manager';
+
+// Make ReportManager available globally for inline scripts
+if (typeof window !== 'undefined') {
+    window.ReportManager = ReportManager;
+}
 
 // Simple initialization with snowfall effect
 document.addEventListener('DOMContentLoaded', function() {
@@ -7,8 +13,8 @@ document.addEventListener('DOMContentLoaded', function() {
         element.style.opacity = '1';
         element.style.visibility = 'visible';
         element.style.transform = 'none';
-    });
-    
+        });
+
     // Ensure hero content is visible
     const heroContent = document.querySelector('section.relative.min-h-screen .relative.max-w-7xl');
     if (heroContent) {
@@ -22,20 +28,20 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
     }
-    
+
     // Ensure stat cards are visible
     document.querySelectorAll('.stat-card').forEach(card => {
         card.style.opacity = '1';
         card.style.visibility = 'visible';
     });
-    
+
     // Ensure stat numbers are visible
     document.querySelectorAll('.stat-card .text-5xl').forEach(stat => {
         stat.style.opacity = '1';
         stat.style.visibility = 'visible';
         stat.style.display = 'block';
     });
-    
+
     // Snowfall Effect
     initSnowfall();
 });

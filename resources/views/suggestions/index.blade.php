@@ -7,17 +7,17 @@
     <!-- Header -->
     <div class="mb-10">
         <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mb-8">
-            <div>
+        <div>
                 <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4">Community Suggestions</h1>
                 <div class="w-40 h-2 bg-gradient-to-r from-[#65B741] via-[#65B741] to-transparent rounded-full mb-4"></div>
                 <p class="text-lg md:text-xl text-gray-600 max-w-2xl">Share your ideas to improve our community</p>
-            </div>
-            <button type="button" id="openSuggestionModal" onclick="event.preventDefault(); document.getElementById('suggestionModal').classList.remove('hidden'); document.body.style.overflow='hidden';" class="inline-flex items-center gap-2 px-6 py-3 bg-gray-900 text-white font-semibold rounded-lg hover:bg-gray-800">
+        </div>
+            <a href="{{ route('suggestions.create') }}" class="inline-flex items-center gap-2 px-6 py-3 bg-gray-900 text-white font-semibold rounded-lg hover:bg-gray-800">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                 </svg>
                 <span>New Suggestion</span>
-            </button>
+            </a>
         </div>
 
         <!-- Quick Stats -->
@@ -117,7 +117,7 @@
         <a href="{{ route('suggestions.show', $suggestion['id']) }}" class="block group">
             <div class="bg-white p-5 rounded-lg border border-gray-200 h-full flex flex-col hover:border-gray-300 hover:shadow-md">
                 <!-- Header -->
-                <div class="mb-4">
+            <div class="mb-4">
                     <div class="flex items-start justify-between mb-3">
                         <h3 class="text-base font-bold text-gray-900 line-clamp-2 flex-1 group-hover:text-gray-700">
                             {{ $suggestion['title'] }}
@@ -129,31 +129,31 @@
                     
                     <div class="flex items-center gap-2 flex-wrap mb-3">
                         <span class="inline-flex items-center px-2.5 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800 border border-gray-200">
-                            {{ $suggestion['category'] }}
-                        </span>
+                    {{ $suggestion['category'] }}
+                </span>
                     </div>
                     
                     <div class="flex items-center text-xs text-gray-500 mb-4">
-                        <span>By {{ $suggestion['author'] }}</span>
-                        <span class="mx-2">•</span>
-                        <span>{{ $suggestion['date'] }}</span>
-                    </div>
+                    <span>By {{ $suggestion['author'] }}</span>
+                    <span class="mx-2">•</span>
+                    <span>{{ $suggestion['date'] }}</span>
                 </div>
-                
+            </div>
+            
                 <!-- Footer Info -->
                 <div class="pt-4 border-t border-gray-100 mt-auto">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-4 text-sm">
                             <div class="flex items-center gap-1.5 text-gray-600">
                                 <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5" />
-                                </svg>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5" />
+                        </svg>
                                 <span class="font-semibold text-gray-900">{{ $suggestion['upvotes'] }}</span>
                             </div>
                             <div class="flex items-center gap-1.5 text-gray-600">
                                 <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                                </svg>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                        </svg>
                                 <span class="font-semibold text-gray-900">{{ $suggestion['comments'] }}</span>
                             </div>
                         </div>
@@ -185,7 +185,7 @@
                 @else
                     <a href="{{ $url }}" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">{{ $page }}</a>
                 @endif
-            @endforeach
+        @endforeach
 
             @if($suggestions->hasMorePages())
                 <a href="{{ $suggestions->nextPageUrl() }}" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">Next</a>
@@ -196,7 +196,5 @@
     </div>
     @endif
 </div>
-
-@include('components.suggestion-modal')
 @endsection
 

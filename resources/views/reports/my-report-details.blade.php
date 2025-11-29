@@ -6,11 +6,11 @@
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" style="padding-top: 6rem !important; padding-bottom: 2rem;">
     <!-- Back Button -->
     <div class="mb-6">
-        <a href="{{ route('reports.index') }}" id="backButton" class="inline-flex items-center space-x-2 text-gray-600 hover:text-gray-900">
+        <a href="{{ route('reports.my-reports') }}" class="inline-flex items-center space-x-2 text-gray-600 hover:text-gray-900">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
             </svg>
-            <span class="font-medium">Back to Reports</span>
+            <span class="font-medium">Back to My Reports</span>
         </a>
     </div>
 
@@ -81,8 +81,8 @@
                     </svg>
                     <h3 class="text-xl font-bold text-gray-900 mb-2">Report Not Found</h3>
                     <p class="text-gray-600 mb-6">The report you're looking for doesn't exist or has been removed.</p>
-                    <a href="{{ route('reports.index') }}" class="inline-flex items-center gap-2 px-6 py-3 bg-gray-900 text-white font-semibold rounded-lg hover:bg-gray-800">
-                        <span>Back to Reports</span>
+                    <a href="{{ route('reports.my-reports') }}" class="inline-flex items-center gap-2 px-6 py-3 bg-gray-900 text-white font-semibold rounded-lg hover:bg-gray-800">
+                        <span>Back to My Reports</span>
                     </a>
                 </div>
             </div>
@@ -109,25 +109,21 @@
                 <!-- Chat Input -->
                 <div class="p-4 border-t border-gray-200 bg-white">
                     @if(session('user'))
-                        <form id="chatForm" class="space-y-2">
-                            <!-- File Upload Area -->
-                            <div id="chatFilePreview" class="hidden mb-2">
-                                <div class="flex items-center gap-2 flex-wrap">
-                                    <div id="chatFileList" class="flex items-center gap-2 flex-wrap"></div>
-                                    <button type="button" onclick="clearChatFiles()" class="text-xs text-red-600 hover:text-red-800 font-semibold">Clear All</button>
-                                </div>
-                            </div>
-                            
-                            <div class="flex gap-2">
-                                <div class="flex-1 relative">
-                                    <input type="text" id="chatInput" placeholder="Type your message..." class="w-full px-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#65B741] focus:border-[#65B741] outline-none" required>
-                                    <input type="file" id="chatFileInput" multiple accept="image/*,.pdf,.doc,.docx" class="hidden">
-                                </div>
-                                <button type="button" onclick="document.getElementById('chatFileInput').click()" class="px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors" title="Attach file">
+                        <form id="chatForm" class="space-y-3">
+                            <!-- File Upload Button -->
+                            <div class="flex items-center gap-2">
+                                <label for="chatFileInput" class="cursor-pointer p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
                                     </svg>
-                                </button>
+                                </label>
+                                <input type="file" id="chatFileInput" multiple accept="image/*,.pdf,.doc,.docx" class="hidden">
+                                <div id="chatFilePreview" class="flex-1 flex items-center gap-2 flex-wrap"></div>
+                            </div>
+                            
+                            <!-- Message Input -->
+                            <div class="flex gap-2">
+                                <input type="text" id="chatInput" placeholder="Type your message..." class="flex-1 px-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#65B741] focus:border-[#65B741] outline-none" required>
                                 <button type="submit" class="px-4 py-2 bg-[#65B741] text-white rounded-lg hover:bg-[#4d8a32] transition-colors">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
@@ -154,31 +150,16 @@
     window.currentUserName = '{{ session("user")["name"] }}';
     window.currentUserRole = '{{ session("user")["role"] }}';
 </script>
-@endif
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const reportManager = new ReportManager();
     const reportId = '{{ $id }}';
     let chatRefreshInterval;
-
-    // Update back button based on URL parameter
-    const urlParams = new URLSearchParams(window.location.search);
-    const backButton = document.getElementById('backButton');
-    if (backButton && urlParams.get('from') === 'my-reports') {
-        backButton.href = '{{ route("reports.my-reports") }}';
-        backButton.querySelector('span').textContent = 'Back to My Reports';
-    }
+    let selectedChatFiles = [];
 
     // Load and display report
     function loadReport() {
-        // First try to get from localStorage (for "My Reports")
-        let report = reportManager.getReportById(reportId);
-        
-        // If not found in localStorage, try PHP hardcoded data (for public reports)
-        if (!report) {
-            // This will be handled by PHP fallback if needed
-            // For now, we'll show not found
-        }
+        const report = reportManager.getReportById(reportId);
         
         if (!report) {
             document.getElementById('loadingState').classList.add('hidden');
@@ -260,32 +241,32 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('photoSection').classList.remove('hidden');
         }
         
-        // Image modal function
-        window.openImageModal = function(imageSrc, imageName) {
-            const modal = document.createElement('div');
-            modal.className = 'fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75';
-            modal.innerHTML = `
-                <div class="relative max-w-4xl max-h-full p-4">
-                    <button onclick="this.closest('.fixed').remove()" class="absolute top-4 right-4 bg-white rounded-full p-2 hover:bg-gray-100 z-10">
-                        <svg class="w-6 h-6 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
-                    <img src="${imageSrc}" alt="${imageName}" class="max-w-full max-h-[90vh] rounded-lg">
-                </div>
-            `;
-            document.body.appendChild(modal);
-            modal.addEventListener('click', function(e) {
-                if (e.target === modal) {
-                    modal.remove();
-                }
-            });
-        };
-
         // Show report content
         document.getElementById('loadingState').classList.add('hidden');
         document.getElementById('reportContent').classList.remove('hidden');
     }
+
+    // Image modal function
+    window.openImageModal = function(imageSrc, imageName) {
+        const modal = document.createElement('div');
+        modal.className = 'fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75';
+        modal.innerHTML = `
+            <div class="relative max-w-4xl max-h-full p-4">
+                <button onclick="this.closest('.fixed').remove()" class="absolute top-4 right-4 bg-white rounded-full p-2 hover:bg-gray-100 z-10">
+                    <svg class="w-6 h-6 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+                <img src="${imageSrc}" alt="${imageName}" class="max-w-full max-h-[90vh] rounded-lg">
+            </div>
+        `;
+        document.body.appendChild(modal);
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                modal.remove();
+            }
+        });
+    };
 
     // Load and display chat messages
     function loadChatMessages() {
@@ -305,40 +286,45 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         chatContainer.innerHTML = messages.map(msg => {
-            const isEmployee = msg.senderType === 'employee';
+            const isUser = msg.senderType === 'user';
             const timeAgo = reportManager.formatDate(msg.timestamp);
             
             let attachmentsHtml = '';
             if (msg.attachments && msg.attachments.length > 0) {
-                attachmentsHtml = '<div class="mt-2 space-y-2">' + msg.attachments.map(att => {
+                attachmentsHtml = msg.attachments.map(att => {
                     if (att.type && att.type.startsWith('image/')) {
                         return `
-                            <div class="rounded-lg overflow-hidden border ${isEmployee ? 'border-gray-300' : 'border-white/30'}">
-                                <img src="${att.data}" alt="${att.name || 'Image'}" class="max-w-full max-h-48 cursor-pointer" onclick="openImageModal('${att.data}', '${att.name || 'Image'}')">
+                            <div class="mt-2">
+                                <img src="${att.data}" alt="${att.name}" class="max-w-full max-h-32 rounded-lg cursor-pointer" onclick="openImageModal('${att.data}', '${att.name}')">
+                                <p class="text-xs ${isUser ? 'text-white/70' : 'text-gray-500'} mt-1">${att.name}</p>
                             </div>
                         `;
                     } else {
                         return `
-                            <div class="flex items-center gap-2 p-2 ${isEmployee ? 'bg-gray-100' : 'bg-white/10'} rounded">
-                                <svg class="w-4 h-4 ${isEmployee ? 'text-gray-600' : 'text-white'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <div class="mt-2 flex items-center gap-2 ${isUser ? 'bg-white/20' : 'bg-gray-100'} p-2 rounded">
+                                <svg class="w-4 h-4 ${isUser ? 'text-white' : 'text-gray-600'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                 </svg>
-                                <span class="text-xs ${isEmployee ? 'text-gray-700' : 'text-white'} truncate flex-1">${att.name || 'File'}</span>
-                                <a href="${att.data}" download="${att.name || 'file'}" class="text-xs ${isEmployee ? 'text-[#65B741] hover:text-[#4d8a32]' : 'text-white/80 hover:text-white'} font-semibold">Download</a>
+                                <span class="text-xs ${isUser ? 'text-white' : 'text-gray-700'}">${att.name}</span>
+                                <a href="${att.data}" download="${att.name}" class="ml-auto">
+                                    <svg class="w-4 h-4 ${isUser ? 'text-white' : 'text-gray-600'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                    </svg>
+                                </a>
                             </div>
                         `;
                     }
-                }).join('') + '</div>';
+                }).join('');
             }
             
             return `
-                <div class="flex ${isEmployee ? 'justify-start' : 'justify-end'}">
-                    <div class="max-w-[80%] ${isEmployee ? 'bg-white border border-gray-200' : 'bg-[#65B741] text-white'} rounded-lg px-4 py-2 shadow-sm">
+                <div class="flex ${isUser ? 'justify-end' : 'justify-start'}">
+                    <div class="max-w-[80%] ${isUser ? 'bg-[#65B741] text-white' : 'bg-white border border-gray-200'} rounded-lg px-4 py-2 shadow-sm">
                         <div class="flex items-center gap-2 mb-1">
-                            <span class="text-xs font-semibold ${isEmployee ? 'text-gray-700' : 'text-white/90'}">${msg.senderName}</span>
-                            <span class="text-xs ${isEmployee ? 'text-gray-500' : 'text-white/70'}">${timeAgo}</span>
+                            <span class="text-xs font-semibold ${isUser ? 'text-white/90' : 'text-gray-700'}">${msg.senderName}</span>
+                            <span class="text-xs ${isUser ? 'text-white/70' : 'text-gray-500'}">${timeAgo}</span>
                         </div>
-                        ${msg.message ? `<p class="text-sm ${isEmployee ? 'text-gray-900' : 'text-white'}">${msg.message}</p>` : ''}
+                        ${msg.message ? `<p class="text-sm ${isUser ? 'text-white' : 'text-gray-900'}">${msg.message}</p>` : ''}
                         ${attachmentsHtml}
                     </div>
                 </div>
@@ -349,32 +335,24 @@ document.addEventListener('DOMContentLoaded', function() {
         chatContainer.scrollTop = chatContainer.scrollHeight;
     }
 
-    // Chat file handling
-    let chatFiles = [];
+    // File upload handling
     const chatFileInput = document.getElementById('chatFileInput');
     const chatFilePreview = document.getElementById('chatFilePreview');
-    const chatFileList = document.getElementById('chatFileList');
-
+    
     if (chatFileInput) {
         chatFileInput.addEventListener('change', function(e) {
             const files = Array.from(e.target.files);
-            chatFiles = [...chatFiles, ...files];
+            selectedChatFiles = files;
             updateChatFilePreview();
         });
     }
 
     function updateChatFilePreview() {
-        if (chatFiles.length === 0) {
-            chatFilePreview.classList.add('hidden');
-            return;
-        }
-
-        chatFilePreview.classList.remove('hidden');
-        chatFileList.innerHTML = '';
-
-        chatFiles.forEach((file, index) => {
+        chatFilePreview.innerHTML = '';
+        
+        selectedChatFiles.forEach((file, index) => {
             const fileDiv = document.createElement('div');
-            fileDiv.className = 'flex items-center gap-2 bg-gray-100 rounded-lg p-2 text-xs';
+            fileDiv.className = 'flex items-center gap-2 bg-gray-100 px-2 py-1 rounded text-xs';
             
             if (file.type.startsWith('image/')) {
                 const reader = new FileReader();
@@ -382,43 +360,37 @@ document.addEventListener('DOMContentLoaded', function() {
                     fileDiv.innerHTML = `
                         <img src="${e.target.result}" alt="${file.name}" class="w-8 h-8 object-cover rounded">
                         <span class="text-gray-700 truncate max-w-[100px]">${file.name}</span>
-                        <button type="button" onclick="removeChatFile(${index})" class="text-red-600 hover:text-red-800">
+                        <button type="button" onclick="removeChatFile(${index})" class="text-red-500 hover:text-red-700">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                             </svg>
                         </button>
                     `;
+                    chatFilePreview.appendChild(fileDiv);
                 };
                 reader.readAsDataURL(file);
             } else {
                 fileDiv.innerHTML = `
-                    <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
                     <span class="text-gray-700 truncate max-w-[100px]">${file.name}</span>
-                    <button type="button" onclick="removeChatFile(${index})" class="text-red-600 hover:text-red-800">
+                    <button type="button" onclick="removeChatFile(${index})" class="text-red-500 hover:text-red-700">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                         </svg>
                     </button>
                 `;
+                chatFilePreview.appendChild(fileDiv);
             }
-            
-            chatFileList.appendChild(fileDiv);
         });
     }
 
     window.removeChatFile = function(index) {
-        chatFiles.splice(index, 1);
+        selectedChatFiles.splice(index, 1);
         const dt = new DataTransfer();
-        chatFiles.forEach(file => dt.items.add(file));
+        selectedChatFiles.forEach(file => dt.items.add(file));
         chatFileInput.files = dt.files;
-        updateChatFilePreview();
-    };
-
-    window.clearChatFiles = function() {
-        chatFiles = [];
-        chatFileInput.value = '';
         updateChatFilePreview();
     };
 
@@ -430,12 +402,10 @@ document.addEventListener('DOMContentLoaded', function() {
             const input = document.getElementById('chatInput');
             const message = input.value.trim();
 
-            if (message || chatFiles.length > 0) {
-                const senderType = window.currentUserRole === 'employee' ? 'employee' : 'user';
-                
+            if (message || selectedChatFiles.length > 0) {
                 // Convert files to base64
-                if (chatFiles.length > 0) {
-                    const filePromises = chatFiles.map(file => {
+                if (selectedChatFiles.length > 0) {
+                    const filePromises = Array.from(selectedChatFiles).map(file => {
                         return new Promise((resolve) => {
                             const reader = new FileReader();
                             reader.onload = function(e) {
@@ -451,18 +421,29 @@ document.addEventListener('DOMContentLoaded', function() {
                     });
 
                     Promise.all(filePromises).then(attachments => {
-                        reportManager.saveChatMessage(reportId, message || '', senderType, attachments);
-                        input.value = '';
-                        clearChatFiles();
-                        loadChatMessages();
+                        sendMessage(message, attachments);
                     });
                 } else {
-                    reportManager.saveChatMessage(reportId, message, senderType, []);
-                    input.value = '';
-                    loadChatMessages();
+                    sendMessage(message, []);
                 }
             }
         });
+    }
+
+    function sendMessage(messageText, attachments) {
+        const senderType = window.currentUserRole === 'employee' ? 'employee' : 'user';
+        
+        // Save message with attachments using ReportManager
+        reportManager.saveChatMessage(reportId, messageText, senderType, attachments);
+
+        // Clear input and files
+        document.getElementById('chatInput').value = '';
+        selectedChatFiles = [];
+        chatFileInput.value = '';
+        updateChatFilePreview();
+        
+        // Reload messages
+        loadChatMessages();
     }
 
     // Initial load
@@ -480,4 +461,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
+@endif
 @endsection
+
