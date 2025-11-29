@@ -25,8 +25,8 @@
                     </a>
                 </div>
                 
-                <!-- Desktop Navigation - Hidden for staff users -->
-                @if(!session('user') || session('user')['role'] !== 'employee')
+                <!-- Desktop Navigation - Hidden only on staff dashboard pages -->
+                @if(!request()->routeIs('staff.*'))
                 <div class="hidden md:flex items-center space-x-1">
                     <a href="{{ route('home') }}" class="px-4 py-2 text-sm font-medium {{ request()->routeIs('home') ? 'text-[#65B741] bg-[#65B741]/10' : 'text-gray-600' }} hover:text-[#65B741] hover:bg-[#65B741]/10 rounded-lg transition-colors">Home</a>
                     <a href="{{ route('reports.index') }}" class="px-4 py-2 text-sm font-medium {{ request()->routeIs('reports.*') ? 'text-[#65B741] bg-[#65B741]/10' : 'text-gray-600' }} hover:text-[#65B741] hover:bg-[#65B741]/10 rounded-lg transition-colors">Reports</a>
@@ -49,6 +49,11 @@
                                 </div>
                                 <span>{{ session('user')['name'] }}</span>
                             </a>
+                            @if(session('user')['role'] === 'employee')
+                            <a href="{{ route('staff.dashboard') }}" class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-[#65B741] rounded-lg">
+                                Dashboard
+                            </a>
+                            @endif
                             <form method="POST" action="{{ route('logout') }}" id="logoutFormDesktop" onsubmit="handleLogout(event)">
                                 @csrf
                                 <button type="submit" class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 rounded-lg">
@@ -70,8 +75,8 @@
                             <span>Register</span>
                         </a>
                     @endif
-                    <!-- Mobile menu button - Hidden for staff users -->
-                    @if(!session('user') || session('user')['role'] !== 'employee')
+                    <!-- Mobile menu button - Hidden only on staff dashboard pages -->
+                    @if(!request()->routeIs('staff.*'))
                     <button id="mobile-menu-button" class="md:hidden p-2 rounded-lg hover:bg-gray-100 text-gray-600">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
@@ -82,8 +87,8 @@
             </div>
         </div>
         
-        <!-- Mobile Menu - Hidden for staff users -->
-        @if(!session('user') || session('user')['role'] !== 'employee')
+        <!-- Mobile Menu - Hidden only on staff dashboard pages -->
+        @if(!request()->routeIs('staff.*'))
         <div id="mobile-menu" class="hidden md:hidden border-t border-gray-200 bg-white">
             <div class="px-4 py-2 space-y-1">
                 <a href="{{ route('home') }}" class="block px-4 py-2 text-sm font-medium {{ request()->routeIs('home') ? 'text-[#65B741] bg-[#65B741]/10' : 'text-gray-600' }} hover:text-[#65B741] hover:bg-[#65B741]/10 rounded-lg">Home</a>
@@ -103,6 +108,11 @@
                                 </div>
                                 <span>{{ session('user')['name'] }}</span>
                             </a>
+                            @if(session('user')['role'] === 'employee')
+                            <a href="{{ route('staff.dashboard') }}" class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-[#65B741] rounded-lg">
+                                Dashboard
+                            </a>
+                            @endif
                             <form method="POST" action="{{ route('logout') }}" id="logoutFormMobile" onsubmit="handleLogout(event)">
                                 @csrf
                                 <button type="submit" class="w-full text-left px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 rounded-lg">
