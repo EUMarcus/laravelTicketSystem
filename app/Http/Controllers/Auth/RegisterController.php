@@ -20,32 +20,33 @@ class RegisterController extends Controller
 
     public function register(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'role' => ['required', 'in:customer,employee'],
+            'contact' => ['nullable', 'string', 'max:255'],
+            'address' => ['nullable', 'string', 'max:500'],
         ]);
 
         $userId = (string) Str::uuid();
         
         $user = User::create([
             'id' => $userId,
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'password' => Hash::make($validated['password']),
         ]);
 
-        // Create profile with same UUID as user
+        // Create profile with same UUID as user (default to customer role)
         Profile::create([
             'id' => $userId,
-            'role' => $request->role,
-            'name' => $request->name,
+            'role' => 'customer', // Default role - can be changed by admin later
+            'name' => $validated['name'],
         ]);
 
         Auth::login($user);
 
-        return redirect()->route('dashboard');
+        return redirect()->route('dashboard')->with('success', 'Account created successfully! Welcome to Community Hub.');
     }
 }
 

@@ -34,12 +34,24 @@
                     <a href="{{ route('events.index') }}" class="px-4 py-2 text-sm font-medium {{ request()->routeIs('events.*') ? 'text-[#65B741] bg-[#65B741]/10' : 'text-gray-600' }} hover:text-[#65B741] hover:bg-[#65B741]/10 rounded-lg transition-colors">Events</a>
                     <a href="{{ route('polls.index') }}" class="px-4 py-2 text-sm font-medium {{ request()->routeIs('polls.*') ? 'text-[#65B741] bg-[#65B741]/10' : 'text-gray-600' }} hover:text-[#65B741] hover:bg-[#65B741]/10 rounded-lg transition-colors">Polls</a>
                     <a href="{{ route('faq.index') }}" class="px-4 py-2 text-sm font-medium {{ request()->routeIs('faq.*') ? 'text-[#65B741] bg-[#65B741]/10' : 'text-gray-600' }} hover:text-[#65B741] hover:bg-[#65B741]/10 rounded-lg transition-colors">FAQ</a>
+                    @auth
+                    <a href="{{ route('tickets.index') }}" class="px-4 py-2 text-sm font-medium {{ request()->routeIs('tickets.*') ? 'text-[#65B741] bg-[#65B741]/10' : 'text-gray-600' }} hover:text-[#65B741] hover:bg-[#65B741]/10 rounded-lg transition-colors">Tickets</a>
+                    @endauth
                 </div>
 
                 <!-- Auth Buttons & Mobile Menu -->
                 <div class="flex items-center space-x-3">
+                    @auth
+                    <a href="{{ route('tickets.index') }}" class="hidden md:block px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 rounded-lg hover:bg-gray-50 transition-colors">Tickets</a>
+                    <a href="{{ route('tickets.create') }}" class="hidden md:block px-5 py-2 text-sm font-semibold bg-[#65B741] text-white rounded-lg hover:bg-[#4d8a32] transition-colors">New Ticket</a>
+                    <form method="POST" action="{{ route('logout') }}" class="hidden md:block">
+                        @csrf
+                        <button type="submit" class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 rounded-lg hover:bg-gray-50 transition-colors">Logout</button>
+                    </form>
+                    @else
                     <a href="{{ route('login') }}" class="hidden md:block px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 rounded-lg hover:bg-gray-50 transition-colors">Login</a>
                     <a href="{{ route('register') }}" class="hidden md:block px-5 py-2 text-sm font-semibold bg-[#65B741] text-white rounded-lg hover:bg-[#4d8a32] transition-colors">Register</a>
+                    @endauth
                     <!-- Mobile menu button -->
                     <button id="mobile-menu-button" class="md:hidden p-2 rounded-lg hover:bg-gray-100 text-gray-600">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -60,23 +72,38 @@
                 <a href="{{ route('events.index') }}" class="block px-4 py-2 text-sm font-medium {{ request()->routeIs('events.*') ? 'text-[#65B741] bg-[#65B741]/10' : 'text-gray-600' }} hover:text-[#65B741] hover:bg-[#65B741]/10 rounded-lg">Events</a>
                 <a href="{{ route('polls.index') }}" class="block px-4 py-2 text-sm font-medium {{ request()->routeIs('polls.*') ? 'text-[#65B741] bg-[#65B741]/10' : 'text-gray-600' }} hover:text-[#65B741] hover:bg-[#65B741]/10 rounded-lg">Polls</a>
                 <a href="{{ route('faq.index') }}" class="block px-4 py-2 text-sm font-medium {{ request()->routeIs('faq.*') ? 'text-[#65B741] bg-[#65B741]/10' : 'text-gray-600' }} hover:text-[#65B741] hover:bg-[#65B741]/10 rounded-lg">FAQ</a>
+                @auth
+                <a href="{{ route('tickets.index') }}" class="block px-4 py-2 text-sm font-medium {{ request()->routeIs('tickets.*') ? 'text-[#65B741] bg-[#65B741]/10' : 'text-gray-600' }} hover:text-[#65B741] hover:bg-[#65B741]/10 rounded-lg">Tickets</a>
+                <div class="border-t border-gray-200 mt-2 pt-2 space-y-1">
+                    <a href="{{ route('tickets.create') }}" class="block px-4 py-2 text-sm font-semibold bg-[#65B741] text-white rounded-lg hover:bg-[#4d8a32]">New Ticket</a>
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit" class="w-full text-left block px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg">Logout</button>
+                    </form>
+                </div>
+                @else
                 <div class="border-t border-gray-200 mt-2 pt-2 space-y-1">
                     <a href="{{ route('login') }}" class="block px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg">Login</a>
                     <a href="{{ route('register') }}" class="block px-4 py-2 text-sm font-semibold bg-[#65B741] text-white rounded-lg hover:bg-[#4d8a32]">Register</a>
                 </div>
+                @endauth
             </div>
         </div>
     </nav>
 
-    <main class="min-h-[calc(100vh-4rem)]" style="position: relative; background-color: transparent !important; margin-top: 0 !important; overflow-y: visible !important; overflow-x: hidden !important;">
+    <main class="min-h-[calc(100vh-4rem)]" style="position: relative; background-color: transparent !important; overflow-y: visible !important; overflow-x: hidden !important;">
         <style>
-            /* Ensure hero section is visible above white background */
+            /* Add padding for fixed header, except for hero section */
+            main {
+                padding-top: 4rem !important;
+            }
+            /* Ensure hero section is visible above white background and starts at top */
             main > section:first-child {
                 position: relative !important;
                 z-index: 1 !important;
                 background: transparent !important;
                 background-color: transparent !important;
-                margin-top: 0 !important;
+                margin-top: -4rem !important;
                 padding-top: 0 !important;
             }
             main > section:first-child img.hero-parallax {

@@ -63,11 +63,28 @@ Route::get('/profile', function () {
     return view('profile.index');
 })->name('profile.index');
 
-// Auth routes (frontend-only, no actual authentication)
-Route::get('/login', function () {
-    return view('auth.login');
-})->name('login');
+// Authentication routes
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\RegisterController;
 
-Route::get('/register', function () {
-    return view('auth.register');
-})->name('register');
+// Registration routes - accessible to everyone (logged in or not)
+Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
+Route::post('/register', [RegisterController::class, 'register']);
+
+// Login routes - only for guests
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
+    Route::post('/login', [LoginController::class, 'login']);
+});
+
+Route::middleware('auth')->group(function () {
+    Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+    
+    Route::get('/dashboard', function () {
+        return redirect()->route('tickets.index');
+    })->name('dashboard');
+    
+    // Tickets
+    Route::resource('tickets', \App\Http\Controllers\TicketController::class);
+    Route::post('/tickets/{ticket}/messages', [\App\Http\Controllers\MessageController::class, 'store'])->name('tickets.messages.store');
+});
