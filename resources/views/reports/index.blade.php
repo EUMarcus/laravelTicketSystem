@@ -48,91 +48,18 @@
                 <form method="GET" action="{{ route('reports.index') }}" class="space-y-5">
                     <div>
                         <label class="block text-xs font-semibold text-gray-700 mb-2 uppercase tracking-wide">Category</label>
-                        <div class="space-y-1">
-                            @php
-                                $currentCategory = request('category');
-                                $currentStatus = request('status', []);
-                                $currentPriority = request('priority', []);
-                                $currentSearch = request('search');
-                                
-                                // Build query string preserving other filters
-                                function buildCategoryUrl($category, $status, $priority, $search) {
-                                    $params = [];
-                                    // Only add category if it's not empty
-                                    if ($category !== '' && $category !== null) {
-                                        $params['category'] = $category;
-                                    }
-                                    // Handle status array
-                                    if (!empty($status) && is_array($status)) {
-                                        foreach ($status as $s) {
-                                            $params['status[]'] = $s;
-                                        }
-                                    }
-                                    // Handle priority array
-                                    if (!empty($priority) && is_array($priority)) {
-                                        foreach ($priority as $p) {
-                                            $params['priority[]'] = $p;
-                                        }
-                                    }
-                                    // Add search if present
-                                    if ($search) {
-                                        $params['search'] = $search;
-                                    }
-                                    $queryString = http_build_query($params);
-                                    return route('reports.index') . ($queryString ? '?' . $queryString : '');
-                                }
-                            @endphp
-                            
-                            <a href="{{ buildCategoryUrl('', $currentStatus, $currentPriority, $currentSearch) }}" 
-                               class="flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ $currentCategory == '' ? 'bg-[#65B741]/10 text-[#65B741]' : 'text-gray-700 hover:bg-gray-50' }}">
-                                <span>All Categories</span>
-                            </a>
-                            
-                            <a href="{{ buildCategoryUrl('road', $currentStatus, $currentPriority, $currentSearch) }}" 
-                               class="flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ $currentCategory == 'road' ? 'bg-[#65B741]/10 text-[#65B741]' : 'text-gray-700 hover:bg-gray-50' }}">
-                                <span>Road Issues</span>
-                            </a>
-                            
-                            <a href="{{ buildCategoryUrl('flooding', $currentStatus, $currentPriority, $currentSearch) }}" 
-                               class="flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ $currentCategory == 'flooding' ? 'bg-[#65B741]/10 text-[#65B741]' : 'text-gray-700 hover:bg-gray-50' }}">
-                                <span>Flooding/Drainage</span>
-                            </a>
-                            
-                            <a href="{{ buildCategoryUrl('streetlights', $currentStatus, $currentPriority, $currentSearch) }}" 
-                               class="flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ $currentCategory == 'streetlights' ? 'bg-[#65B741]/10 text-[#65B741]' : 'text-gray-700 hover:bg-gray-50' }}">
-                                <span>Broken Streetlights</span>
-                            </a>
-                            
-                            <a href="{{ buildCategoryUrl('garbage', $currentStatus, $currentPriority, $currentSearch) }}" 
-                               class="flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ $currentCategory == 'garbage' ? 'bg-[#65B741]/10 text-[#65B741]' : 'text-gray-700 hover:bg-gray-50' }}">
-                                <span>Garbage/Cleanliness</span>
-                            </a>
-                            
-                            <a href="{{ buildCategoryUrl('noise', $currentStatus, $currentPriority, $currentSearch) }}" 
-                               class="flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ $currentCategory == 'noise' ? 'bg-[#65B741]/10 text-[#65B741]' : 'text-gray-700 hover:bg-gray-50' }}">
-                                <span>Noise Complaints</span>
-                            </a>
-                            
-                            <a href="{{ buildCategoryUrl('safety', $currentStatus, $currentPriority, $currentSearch) }}" 
-                               class="flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ $currentCategory == 'safety' ? 'bg-[#65B741]/10 text-[#65B741]' : 'text-gray-700 hover:bg-gray-50' }}">
-                                <span>Safety/Security</span>
-                            </a>
-                            
-                            <a href="{{ buildCategoryUrl('lost', $currentStatus, $currentPriority, $currentSearch) }}" 
-                               class="flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ $currentCategory == 'lost' ? 'bg-[#65B741]/10 text-[#65B741]' : 'text-gray-700 hover:bg-gray-50' }}">
-                                <span>Lost & Found</span>
-                            </a>
-                            
-                            <a href="{{ buildCategoryUrl('animals', $currentStatus, $currentPriority, $currentSearch) }}" 
-                               class="flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ $currentCategory == 'animals' ? 'bg-[#65B741]/10 text-[#65B741]' : 'text-gray-700 hover:bg-gray-50' }}">
-                                <span>Stray Animals</span>
-                            </a>
-                            
-                            <a href="{{ buildCategoryUrl('other', $currentStatus, $currentPriority, $currentSearch) }}" 
-                               class="flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ $currentCategory == 'other' ? 'bg-[#65B741]/10 text-[#65B741]' : 'text-gray-700 hover:bg-gray-50' }}">
-                                <span>Other</span>
-                            </a>
-                        </div>
+                        <select name="category" id="category-filter" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-gray-900 outline-none" style="background-color: white !important; background: white !important; color: #111827 !important;" onchange="this.form.submit()">
+                            <option value="" {{ request('category') == '' ? 'selected' : '' }} style="background-color: white !important; background: white !important; color: #111827 !important;">All Categories</option>
+                            <option value="road" {{ request('category') == 'road' ? 'selected' : '' }} style="background-color: white !important; background: white !important; color: #111827 !important;">Road Issues</option>
+                            <option value="flooding" {{ request('category') == 'flooding' ? 'selected' : '' }} style="background-color: white !important; background: white !important; color: #111827 !important;">Flooding/Drainage</option>
+                            <option value="streetlights" {{ request('category') == 'streetlights' ? 'selected' : '' }} style="background-color: white !important; background: white !important; color: #111827 !important;">Broken Streetlights</option>
+                            <option value="garbage" {{ request('category') == 'garbage' ? 'selected' : '' }} style="background-color: white !important; background: white !important; color: #111827 !important;">Garbage/Cleanliness</option>
+                            <option value="noise" {{ request('category') == 'noise' ? 'selected' : '' }} style="background-color: white !important; background: white !important; color: #111827 !important;">Noise Complaints</option>
+                            <option value="safety" {{ request('category') == 'safety' ? 'selected' : '' }} style="background-color: white !important; background: white !important; color: #111827 !important;">Safety/Security</option>
+                            <option value="lost" {{ request('category') == 'lost' ? 'selected' : '' }} style="background-color: white !important; background: white !important; color: #111827 !important;">Lost & Found</option>
+                            <option value="animals" {{ request('category') == 'animals' ? 'selected' : '' }} style="background-color: white !important; background: white !important; color: #111827 !important;">Stray Animals</option>
+                            <option value="other" {{ request('category') == 'other' ? 'selected' : '' }} style="background-color: white !important; background: white !important; color: #111827 !important;">Other</option>
+                        </select>
                     </div>
                     
                     <div>
