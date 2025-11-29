@@ -20,6 +20,10 @@
         ['id' => 12, 'title' => 'Emergency Contact Numbers', 'category' => 'Safety', 'date' => 'Nov 8, 2024', 'summary' => 'Updated emergency contact numbers for barangay office, police, and fire department.', 'urgent' => true, 'content' => 'Please save these updated emergency contact numbers: Barangay Office: 123-4567, Police Station: 911, Fire Department: 117, Hospital: 123-7890, Emergency Hotline: 8888. Keep these numbers handy and share with family members. In case of emergency, call immediately.', 'images' => ['https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800']],
     ];
     
+    // Merge session announcements with hardcoded ones
+    $sessionAnnouncements = session('announcements', []);
+    $allAnnouncements = array_merge($sessionAnnouncements, $allAnnouncements);
+    
     // Find the announcement by ID
     $announcement = collect($allAnnouncements)->firstWhere('id', (int)$id);
     

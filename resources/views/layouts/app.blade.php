@@ -293,30 +293,14 @@
         }
 
 
-        // Hide/show navbar on scroll
-        let lastScrollTop = 0;
+        // Keep navbar fixed at top (removed hide/show on scroll behavior)
         const navbar = document.getElementById('main-nav');
-        let isScrollingDown = false;
-
-        window.addEventListener('scroll', function() {
-            let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-            
-            if (scrollTop > lastScrollTop && scrollTop > 100) {
-                // Scrolling down - hide navbar
-                if (!isScrollingDown) {
-                    navbar.style.transform = 'translateY(-100%)';
-                    isScrollingDown = true;
-                }
-            } else {
-                // Scrolling up - show navbar
-                if (isScrollingDown) {
-                    navbar.style.transform = 'translateY(0)';
-                    isScrollingDown = false;
-                }
-            }
-            
-            lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
-        });
+        navbar.style.transform = 'translateY(0)';
+        navbar.style.position = 'fixed';
+        navbar.style.top = '0';
+        navbar.style.left = '0';
+        navbar.style.right = '0';
+        navbar.style.zIndex = '50';
 
         // Handle logout - clear all localStorage data
         window.handleLogout = function(e) {

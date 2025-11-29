@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Storage;
 
 class AnnouncementController extends Controller
 {
@@ -20,7 +21,18 @@ class AnnouncementController extends Controller
             'summary' => ['required', 'string', 'max:500'],
             'content' => ['required', 'string'],
             'urgent' => ['nullable', 'boolean'],
+            'images.*' => ['nullable', 'image', 'mimes:jpeg,jpg,png,gif', 'max:5120'], // 5MB max per image
         ]);
+
+        // Handle image uploads
+        $imagePaths = [];
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $image) {
+                // Store in public/announcements directory
+                $path = $image->store('announcements', 'public');
+                $imagePaths[] = Storage::url($path);
+            }
+        }
 
         // Since this is a frontend-only app with hardcoded data,
         // we'll store the announcement in session for now
@@ -34,6 +46,7 @@ class AnnouncementController extends Controller
             'summary' => $validated['summary'],
             'content' => $validated['content'],
             'urgent' => $request->has('urgent') && $request->urgent == '1',
+            'images' => $imagePaths, // Store image paths
         ];
 
         // Store in session (in a real app, save to database)
