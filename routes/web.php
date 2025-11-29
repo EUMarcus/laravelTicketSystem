@@ -39,13 +39,9 @@ Route::get('/suggestions/{id}', function ($id) {
     return view('suggestions.show', ['id' => $id]);
 })->name('suggestions.show');
 
-Route::get('/announcements', function () {
-    return view('announcements.index');
-})->name('announcements.index');
+Route::get('/announcements', [App\Http\Controllers\AnnouncementController::class, 'index'])->name('announcements.index');
 
-Route::get('/announcements/{id}', function ($id) {
-    return view('announcements.show', ['id' => $id]);
-})->name('announcements.show');
+Route::get('/announcements/{id}', [App\Http\Controllers\AnnouncementController::class, 'show'])->name('announcements.show');
 
 Route::post('/announcements', [App\Http\Controllers\AnnouncementController::class, 'store'])->name('announcements.store');
     
@@ -86,9 +82,7 @@ Route::get('/staff/suggestions', function () {
     return view('staff.suggestions');
 })->name('staff.suggestions');
 
-Route::get('/staff/announcements', function () {
-    return view('staff.announcements');
-})->name('staff.announcements');
+Route::get('/staff/announcements', [App\Http\Controllers\AnnouncementController::class, 'index'])->name('staff.announcements');
 
 Route::get('/staff/events', function () {
     return view('staff.events');

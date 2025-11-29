@@ -154,7 +154,7 @@ class SupabaseService
     /**
      * Select data from a Supabase table
      */
-    public function select(string $table, array $filters = [], string $select = '*'): array
+    public function select(string $table, array $filters = [], string $select = '*', string $orderBy = null, string $orderDirection = 'desc'): array
     {
         if (!$this->isConfigured()) {
             throw new Exception('Supabase is not configured. Please set SUPABASE_URL and SUPABASE_SERVICE_KEY in your .env file.');
@@ -176,6 +176,11 @@ class SupabaseService
         // Add filters as query parameters
         foreach ($filters as $key => $value) {
             $url .= "&{$key}=eq.{$value}";
+        }
+        
+        // Add ordering
+        if ($orderBy) {
+            $url .= "&order={$orderBy}.{$orderDirection}";
         }
 
         $response = $http->get($url);
