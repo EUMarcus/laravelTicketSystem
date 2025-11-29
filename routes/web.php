@@ -36,6 +36,7 @@ Route::get('/suggestions/create', function () {
 Route::post('/suggestions', [App\Http\Controllers\SuggestionController::class, 'store'])->name('suggestions.store');
 
 Route::get('/suggestions/{id}', [App\Http\Controllers\SuggestionController::class, 'show'])->name('suggestions.show');
+Route::post('/suggestions/{id}/comments', [App\Http\Controllers\SuggestionController::class, 'storeComment'])->name('suggestions.comments.store');
 
 Route::get('/announcements', [App\Http\Controllers\AnnouncementController::class, 'index'])->name('announcements.index');
 

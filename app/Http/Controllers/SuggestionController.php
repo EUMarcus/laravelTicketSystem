@@ -141,6 +141,21 @@ class SuggestionController extends Controller
             
             $suggestion = $suggestions[0];
             
+            // Fetch comments for this suggestion
+            $comments = $this->supabase->select('suggestion_comments', ['suggestion_id' => $id], 'scom_id,comment,created_at,comment_from', 'created_at', 'asc');
+            
+            // Format comments
+            $formattedComments = array_map(function($comment) {
+                return [
+                    'id' => $comment['scom_id'],
+                    'text' => $comment['comment'],
+                    'date' => isset($comment['created_at']) 
+                        ? Carbon::parse($comment['created_at'])->diffForHumans()
+                        : 'Just now',
+                    'author' => 'Anonymous', // Can be enhanced later with user lookup
+                ];
+            }, $comments);
+            
             // Format date
             $date = isset($suggestion['created_at']) 
                 ? Carbon::parse($suggestion['created_at'])->diffForHumans()
@@ -165,10 +180,13 @@ class SuggestionController extends Controller
                 'author' => $author,
                 'content' => $suggestion['full_content'],
                 'upvotes' => 0, // Not in database schema yet
-                'comments' => 0, // Not in database schema yet
+                'comments' => count($formattedComments),
             ];
             
-            return view('suggestions.show', ['suggestion' => $formattedSuggestion]);
+            return view('suggestions.show', [
+                'suggestion' => $formattedSuggestion,
+                'comments' => $formattedComments
+            ]);
         } catch (\Exception $e) {
             // Fallback to hardcoded data
             $hardcodedSuggestions = [
@@ -183,7 +201,57 @@ class SuggestionController extends Controller
                 abort(404, 'Suggestion not found');
             }
             
-            return view('suggestions.show', ['suggestion' => $suggestion]);
+            // Fallback comments
+            $comments = [
+                ['id' => 1, 'author' => 'Carlos Rivera', 'date' => '2 days ago', 'text' => 'Great idea! I would love to participate in this.'],
+            ];
+            
+            return view('suggestions.show', [
+                'suggestion' => $suggestion,
+                'comments' => $comments
+            ]);
+        }
+    }
+
+    public function storeComment(Request $request, $id)
+    {
+        // Check if user is logged in
+        if (!session('user')) {
+            return redirect()->route('login')
+                ->withErrors(['message' => 'You must be logged in to comment.']);
+        }
+
+        $validated = $request->validate([
+            'comment' => ['required', 'string', 'max:1000'],
+        ]);
+
+        // Get user ID from session
+        $userId = session('user')['id'] ?? null;
+        
+        // Prepare data for Supabase
+        $commentData = [
+            'suggestion_id' => $id,
+            'comment' => $validated['comment'],
+        ];
+
+        // Add comment_from if user ID is available and is a valid UUID
+        if ($userId && $this->isValidUuid($userId)) {
+            $commentData['comment_from'] = $userId;
+        }
+
+        try {
+            // Save to Supabase
+            $result = $this->supabase->insert('suggestion_comments', $commentData);
+            
+            return redirect()->route('suggestions.show', $id)
+                ->with('success', 'Comment posted successfully!');
+        } catch (\Exception $e) {
+            // Log error and redirect with error message
+            \Log::error('Failed to save comment to Supabase: ' . $e->getMessage());
+            
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['message' => 'Failed to post comment. Please try again.']);
         }
     }
 
