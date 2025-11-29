@@ -8,7 +8,7 @@
         <div class="modern-card p-8 lg:p-10">
             <div class="text-center mb-8">
                 <div class="inline-block p-3 bg-primary-lighter rounded-2xl mb-4">
-                    <img src="{{ asset('Logo/kampay_logo.jpg') }}" alt="Logo" class="h-16 w-16 rounded-full object-cover">
+                    <img src="{{ asset('Logo/sklogo.png') }}" alt="Logo" class="h-16 w-16 rounded-full object-cover">
                 </div>
                 <h1 class="text-3xl font-bold text-text-primary mb-2">Join Community Hub</h1>
                 <p class="text-text-secondary">Create your account to participate in community activities</p>

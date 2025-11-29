@@ -26,7 +26,7 @@
         <div class="mb-8" style="visibility: visible !important; opacity: 1 !important;">
             <div class="inline-block relative">
                 <div class="relative inline-block p-3 bg-white/10 backdrop-blur-md rounded-full border-2 border-white/30" style="z-index: 10 !important;">
-                    <img src="{{ asset('Logo/kampay_logo.jpg') }}" alt="Logo" class="h-16 w-16 rounded-full object-cover" style="display: block !important; visibility: visible !important; opacity: 1 !important;">
+                    <img src="{{ asset('Logo/sklogo.png') }}" alt="Logo" class="h-16 w-16 rounded-full object-cover" style="display: block !important; visibility: visible !important; opacity: 1 !important;">
                 </div>
             </div>
         </div>

@@ -19,7 +19,7 @@
                 <div class="flex items-center space-x-3">
                     <a href="{{ route('home') }}" class="flex items-center space-x-3 group">
                         <div class="relative">
-                            <img src="{{ asset('Logo/kampay_logo.jpg') }}" alt="Logo" class="h-10 w-10 rounded-full object-cover border-2 border-[#65B741]/20 group-hover:border-[#65B741]/40">
+                            <img src="{{ asset('Logo/sklogo.png') }}" alt="Logo" class="h-10 w-10 rounded-full object-cover border-2 border-[#65B741]/20 group-hover:border-[#65B741]/40">
                         </div>
                         <span class="text-xl font-bold text-[#65B741] group-hover:text-[#4d8a32]">Community Hub</span>
                     </a>
@@ -186,7 +186,7 @@
                 <!-- Brand Section -->
                 <div>
                     <div class="flex items-center space-x-3 mb-4">
-                        <img src="{{ asset('Logo/kampay_logo.jpg') }}" alt="Logo" class="h-10 w-10 rounded-full object-cover border-2 border-[#65B741]/20">
+                        <img src="{{ asset('Logo/sklogo.png') }}" alt="Logo" class="h-10 w-10 rounded-full object-cover border-2 border-[#65B741]/20">
                         <span class="text-xl font-bold text-[#65B741]">Community Hub</span>
                     </div>
                     <p class="text-sm text-gray-600 leading-relaxed">
