@@ -71,6 +71,11 @@ Route::get('/profile', function () {
     return view('profile.index');
 })->name('profile.index');
 
+// Staff routes
+Route::get('/staff/dashboard', function () {
+    return view('staff.dashboard');
+})->name('staff.dashboard');
+
 // Auth routes
 Route::get('/login', [App\Http\Controllers\Auth\LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [App\Http\Controllers\Auth\LoginController::class, 'login']);

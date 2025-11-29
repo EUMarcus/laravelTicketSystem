@@ -53,8 +53,8 @@ class LoginController extends Controller
 
             // Redirect based on role
             if ($user['role'] === 'employee') {
-                // Employee - redirect to reports page (or employee dashboard)
-                return redirect()->route('reports.index')->with('success', 'Welcome back, Staff!');
+                // Employee - redirect to staff dashboard
+                return redirect()->route('staff.dashboard')->with('success', 'Welcome back, Staff!');
             } else {
                 // Citizen - redirect to reports/create page (reporting page)
                 return redirect()->route('reports.create')->with('success', 'Welcome back!');
