@@ -11,26 +11,6 @@
             <div class="w-40 h-2 bg-gradient-to-r from-[#65B741] via-[#65B741] to-transparent rounded-full mb-4"></div>
             <p class="text-lg md:text-xl text-gray-600 max-w-2xl">Participate in community decisions and voice your opinion</p>
         </div>
-
-        <!-- Quick Stats -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-10">
-            <div class="bg-white p-5 rounded-lg border border-gray-200 shadow-sm">
-                <div class="text-3xl font-bold text-gray-900 mb-1">12</div>
-                <div class="text-sm font-medium text-gray-600">Total Polls</div>
-            </div>
-            <div class="bg-white p-5 rounded-lg border border-gray-200 shadow-sm">
-                <div class="text-3xl font-bold text-[#65B741] mb-1">8</div>
-                <div class="text-sm font-medium text-gray-600">Active</div>
-            </div>
-            <div class="bg-white p-5 rounded-lg border border-gray-200 shadow-sm">
-                <div class="text-3xl font-bold text-[#FFB534] mb-1">1,245</div>
-                <div class="text-sm font-medium text-gray-600">Total Votes</div>
-            </div>
-            <div class="bg-white p-5 rounded-lg border border-gray-200 shadow-sm">
-                <div class="text-3xl font-bold text-gray-700 mb-1">4</div>
-                <div class="text-sm font-medium text-gray-600">Closed</div>
-            </div>
-        </div>
     </div>
 
     <!-- Polls Grid -->

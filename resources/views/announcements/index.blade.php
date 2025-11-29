@@ -11,30 +11,10 @@
             <div class="w-40 h-2 bg-gradient-to-r from-[#65B741] via-[#65B741] to-transparent rounded-full mb-4"></div>
             <p class="text-lg md:text-xl text-gray-600 max-w-2xl">Stay informed with the latest community updates and important notices</p>
         </div>
-
-        <!-- Quick Stats -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-10">
-            <div class="bg-white p-5 rounded-lg border border-gray-200 shadow-sm">
-                <div class="text-3xl font-bold text-gray-900 mb-1">24</div>
-                <div class="text-sm font-medium text-gray-600">Total</div>
-            </div>
-            <div class="bg-white p-5 rounded-lg border border-gray-200 shadow-sm">
-                <div class="text-3xl font-bold text-[#65B741] mb-1">8</div>
-                <div class="text-sm font-medium text-gray-600">This Month</div>
-            </div>
-            <div class="bg-white p-5 rounded-lg border border-gray-200 shadow-sm">
-                <div class="text-3xl font-bold text-[#FFB534] mb-1">5</div>
-                <div class="text-sm font-medium text-gray-600">Urgent</div>
-            </div>
-            <div class="bg-white p-5 rounded-lg border border-gray-200 shadow-sm">
-                <div class="text-3xl font-bold text-gray-700 mb-1">12</div>
-                <div class="text-sm font-medium text-gray-600">Events</div>
-            </div>
-        </div>
     </div>
 
     <!-- Announcements Grid -->
-    @php
+        @php
         $allAnnouncements = [
             ['id' => 1, 'title' => 'Community Clean-Up Day Scheduled', 'category' => 'Event', 'date' => 'Dec 5, 2024', 'summary' => 'Join us for a community-wide clean-up activity this coming Saturday. All residents are welcome to participate.', 'urgent' => false],
             ['id' => 2, 'title' => 'Health Advisory: Dengue Prevention', 'category' => 'Health', 'date' => 'Dec 3, 2024', 'summary' => 'Important reminders on preventing dengue. Keep your surroundings clean and eliminate stagnant water.', 'urgent' => true],
@@ -48,7 +28,7 @@
             ['id' => 10, 'title' => 'Garbage Collection Schedule Change', 'category' => 'Service', 'date' => 'Nov 12, 2024', 'summary' => 'Garbage collection will be moved to Tuesday and Friday starting next week.', 'urgent' => false],
             ['id' => 11, 'title' => 'Community Garden Opening', 'category' => 'Event', 'date' => 'Nov 10, 2024', 'summary' => 'Our new community garden is now open! Residents can register for their own plot.', 'urgent' => false],
             ['id' => 12, 'title' => 'Emergency Contact Numbers', 'category' => 'Safety', 'date' => 'Nov 8, 2024', 'summary' => 'Updated emergency contact numbers for barangay office, police, and fire department.', 'urgent' => true],
-        ];
+            ];
 
         // Paginate
         $perPage = 6;
@@ -65,15 +45,15 @@
             $currentPage,
             ['path' => request()->url(), 'query' => request()->query()]
         );
-    @endphp
+        @endphp
 
     @if(count($announcements) > 0)
         <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
-            @foreach($announcements as $announcement)
-                <a href="{{ route('announcements.show', $announcement['id']) }}" class="block group">
+        @foreach($announcements as $announcement)
+        <a href="{{ route('announcements.show', $announcement['id']) }}" class="block group">
                     <div class="bg-white p-5 rounded-lg border border-gray-200 shadow-sm h-full flex flex-col hover:border-gray-300 hover:shadow-md">
                         <!-- Header -->
-                        <div class="mb-4">
+                <div class="mb-4">
                             <div class="flex items-start justify-between mb-3">
                                 <h3 class="text-base font-bold text-gray-900 line-clamp-2 flex-1 group-hover:text-gray-700">
                                     {{ $announcement['title'] }}
@@ -85,8 +65,8 @@
                             
                             <div class="flex items-center gap-2 flex-wrap mb-3">
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800 border border-gray-200">
-                                    {{ $announcement['category'] }}
-                                </span>
+                        {{ $announcement['category'] }}
+                    </span>
                                 @if($announcement['urgent'])
                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded text-xs font-medium bg-red-50 text-red-700 border border-red-200">
                                         Urgent
@@ -95,9 +75,9 @@
                             </div>
                             
                             <p class="text-gray-600 text-sm mb-4 line-clamp-2 leading-relaxed">
-                                {{ $announcement['summary'] }}
-                            </p>
-                        </div>
+                        {{ $announcement['summary'] }}
+                    </p>
+                </div>
                         
                         <!-- Footer -->
                         <div class="flex items-center justify-between pt-4 border-t border-gray-100 mt-auto">
@@ -108,11 +88,11 @@
                                 <span>{{ $announcement['date'] }}</span>
                             </div>
                             <span class="text-xs font-semibold text-gray-700 group-hover:text-gray-900">Read More →</span>
-                        </div>
-                    </div>
-                </a>
-            @endforeach
-        </div>
+                </div>
+            </div>
+        </a>
+        @endforeach
+    </div>
 
         <!-- Pagination -->
         @if($announcements->hasPages())

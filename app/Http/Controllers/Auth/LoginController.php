@@ -25,7 +25,18 @@ class LoginController extends Controller
 
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
-            return redirect()->intended(route('dashboard'));
+            
+            // Redirect based on role
+            $user = Auth::user();
+            $profile = \App\Models\Profile::find($user->id) ?? \App\Models\Profile::where('name', $user->name)->first();
+            
+            if ($profile && $profile->isEmployee()) {
+                // Employee - redirect to staff dashboard
+                return redirect()->route('staff.dashboard')->with('success', 'Welcome back, Staff!');
+            } else {
+                // Citizen - redirect to reports index
+                return redirect()->intended(route('reports.index'));
+            }
         }
 
         return back()->withErrors([

@@ -26,7 +26,7 @@
         <div class="mb-8" style="visibility: visible !important; opacity: 1 !important;">
             <div class="inline-block relative">
                 <div class="relative inline-block p-3 bg-white/10 backdrop-blur-md rounded-full border-2 border-white/30" style="z-index: 10 !important;">
-                    <img src="{{ asset('Logo/kampay_logo.jpg') }}" alt="Logo" class="h-16 w-16 rounded-full object-cover" style="display: block !important; visibility: visible !important; opacity: 1 !important;">
+                    <img src="{{ asset('Logo/sklogo.png') }}" alt="Logo" class="h-16 w-16 rounded-full object-cover" style="display: block !important; visibility: visible !important; opacity: 1 !important;">
                 </div>
             </div>
         </div>
@@ -43,13 +43,13 @@
             <a href="{{ route('reports.index') }}" class="inline-flex items-center gap-2 px-8 py-3.5 bg-gray-900 text-white font-bold rounded-lg shadow-lg hover:bg-gray-800">
                 <span>Know More</span>
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                    </svg>
             </a>
             <a href="{{ route('events.index') }}" class="inline-flex items-center gap-2 px-8 py-3.5 bg-white/10 backdrop-blur-md border-2 border-white/30 text-white font-bold rounded-lg hover:bg-white/20">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
                 <span>Calendar of Activities</span>
             </a>
         </div>
@@ -57,29 +57,6 @@
 </section>
 
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 bg-white" style="background-color: #ffffff !important; position: relative; z-index: 2; overflow: visible !important; padding-top: 2rem !important;">
-    <!-- Quick Stats -->
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-16 relative z-20" style="margin-top: -4rem !important; padding-top: 2rem !important;">
-        <div class="bg-white p-5 rounded-lg border border-gray-200 shadow-sm text-center">
-            <div class="text-3xl font-bold text-gray-900 mb-1">142</div>
-            <div class="text-sm text-gray-500 font-medium">Total Reports</div>
-        </div>
-        
-        <div class="bg-white p-5 rounded-lg border border-gray-200 shadow-sm text-center">
-            <div class="text-3xl font-bold text-[#65B741] mb-1">23</div>
-            <div class="text-sm text-gray-500 font-medium">Open</div>
-        </div>
-
-        <div class="bg-white p-5 rounded-lg border border-gray-200 shadow-sm text-center">
-            <div class="text-3xl font-bold text-[#FFB534] mb-1">89</div>
-            <div class="text-sm text-gray-500 font-medium">Suggestions</div>
-        </div>
-        
-        <div class="bg-white p-5 rounded-lg border border-gray-200 shadow-sm text-center">
-            <div class="text-3xl font-bold text-gray-700 mb-1">6</div>
-            <div class="text-sm text-gray-500 font-medium">Upcoming Events</div>
-        </div>
-    </div>
-
     <!-- Main Services Section -->
     <div class="mb-16">
         <div class="text-center mb-12">
@@ -110,14 +87,14 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                     </svg>
                 </div>
-
+                
                 <h3 class="text-lg font-bold text-gray-900 mb-2 group-hover:text-gray-700">{{ $service['title'] }}</h3>
                 <p class="text-gray-600 text-sm leading-relaxed mb-4 flex-grow">{{ $service['desc'] }}</p>
-                
+                    
                 <div class="flex items-center text-[#{{ $service['color'] }}] font-semibold text-sm mt-auto">
-                    <span>Learn More</span>
+                        <span>Learn More</span>
                     <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                     </svg>
                 </div>
             </a>
@@ -249,8 +226,8 @@
                         <div class="font-medium">{{ $event['date'] }} • {{ $event['time'] }}</div>
                         <div class="flex items-center">
                             <svg class="w-3.5 h-3.5 text-gray-500 mr-1.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                            </svg>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                </svg>
                             <span>{{ $event['location'] }}</span>
                         </div>
                     </div>

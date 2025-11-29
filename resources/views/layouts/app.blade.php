@@ -19,7 +19,7 @@
                 <div class="flex items-center space-x-3">
                     <a href="{{ route('home') }}" class="flex items-center space-x-3 group">
                         <div class="relative">
-                            <img src="{{ asset('Logo/kampay_logo.jpg') }}" alt="Logo" class="h-10 w-10 rounded-full object-cover border-2 border-[#65B741]/20 group-hover:border-[#65B741]/40">
+                            <img src="{{ asset('Logo/sklogo.png') }}" alt="Logo" class="h-10 w-10 rounded-full object-cover border-2 border-[#65B741]/20 group-hover:border-[#65B741]/40">
                         </div>
                         <span class="text-xl font-bold text-[#65B741] group-hover:text-[#4d8a32]">Community Hub</span>
                     </a>
@@ -39,14 +39,34 @@
                 <!-- Auth Buttons & Mobile Menu -->
                 <div class="flex items-center space-x-3">
                     @auth
-                        <span class="hidden md:block text-sm text-gray-600">{{ Auth::user()->name }}</span>
-                        <form method="POST" action="{{ route('logout') }}" class="hidden md:block">
-                            @csrf
-                            <button type="submit" class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 rounded-lg hover:bg-gray-50 transition-colors">Logout</button>
-                        </form>
+                        <!-- User Menu (Separate Buttons) -->
+                        <div class="hidden md:flex items-center space-x-3">
+                            <a href="{{ route('profile.index') }}" class="flex items-center space-x-2 px-4 py-2 text-sm font-medium text-gray-600 hover:text-[#65B741] rounded-lg">
+                                <div class="w-8 h-8 bg-[#65B741] rounded-full flex items-center justify-center">
+                                    <span class="text-white font-semibold text-sm">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}</span>
+                                </div>
+                                <span>{{ Auth::user()->name }}</span>
+                            </a>
+                            <form method="POST" action="{{ route('logout') }}" id="logoutFormDesktop" onsubmit="handleLogout(event)">
+                                @csrf
+                                <button type="submit" class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 rounded-lg">
+                                    Logout
+                                </button>
+                            </form>
+                        </div>
                     @else
-                        <a href="{{ route('login') }}" class="hidden md:block px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 rounded-lg hover:bg-gray-50 transition-colors">Login</a>
-                        <a href="{{ route('register') }}" class="hidden md:block px-5 py-2 text-sm font-semibold bg-[#65B741] text-white rounded-lg hover:bg-[#4d8a32] transition-colors">Register</a>
+                        <a href="{{ route('login') }}" class="hidden md:flex items-center space-x-2 px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 rounded-lg hover:bg-gray-50 transition-colors">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                            </svg>
+                            <span>Login</span>
+                        </a>
+                        <a href="{{ route('register') }}" class="hidden md:flex items-center space-x-2 px-5 py-2 text-sm font-semibold bg-[#65B741] text-white rounded-lg hover:bg-[#4d8a32] transition-colors">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                            </svg>
+                            <span>Register</span>
+                        </a>
                     @endauth
                     <!-- Mobile menu button -->
                     <button id="mobile-menu-button" class="md:hidden p-2 rounded-lg hover:bg-gray-100 text-gray-600">
@@ -70,16 +90,34 @@
                 <a href="{{ route('faq.index') }}" class="block px-4 py-2 text-sm font-medium {{ request()->routeIs('faq.*') ? 'text-[#65B741] bg-[#65B741]/10' : 'text-gray-600' }} hover:text-[#65B741] hover:bg-[#65B741]/10 rounded-lg">FAQ</a>
                 @auth
                 <div class="border-t border-gray-200 mt-2 pt-2 space-y-1">
+                    <a href="{{ route('profile.index') }}" class="flex items-center space-x-2 px-4 py-2 text-sm font-medium text-gray-600 hover:text-[#65B741] rounded-lg">
+                        <div class="w-8 h-8 bg-[#65B741] rounded-full flex items-center justify-center">
+                            <span class="text-white font-semibold text-sm">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}</span>
+                        </div>
+                        <span>{{ Auth::user()->name }}</span>
+                    </a>
                     <a href="{{ route('reports.create') }}" class="block px-4 py-2 text-sm font-semibold bg-[#65B741] text-white rounded-lg hover:bg-[#4d8a32]">New Report</a>
-                    <form method="POST" action="{{ route('logout') }}">
+                    <form method="POST" action="{{ route('logout') }}" id="logoutFormMobile" onsubmit="handleLogout(event)">
                         @csrf
-                        <button type="submit" class="w-full text-left block px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg">Logout</button>
+                        <button type="submit" class="w-full text-left px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 rounded-lg">
+                            Logout
+                        </button>
                     </form>
                 </div>
                 @else
                 <div class="border-t border-gray-200 mt-2 pt-2 space-y-1">
-                    <a href="{{ route('login') }}" class="block px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg">Login</a>
-                    <a href="{{ route('register') }}" class="block px-4 py-2 text-sm font-semibold bg-[#65B741] text-white rounded-lg hover:bg-[#4d8a32]">Register</a>
+                    <a href="{{ route('login') }}" class="flex items-center space-x-2 px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                        </svg>
+                        <span>Login</span>
+                    </a>
+                    <a href="{{ route('register') }}" class="flex items-center space-x-2 px-4 py-2 text-sm font-semibold bg-[#65B741] text-white rounded-lg hover:bg-[#4d8a32]">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                        </svg>
+                        <span>Register</span>
+                    </a>
                 </div>
                 @endauth
             </div>
@@ -120,15 +158,23 @@
                 background-color: #ffffff !important;
             }
         </style>
-        <!-- Flash Messages -->
+        <!-- Success Modal -->
         @if(session('success'))
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6" style="position: relative; z-index: 50;">
-                <div class="alert alert-success animate-slide-in" data-aos="fade-down">
-                    <div class="flex items-center space-x-2">
-                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <div id="successModal" class="fixed inset-0 z-50 flex items-center justify-center" style="background-color: rgba(0, 0, 0, 0.5); backdrop-filter: blur(2px);">
+                <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 transform transition-all">
+                    <div class="p-6">
+                        <div class="flex items-center justify-center mb-4">
+                            <div class="w-16 h-16 bg-[#65B741]/10 rounded-full flex items-center justify-center">
+                                <svg class="w-8 h-8 text-[#65B741]" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                         </svg>
-                        <span>{{ session('success') }}</span>
+                            </div>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 text-center mb-2">Success!</h3>
+                        <p class="text-gray-600 text-center mb-6">{{ session('success') }}</p>
+                        <button onclick="closeSuccessModal()" class="w-full px-6 py-3 bg-[#65B741] text-white font-semibold rounded-lg hover:bg-[#4d8a32] transition-colors">
+                            Okay
+                        </button>
             </div>
                 </div>
             </div>
@@ -144,7 +190,7 @@
                 <!-- Brand Section -->
                 <div>
                     <div class="flex items-center space-x-3 mb-4">
-                        <img src="{{ asset('Logo/kampay_logo.jpg') }}" alt="Logo" class="h-10 w-10 rounded-full object-cover border-2 border-[#65B741]/20">
+                        <img src="{{ asset('Logo/sklogo.png') }}" alt="Logo" class="h-10 w-10 rounded-full object-cover border-2 border-[#65B741]/20">
                         <span class="text-xl font-bold text-[#65B741]">Community Hub</span>
                     </div>
                     <p class="text-sm text-gray-600 leading-relaxed">
@@ -234,6 +280,7 @@
             });
         }
 
+
         // Hide/show navbar on scroll
         let lastScrollTop = 0;
         const navbar = document.getElementById('main-nav');
@@ -259,15 +306,81 @@
             lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
         });
 
-        // Clear localStorage on logout
-        @if(session('logout'))
-            // Clear all TemporaryAuth related localStorage data
+        // Handle logout - clear all localStorage data
+        window.handleLogout = function(e) {
+            e.preventDefault();
+            
+            // Clear all authentication and user-related localStorage data
+            localStorage.removeItem('user_reports');
+            localStorage.removeItem('report_chat_messages');
             localStorage.removeItem('suggestion_user_id');
             localStorage.removeItem('suggestion_user_name');
             localStorage.removeItem('suggestion_votes');
             localStorage.removeItem('suggestion_comments');
             localStorage.removeItem('poll_votes');
             localStorage.removeItem('poll_selected_options');
+            localStorage.removeItem('user_poll_votes');
+            localStorage.removeItem('user_poll_selected_options');
+            localStorage.removeItem('user_suggestion_votes');
+            localStorage.removeItem('user_suggestions');
+            
+            // Clear dynamic keys (suggestion_comments_*, user_suggestion_*, suggestion_votes_*)
+            for (let i = localStorage.length - 1; i >= 0; i--) {
+                const key = localStorage.key(i);
+                if (key && (key.startsWith('suggestion_comments_') || key.startsWith('user_suggestion_') || key.startsWith('suggestion_votes_'))) {
+                    localStorage.removeItem(key);
+                }
+            }
+            
+            // Submit the form to logout from session
+            e.target.closest('form').submit();
+        };
+
+        // Clear localStorage on logout (if redirected from logout)
+        @if(session('logout'))
+            // Clear all authentication and user-related localStorage data
+            localStorage.removeItem('user_reports');
+            localStorage.removeItem('report_chat_messages');
+            localStorage.removeItem('suggestion_user_id');
+            localStorage.removeItem('suggestion_user_name');
+            localStorage.removeItem('suggestion_votes');
+            localStorage.removeItem('suggestion_comments');
+            localStorage.removeItem('poll_votes');
+            localStorage.removeItem('poll_selected_options');
+            localStorage.removeItem('user_poll_votes');
+            localStorage.removeItem('user_poll_selected_options');
+            localStorage.removeItem('user_suggestion_votes');
+            localStorage.removeItem('user_suggestions');
+            
+            // Clear dynamic keys (suggestion_comments_*, user_suggestion_*, suggestion_votes_*)
+            for (let i = localStorage.length - 1; i >= 0; i--) {
+                const key = localStorage.key(i);
+                if (key && (key.startsWith('suggestion_comments_') || key.startsWith('user_suggestion_') || key.startsWith('suggestion_votes_'))) {
+                    localStorage.removeItem(key);
+                }
+            }
+        @endif
+
+        // Success Modal Functions
+        function closeSuccessModal() {
+            const modal = document.getElementById('successModal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        // Close modal when clicking outside
+        @if(session('success'))
+            document.addEventListener('DOMContentLoaded', function() {
+                const modal = document.getElementById('successModal');
+                if (modal) {
+                    modal.addEventListener('click', function(e) {
+                        if (e.target === modal) {
+                            closeSuccessModal();
+                        }
+                    });
+                }
+            });
         @endif
     </script>
 </body>
