@@ -23,8 +23,11 @@ class RegisterController extends Controller
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'contact_number' => ['required', 'string', 'max:20'],
+            'voters_id' => ['required', 'string', 'size:22', 'regex:/^[A-Za-z0-9]{22}$/', 'unique:users,voters_id'],
+            'address' => ['required', 'string', 'max:255'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'role' => ['required', 'in:customer,employee'],
+            'role' => ['required', 'in:citizen,employee'],
         ]);
 
         $userId = (string) Str::uuid();
@@ -34,6 +37,9 @@ class RegisterController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'voters_id' => strtoupper($request->voters_id),
+            'contact_number' => $request->contact_number,
+            'address' => $request->address,
         ]);
 
         // Create profile with same UUID as user

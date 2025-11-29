@@ -22,7 +22,18 @@ class LoginController extends Controller
 
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
-            return redirect()->intended(route('dashboard'));
+            
+            // Automatically determine if user is staff (employee) or normal user (citizen) based on role
+            $user = Auth::user();
+            $profile = $user->profile;
+            
+            if ($profile && $profile->role === 'employee') {
+                // Staff/Employee - redirect to home
+                return redirect()->intended(route('home'))->with('success', 'Welcome back, Staff!');
+            } else {
+                // Normal user/Citizen - redirect to home
+                return redirect()->intended(route('home'))->with('success', 'Welcome back!');
+            }
         }
 
         return back()->withErrors([

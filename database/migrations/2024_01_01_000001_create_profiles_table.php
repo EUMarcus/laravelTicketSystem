@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('profiles', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->string('role')->default('customer'); // customer, employee, admin
+            $table->string('role')->default('citizen'); // citizen, employee
             $table->string('name');
             $table->string('avatar_url')->nullable();
             $table->timestamps();

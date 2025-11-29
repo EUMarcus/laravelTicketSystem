@@ -31,13 +31,13 @@ class MessageController extends Controller
         if (!$profile) {
             $profile = Profile::create([
                 'id' => $user->id,
-                'role' => 'customer',
+                'role' => 'citizen',
                 'name' => $user->name,
             ]);
         }
 
         // Check access
-        if ($profile->isCustomer() && $ticket->customer_id !== $profile->id) {
+        if ($profile->isCitizen() && $ticket->customer_id !== $profile->id) {
             abort(403);
         }
 
