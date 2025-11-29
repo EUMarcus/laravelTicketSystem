@@ -69,6 +69,87 @@
 /* Modern Global Styles */
 * {
     transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.2s ease, opacity 0.2s ease;
+    box-sizing: border-box;
+}
+
+/* Remove scrollbars globally except for html/body - keep scroll functionality */
+* {
+    scrollbar-width: none !important; /* Firefox */
+    -ms-overflow-style: none !important; /* IE and Edge */
+}
+
+*::-webkit-scrollbar {
+    display: none !important; /* Chrome, Safari, Opera */
+    width: 0 !important;
+    height: 0 !important;
+    background: transparent !important;
+}
+
+/* Override: Show scrollbar for html/body (whole page) */
+html, body {
+    scrollbar-width: thin !important; /* Firefox - show thin scrollbar */
+    scrollbar-color: #65B741 #f0f0f0 !important; /* Firefox - green thumb, light track */
+    -ms-overflow-style: scrollbar !important; /* IE and Edge - show scrollbar */
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+    display: block !important; /* Chrome, Safari, Opera - show scrollbar */
+    width: 12px !important;
+    height: 12px !important;
+    background: transparent !important;
+}
+
+html::-webkit-scrollbar-track,
+body::-webkit-scrollbar-track {
+    background: #f0f0f0 !important;
+    border-radius: 10px !important;
+}
+
+html::-webkit-scrollbar-thumb,
+body::-webkit-scrollbar-thumb {
+    background: #65B741 !important;
+    border-radius: 10px !important;
+    border: 2px solid #f0f0f0 !important;
+}
+
+html::-webkit-scrollbar-thumb:hover,
+body::-webkit-scrollbar-thumb:hover {
+    background: #4d8a32 !important;
+}
+
+/* Ensure all containers respect viewport width */
+.container,
+.max-w-7xl,
+.max-w-6xl,
+.max-w-5xl,
+.max-w-4xl,
+.max-w-3xl,
+.max-w-2xl,
+.max-w-xl,
+.max-w-lg,
+.max-w-md,
+.max-w-sm {
+    max-width: 100vw !important;
+    width: 100% !important;
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+@media (min-width: 640px) {
+    .container,
+    .max-w-7xl,
+    .max-w-6xl,
+    .max-w-5xl,
+    .max-w-4xl,
+    .max-w-3xl,
+    .max-w-2xl,
+    .max-w-xl,
+    .max-w-lg,
+    .max-w-md {
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+    }
 }
 
 body {
@@ -76,20 +157,80 @@ body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     background-color: #ffffff !important;
+    overflow-x: hidden !important;
+    max-width: 100vw !important;
+    width: 100% !important;
 }
 
-/* Smooth Scroll */
+/* Smooth Scroll - Show scrollbar for whole page */
 html {
     scroll-behavior: smooth;
     background-color: #ffffff !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    max-width: 100vw !important;
+    scrollbar-width: thin !important; /* Firefox - show thin scrollbar */
+    scrollbar-color: #65B741 #f0f0f0 !important; /* Firefox - green thumb, light track */
+    -ms-overflow-style: scrollbar !important; /* IE and Edge - show scrollbar */
+}
+
+/* Custom scrollbar for whole page - Webkit browsers (Chrome, Safari, Edge) */
+html::-webkit-scrollbar {
+    width: 12px !important;
+    display: block !important;
+}
+
+html::-webkit-scrollbar-track {
+    background: #f0f0f0 !important;
+    border-radius: 10px !important;
+}
+
+html::-webkit-scrollbar-thumb {
+    background: #65B741 !important;
+    border-radius: 10px !important;
+    border: 2px solid #f0f0f0 !important;
+}
+
+html::-webkit-scrollbar-thumb:hover {
+    background: #4d8a32 !important;
 }
 
 html, body {
     background-color: #ffffff !important;
+    overflow-x: hidden !important;
+    max-width: 100vw !important;
+    width: 100% !important;
+}
+
+body {
+    overflow-y: visible !important;
+    overflow-x: hidden !important;
+}
+
+
+/* Ensure nested elements don't create scrollbars */
+main,
+section,
+div,
+article,
+aside,
+nav,
+.max-w-7xl,
+.max-w-6xl,
+.max-w-5xl,
+.max-w-4xl,
+.max-w-3xl,
+.max-w-2xl,
+.container {
+    overflow-y: visible !important;
+    overflow-x: hidden !important;
 }
 
 main {
     background-color: #ffffff !important;
+    overflow-x: hidden !important;
+    max-width: 100vw !important;
+    width: 100% !important;
 }
 
 /* HERO SECTION VISIBILITY - CRITICAL FIX */
@@ -99,7 +240,9 @@ section.relative.min-h-\[90vh\] {
     background-color: transparent !important;
     position: relative !important;
     z-index: 1 !important;
-    overflow: visible !important;
+    overflow: hidden !important;
+    max-width: 100vw !important;
+    width: 100% !important;
 }
 
 /* Override AOS hiding for hero section - make it visible immediately */
@@ -137,6 +280,97 @@ section.relative.min-h-\[90vh\] > div[class*="max-w-7xl"] {
 section.relative.min-h-screen .aos-init {
     opacity: 1 !important;
     visibility: visible !important;
+}
+
+/* Ensure stat cards are always visible and fully displayed */
+.stat-card {
+    opacity: 1 !important;
+    visibility: visible !important;
+    min-height: 180px !important;
+    overflow: visible !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+}
+
+.stat-card [data-aos],
+.stat-card .text-5xl,
+.stat-card .text-gray-600 {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: translateY(0) !important;
+}
+
+/* Ensure stat numbers are visible */
+.stat-card .text-5xl {
+    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    line-height: 1.2 !important;
+    margin-bottom: 0.75rem !important;
+}
+
+/* Ensure stat card content container is visible */
+.stat-card .relative.z-10 {
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+/* Fix gradient overlay to not clip content */
+.stat-card > .absolute.inset-0 {
+    overflow: visible !important;
+    pointer-events: none !important;
+}
+
+/* Ensure stat cards container doesn't clip */
+.grid.grid-cols-2.md\:grid-cols-4 {
+    overflow: visible !important;
+    min-height: auto !important;
+}
+
+/* Ensure parent container doesn't clip stat cards */
+.max-w-7xl.mx-auto.px-4 {
+    overflow: visible !important;
+}
+
+/* Ensure stat card text is fully visible */
+.stat-card .text-gray-600 {
+    margin-top: 0.5rem !important;
+    display: block !important;
+    width: 100% !important;
+}
+
+/* Ensure Upcoming Events section is not scrollable */
+section.mb-24 {
+    overflow: visible !important;
+    max-height: none !important;
+    height: auto !important;
+}
+
+/* Ensure event cards are not scrollable */
+section.mb-24 .grid {
+    overflow: visible !important;
+    max-height: none !important;
+    height: auto !important;
+}
+
+/* Ensure event card containers are not scrollable */
+section.mb-24 .group.relative.bg-white {
+    overflow: visible !important;
+    max-height: none !important;
+    height: auto !important;
+}
+
+/* Only allow image overflow hidden, rest should be visible */
+section.mb-24 .relative.h-48 {
+    overflow: hidden !important;
+}
+
+section.mb-24 .group.relative.bg-white > div:not(.relative.h-48) {
+    overflow: visible !important;
 }
 
 section.relative.min-h-\[90vh\] img.hero-parallax {
@@ -297,7 +531,7 @@ body > * {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Stronger shadow */
     border: 2px solid #e0e0e0; /* Thicker, darker border */
     transition: all 0.3s ease;
-}
+    }
 
 .modern-card:hover {
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); /* Stronger hover shadow */
@@ -477,7 +711,7 @@ body > * {
 @keyframes glow-pulse {
     0%, 100% {
         box-shadow: 0 0 20px rgba(101, 183, 65, 0.3), 0 0 40px rgba(101, 183, 65, 0.2);
-    }
+}
     50% {
         box-shadow: 0 0 30px rgba(101, 183, 65, 0.5), 0 0 60px rgba(101, 183, 65, 0.3);
     }
@@ -849,4 +1083,17 @@ img {
 .hero-content {
     position: relative;
     z-index: 10;
+}
+
+/* Snowfall Canvas Styles */
+#snowfall-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    max-width: 100vw;
+    pointer-events: none;
+    z-index: 6;
+    opacity: 0.8;
 }

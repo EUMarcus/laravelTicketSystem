@@ -6,34 +6,21 @@ import { gsap } from 'gsap';
 // Initialize AOS (Animate On Scroll) when DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
     AOS.init({
-        duration: 1200,
+        duration: 800,
         easing: 'ease-out-cubic',
-        once: false,
-        offset: 0, // Changed to 0 so elements trigger immediately when in view
+        once: true, // Animate only once - prevents repeat animations on scroll
+        offset: 100, // Trigger when element is 100px from viewport
         delay: 0,
         disable: false,
-        mirror: true,
-        startEvent: 'DOMContentLoaded' // Start animations immediately
+        mirror: false, // Disable mirror - prevents animations from repeating
+        startEvent: 'DOMContentLoaded'
     });
     
     // Force refresh AOS to check initial viewport
     AOS.refresh();
 
-    // Smooth parallax effect with GSAP for hero background
-    const heroParallax = document.querySelector('.hero-parallax');
-    if (heroParallax) {
-        let lastScroll = 0;
-        window.addEventListener('scroll', () => {
-            const scrolled = window.pageYOffset;
-            const rate = scrolled * 0.3;
-            gsap.to(heroParallax, {
-                y: rate,
-                duration: 0.5,
-                ease: 'power1.out'
-            });
-            lastScroll = scrolled;
-        });
-    }
+    // Removed parallax scroll effect to reduce scroll behavior
+    // Parallax was causing constant scroll event listeners
 
     // Smooth fade-in animation for hero content - ensure visible first
     const heroContent = document.querySelector('section.relative.min-h-screen .relative.max-w-7xl');
@@ -99,23 +86,36 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Smooth scroll reveal for stats cards
+    // Smooth scroll reveal for stats cards - ensure visible first
     const statCards = document.querySelectorAll('.stat-card');
+    
+    // Make sure stat cards are visible immediately
+    statCards.forEach(card => {
+        card.style.opacity = '1';
+        card.style.visibility = 'visible';
+    });
+    
     const statObserver = new IntersectionObserver((entries) => {
         entries.forEach((entry, index) => {
             if (entry.isIntersecting) {
-                gsap.from(entry.target, {
-                    opacity: 0,
-                    scale: 0.8,
-                    y: 50,
-                    duration: 1,
-                    delay: index * 0.1,
-                    ease: 'back.out(1.7)'
-                });
-                statObserver.unobserve(entry.target);
+                // Only animate if not already visible
+                if (entry.target.style.opacity !== '1') {
+                    gsap.fromTo(entry.target, 
+                        { opacity: 0, scale: 0.8, y: 50 },
+                        {
+                            opacity: 1,
+                            scale: 1,
+                            y: 0,
+                            duration: 0.8,
+                            delay: index * 0.1,
+                            ease: 'back.out(1.7)'
+                        }
+                    );
+                }
+                statObserver.unobserve(entry.target); // Stop observing after animation
             }
         });
-    }, { threshold: 0.2 });
+    }, { threshold: 0.1, rootMargin: '50px' }); // Lower threshold, add margin for earlier trigger
 
     statCards.forEach(card => statObserver.observe(card));
 
@@ -189,57 +189,63 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Smooth number counting with GSAP
+    // Smooth number counting with GSAP - ensure numbers are visible
+    const statNumbers = document.querySelectorAll('.stat-card .text-5xl');
+    
+    statNumbers.forEach(stat => {
+        const num = parseInt(stat.textContent);
+        if (!isNaN(num) && num > 0) {
+            // Store original number in data attribute
+            stat.setAttribute('data-original', num);
+            // Keep original number visible - don't reset to 0 yet
+            stat.style.opacity = '1';
+            stat.style.visibility = 'visible';
+            stat.style.display = 'block';
+        }
+    });
+    
     const numberObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 const target = entry.target;
-                const finalNumber = parseInt(target.textContent) || 0;
+                const finalNumber = parseInt(target.getAttribute('data-original')) || parseInt(target.textContent) || 0;
                 
-                gsap.fromTo(
-                    { value: 0 },
-                    {
-                        value: finalNumber,
-                        duration: 2,
-                        ease: 'power2.out',
-                        onUpdate: function() {
-                            target.textContent = Math.floor(this.targets()[0].value);
-                        }
+                if (finalNumber > 0) {
+                    // Only animate if we haven't already
+                    if (!target.classList.contains('counting-animated')) {
+                        target.classList.add('counting-animated');
+                        // Set to 0 first, then animate
+                        const currentText = target.textContent;
+                        target.textContent = '0';
+                        const counter = { value: 0 };
+                        gsap.to(counter, {
+                            value: finalNumber,
+                            duration: 1.5,
+                            ease: 'power2.out',
+                            onUpdate: function() {
+                                target.textContent = Math.floor(counter.value);
+                            },
+                            onComplete: function() {
+                                target.textContent = finalNumber; // Ensure final number is set
+                            }
+                        });
                     }
-                );
+                }
                 numberObserver.unobserve(target);
             }
         });
-    }, { threshold: 0.5 });
+    }, { threshold: 0.1, rootMargin: '100px' }); // Larger margin for earlier trigger
 
-    // Observe all stat numbers
-    document.querySelectorAll('.text-5xl, .stat-number').forEach(stat => {
-        const num = parseInt(stat.textContent);
+    // Observe all stat numbers - they'll keep their original values until animation triggers
+    statNumbers.forEach(stat => {
+        const num = parseInt(stat.getAttribute('data-original')) || parseInt(stat.textContent);
         if (!isNaN(num) && num > 0) {
-            stat.textContent = '0';
             numberObserver.observe(stat);
         }
     });
 
-    // Smooth scroll reveal for sections
-    const sectionObserver = new IntersectionObserver((entries) => {
-        entries.forEach((entry, index) => {
-            if (entry.isIntersecting) {
-                gsap.from(entry.target, {
-                    opacity: 0,
-                    y: 100,
-                    duration: 1.5,
-                    delay: index * 0.1,
-                    ease: 'power3.out'
-                });
-                sectionObserver.unobserve(entry.target);
-            }
-        });
-    }, { threshold: 0.15 });
-
-    document.querySelectorAll('section, .mb-20, .mb-24').forEach(section => {
-        sectionObserver.observe(section);
-    });
+    // Removed sectionObserver - redundant with AOS animations
+    // This was causing duplicate animations and excessive scroll behavior
 
     // Enhanced card hover with scale and glow
     document.querySelectorAll('.bg-white.rounded-xl, .bg-white.rounded-2xl').forEach(card => {
@@ -278,4 +284,101 @@ document.addEventListener('DOMContentLoaded', function() {
         duration: 0.5,
         ease: 'power2.in'
     });
+
+    // Snowfall Effect
+    initSnowfall();
 });
+
+// Snowfall Animation Function
+function initSnowfall() {
+    const canvas = document.getElementById('snowfall-canvas');
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    let animationId;
+    
+    // Set canvas size - prevent horizontal overflow
+    function resizeCanvas() {
+        const maxWidth = Math.min(canvas.offsetWidth, window.innerWidth);
+        canvas.width = maxWidth;
+        canvas.height = canvas.offsetHeight;
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    // Snowflake class
+    class Snowflake {
+        constructor() {
+            this.x = Math.random() * canvas.width;
+            this.y = Math.random() * canvas.height;
+            this.radius = Math.random() * 3 + 1;
+            this.speed = Math.random() * 2 + 0.5;
+            this.opacity = Math.random() * 0.5 + 0.3;
+            this.wind = Math.random() * 0.5 - 0.25;
+        }
+
+        update() {
+            this.y += this.speed;
+            this.x += this.wind + Math.sin(this.y * 0.01) * 0.5;
+
+            // Reset if snowflake goes off screen
+            if (this.y > canvas.height) {
+                this.y = -10;
+                this.x = Math.random() * canvas.width;
+            }
+            if (this.x > canvas.width + 10) {
+                this.x = -10;
+            }
+            if (this.x < -10) {
+                this.x = canvas.width + 10;
+            }
+        }
+
+        draw() {
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
+            ctx.fill();
+            
+            // Add sparkle effect
+            if (Math.random() > 0.98) {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius * 2, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity * 0.5})`;
+                ctx.fill();
+            }
+        }
+    }
+
+    // Create snowflakes
+    const snowflakes = [];
+    const snowflakeCount = Math.floor((canvas.width * canvas.height) / 15000);
+    
+    for (let i = 0; i < snowflakeCount; i++) {
+        snowflakes.push(new Snowflake());
+    }
+
+    // Animation loop
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        snowflakes.forEach(snowflake => {
+            snowflake.update();
+            snowflake.draw();
+        });
+        
+        animationId = requestAnimationFrame(animate);
+    }
+
+    // Start animation
+    animate();
+
+    // Pause animation when page is not visible (performance optimization)
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+            cancelAnimationFrame(animationId);
+        } else {
+            animate();
+        }
+    });
+}

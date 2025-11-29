@@ -11,9 +11,9 @@
     <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="bg-white min-h-screen font-sans" style="background-color: #ffffff !important;">
+    <body class="bg-white min-h-screen font-sans" style="background-color: #ffffff !important; overflow-x: hidden !important; overflow-y: auto !important; max-width: 100vw !important; width: 100% !important;">
     <!-- Modern Navigation -->
-    <nav id="main-nav" class="fixed top-0 left-0 right-0 z-50 border-b-2 border-gray-300 transition-transform duration-300" style="background-color: #ffffff !important; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);">
+    <nav id="main-nav" class="fixed top-0 left-0 right-0 z-50 border-b-2 border-gray-300 transition-transform duration-300" style="background-color: #ffffff !important; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); max-width: 100vw !important; width: 100% !important; overflow-x: hidden !important;">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
                 <div class="flex items-center space-x-3">
@@ -67,7 +67,7 @@
         </div>
     </nav>
 
-    <main class="min-h-[calc(100vh-4rem)]" style="position: relative; background-color: transparent !important; margin-top: 0 !important;">
+    <main class="min-h-[calc(100vh-4rem)]" style="position: relative; background-color: transparent !important; margin-top: 0 !important; overflow-y: visible !important; overflow-x: hidden !important;">
         <style>
             /* Ensure hero section is visible above white background */
             main > section:first-child {
@@ -106,7 +106,7 @@
                             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                         </svg>
                         <span>{{ session('success') }}</span>
-                    </div>
+            </div>
                 </div>
             </div>
         @endif

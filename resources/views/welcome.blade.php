@@ -4,7 +4,7 @@
 
 @section('content')
 <!-- Hero Section - Enhanced with Parallax Effect -->
-<section class="relative min-h-screen flex items-center justify-center overflow-hidden mb-16" style="position: relative !important; z-index: 1 !important; background: transparent !important; background-color: transparent !important; margin-top: 0 !important; padding-top: 0 !important;">
+<section class="relative min-h-screen flex items-center justify-center overflow-hidden mb-16" style="position: relative !important; z-index: 1 !important; background: transparent !important; background-color: transparent !important; margin-top: 0 !important; padding-top: 0 !important; max-width: 100vw !important; width: 100% !important; overflow: hidden !important;">
     <!-- Background Image with Parallax -->
     <div class="absolute inset-0" style="z-index: 0 !important; position: absolute !important;">
         <img 
@@ -26,7 +26,10 @@
         <div class="particle absolute w-3 h-3 bg-white/12 rounded-full animate-float-reverse" style="left: 35%; top: 75%; animation-delay: 1.5s;"></div>
         <div class="particle absolute w-2 h-2 bg-white/18 rounded-full animate-float" style="left: 75%; top: 65%; animation-delay: 2s;"></div>
         <div class="particle absolute w-2.5 h-2.5 bg-white/20 rounded-full animate-float-reverse" style="left: 25%; top: 55%; animation-delay: 2.5s;"></div>
-    </div>
+                </div>
+
+    <!-- Snowfall Canvas -->
+    <canvas id="snowfall-canvas" class="absolute inset-0 pointer-events-none" style="z-index: 6 !important; position: absolute !important; width: 100%; height: 100%;"></canvas>
 
     <!-- Hero Content -->
     <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center" style="z-index: 10 !important; position: relative !important; padding-top: 5rem !important; opacity: 1 !important; visibility: visible !important;">
@@ -41,11 +44,11 @@
         
         <h1 class="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 drop-shadow-2xl" style="color: white !important; text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8) !important; opacity: 1 !important; visibility: visible !important; transform: translateY(0) !important;" data-aos="fade-up" data-aos-delay="100">
             Welcome to <span class="block mt-3 bg-gradient-to-r from-white via-[#C1F2B0] to-white bg-clip-text text-transparent animate-gradient" style="-webkit-text-fill-color: white !important; background-clip: text !important; text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8) !important;">Barangay Community Hub</span>
-        </h1>
+            </h1>
         
         <p class="text-lg md:text-xl mb-12 max-w-2xl mx-auto leading-relaxed" style="color: rgba(255, 255, 255, 0.95) !important; text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.8) !important; opacity: 1 !important; visibility: visible !important; transform: translateY(0) !important;" data-aos="fade-up" data-aos-delay="200">
             A progressive community, dedicated to genuine service to enrich the lives of its residents through good governance.
-        </p>
+            </p>
         
         <div class="flex flex-col sm:flex-row justify-center items-center gap-5" style="opacity: 1 !important; visibility: visible !important; transform: translateY(0) !important;" data-aos="fade-up" data-aos-delay="300">
             <a href="{{ route('reports.index') }}" class="group magnetic ripple-container relative bg-white text-gray-900 font-bold px-10 py-4 rounded-xl hover:scale-105 text-lg overflow-hidden shadow-2xl animate-breathe">
@@ -70,10 +73,10 @@
     </div>
 </section>
 
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 bg-white" style="background-color: #ffffff !important; position: relative; z-index: 2;">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 bg-white" style="background-color: #ffffff !important; position: relative; z-index: 2; overflow: visible !important; padding-top: 2rem !important;">
     <!-- Quick Stats - Enhanced with Gradient Cards -->
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-24 relative z-20" style="margin-top: -6rem !important;">
-        <div class="stat-card group relative bg-white p-8 rounded-2xl shadow-xl border border-gray-200 text-center overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 perspective-1000" data-aos="fade-up" data-aos-delay="100">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-24 relative z-20" style="margin-top: -4rem !important; min-height: auto !important; overflow: visible !important; padding-top: 2rem !important;">
+        <div class="stat-card group relative bg-white p-8 rounded-2xl shadow-xl border border-gray-200 text-center hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 perspective-1000" style="min-height: 180px !important; overflow: visible !important; display: flex !important; flex-direction: column !important; justify-content: center !important;" data-aos="fade-up" data-aos-delay="100">
             <div class="absolute inset-0 bg-gradient-to-br from-[#65B741]/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
             <div class="relative z-10">
                 <div class="text-5xl font-bold mb-3 bg-gradient-to-br from-[#65B741] to-[#4d8a32] bg-clip-text text-transparent group-hover:scale-110 transition-transform duration-500">142</div>
@@ -82,7 +85,7 @@
             </div>
         </div>
         
-        <div class="stat-card group relative bg-white p-8 rounded-2xl shadow-xl border border-gray-200 text-center overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 perspective-1000" data-aos="fade-up" data-aos-delay="200">
+        <div class="stat-card group relative bg-white p-8 rounded-2xl shadow-xl border border-gray-200 text-center hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 perspective-1000" style="min-height: 180px !important; overflow: visible !important; display: flex !important; flex-direction: column !important; justify-content: center !important;" data-aos="fade-up" data-aos-delay="200">
             <div class="absolute inset-0 bg-gradient-to-br from-[#FFB534]/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
             <div class="relative z-10">
                 <div class="text-5xl font-bold mb-3 bg-gradient-to-br from-[#FFB534] to-[#ff9d00] bg-clip-text text-transparent group-hover:scale-110 transition-transform duration-500">23</div>
@@ -90,17 +93,17 @@
                 <div class="mt-4 h-1 w-0 group-hover:w-full bg-gradient-to-r from-[#FFB534] to-[#ffe6b8] transition-all duration-500 rounded-full"></div>
             </div>
         </div>
-        
-        <div class="stat-card group relative bg-white p-8 rounded-2xl shadow-xl border border-gray-200 text-center overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 perspective-1000" data-aos="fade-up" data-aos-delay="300">
+
+        <div class="stat-card group relative bg-white p-8 rounded-2xl shadow-xl border border-gray-200 text-center hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 perspective-1000" style="min-height: 180px !important; overflow: visible !important; display: flex !important; flex-direction: column !important; justify-content: center !important;" data-aos="fade-up" data-aos-delay="300">
             <div class="absolute inset-0 bg-gradient-to-br from-[#65B741]/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
             <div class="relative z-10">
                 <div class="text-5xl font-bold mb-3 bg-gradient-to-br from-[#65B741] to-[#4d8a32] bg-clip-text text-transparent group-hover:scale-110 transition-transform duration-500">89</div>
                 <div class="text-gray-600 font-semibold">Suggestions</div>
                 <div class="mt-4 h-1 w-0 group-hover:w-full bg-gradient-to-r from-[#65B741] to-[#C1F2B0] transition-all duration-500 rounded-full"></div>
             </div>
-        </div>
+                </div>
         
-        <div class="stat-card group relative bg-white p-8 rounded-2xl shadow-xl border border-gray-200 text-center overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 perspective-1000" data-aos="fade-up" data-aos-delay="400">
+        <div class="stat-card group relative bg-white p-8 rounded-2xl shadow-xl border border-gray-200 text-center hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 perspective-1000" style="min-height: 180px !important; overflow: visible !important; display: flex !important; flex-direction: column !important; justify-content: center !important;" data-aos="fade-up" data-aos-delay="400">
             <div class="absolute inset-0 bg-gradient-to-br from-[#65B741]/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
             <div class="relative z-10">
                 <div class="text-5xl font-bold mb-3 bg-gradient-to-br from-[#65B741] to-[#4d8a32] bg-clip-text text-transparent group-hover:scale-110 transition-transform duration-500">6</div>
@@ -111,7 +114,7 @@
     </div>
 
     <!-- Main Services Section - Enhanced Cards -->
-    <div class="mb-24">
+    <div class="mb-24" style="margin-top: 5rem !important;">
         <div class="text-center mb-16" data-aos="fade-up">
             <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Community Services</h2>
             <div class="w-32 h-1.5 bg-gradient-to-r from-[#FFB534] via-[#FFB534] to-transparent mx-auto mb-6 rounded-full"></div>
@@ -144,8 +147,8 @@
                     <!-- Number Badge -->
                     <div class="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-[#{{ $service['color'] }}]/10 to-[#{{ $service['color'] }}]/5 mb-6 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500">
                         <span class="text-xl font-bold text-[#{{ $service['color'] }}]">{{ $loop->iteration }}</span>
-                    </div>
-                    
+            </div>
+
                     <h3 class="text-xl font-bold text-gray-900 mb-3 group-hover:text-[#{{ $service['color'] }}] transition-colors duration-300">{{ $service['title'] }}</h3>
                     <p class="text-gray-600 text-sm leading-relaxed mb-6">{{ $service['desc'] }}</p>
                     
@@ -153,7 +156,7 @@
                         <span>Learn More</span>
                         <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                        </svg>
+                    </svg>
                     </div>
                 </div>
             </a>
@@ -253,14 +256,14 @@
     </div>
 
     <!-- Upcoming Events Section - Enhanced Cards -->
-    <section class="mb-24">
+    <section class="mb-24" style="overflow: visible !important; max-height: none !important;">
         <div class="text-center mb-16" data-aos="fade-up">
             <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Upcoming Events</h2>
             <div class="w-32 h-1.5 bg-gradient-to-r from-[#FFB534] via-[#FFB534] to-transparent mx-auto mb-6 rounded-full"></div>
             <p class="text-lg text-gray-600 max-w-2xl mx-auto">Join us for exciting community activities</p>
         </div>
 
-        <div class="grid md:grid-cols-3 gap-8">
+        <div class="grid md:grid-cols-3 gap-8" style="overflow: visible !important; max-height: none !important;">
             @php
                 $events = [
                     ['id' => 1, 'title' => 'Community Clean-Up Day', 'date' => 'Dec 14, 2024', 'time' => '8:00 AM - 12:00 PM', 'location' => 'Community Park', 'category' => 'Community', 'image' => 'https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=400&h=300&fit=crop'],
@@ -269,9 +272,9 @@
                 ];
             @endphp
             @foreach($events as $index => $event)
-            <div class="group relative bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden hover:shadow-2xl hover:-translate-y-2 transition-all duration-500" data-aos="fade-up" data-aos-delay="{{ ($index + 1) * 100 }}">
+            <div class="group relative bg-white rounded-2xl shadow-xl border border-gray-200 hover:shadow-2xl hover:-translate-y-2 transition-all duration-500" style="overflow: visible !important; max-height: none !important; height: auto !important;" data-aos="fade-up" data-aos-delay="{{ ($index + 1) * 100 }}">
                 <!-- Event Image -->
-                <div class="relative h-48 overflow-hidden">
+                <div class="relative h-48" style="overflow: hidden !important;">
                     <img src="{{ $event['image'] }}" alt="{{ $event['title'] }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
                     <div class="absolute top-4 left-4">
@@ -282,8 +285,8 @@
                     </div>
                 </div>
                 
-                <div class="p-6">
-                    <div class="space-y-3 mb-6">
+                <div class="p-6" style="overflow: visible !important;">
+                    <div class="space-y-3 mb-6" style="overflow: visible !important;">
                         <div class="flex items-center text-sm text-gray-600">
                             <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-[#65B741]/10 to-[#65B741]/5 flex items-center justify-center mr-3">
                                 <svg class="w-5 h-5 text-[#65B741]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
