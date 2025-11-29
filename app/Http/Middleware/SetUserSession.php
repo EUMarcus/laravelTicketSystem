@@ -19,13 +19,14 @@ class SetUserSession
         // If user is authenticated but session('user') is not set, set it
         if (Auth::check() && !$request->session()->has('user')) {
             $user = Auth::user();
-            $profile = \App\Models\Profile::find($user->id) ?? \App\Models\Profile::where('name', $user->name)->first();
+            // With FK constraint, profile must exist for every user
+            $profile = $user->profile;
             
             $request->session()->put('user', [
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
-                'role' => $profile ? $profile->role : 'citizen',
+                'role' => $profile->role ?? 'citizen',
                 'voters_id' => $user->voters_id ?? null,
                 'contact_number' => $user->contact_number ?? null,
                 'address' => $user->address ?? null,

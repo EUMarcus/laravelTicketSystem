@@ -41,90 +41,8 @@
                     <span class="text-sm text-gray-500">#{{ substr($ticket->id, 0, 8) }}</span>
                     <span class="text-sm text-gray-500">•</span>
                     <span class="text-sm text-gray-500">{{ $ticket->created_at->format('M d, Y') }}</span>
-    <div class="grid lg:grid-cols-3 gap-6">
-        <!-- Report Details Card -->
-        <div class="lg:col-span-2">
-            <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-6 lg:p-8 mb-6" id="reportDetailsCard">
-                <!-- Loading state -->
-                <div id="loadingState" class="text-center py-12">
-                    <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#65B741]"></div>
-                    <p class="mt-4 text-gray-600">Loading report...</p>
-                </div>
-
-                <!-- Report content (hidden initially) -->
-                <div id="reportContent" class="hidden">
-                    <!-- Header -->
-                    <div class="mb-6 pb-6 border-b border-gray-200">
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="flex items-center gap-2 flex-wrap">
-                                <span id="reportCategory" class="inline-flex items-center px-2.5 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800 border border-gray-200"></span>
-                                <span id="reportStatus" class="inline-flex items-center px-2.5 py-0.5 rounded text-xs font-medium"></span>
-                                <span id="reportPriority" class="inline-flex items-center px-2.5 py-0.5 rounded text-xs font-medium"></span>
-                                <span id="reportTicketId" class="text-gray-400 font-mono text-xs"></span>
-                            </div>
-                            <!-- Public Toggle (only for report owner) -->
-                            <div id="publicToggleContainer" class="hidden flex items-center gap-3">
-                                <span class="text-sm text-gray-600 font-medium">Share Publicly</span>
-                                <label class="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" id="publicToggle" class="sr-only peer">
-                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-[#65B741] rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#65B741]"></div>
-                                </label>
-                            </div>
-                        </div>
-                        <h1 id="reportTitle" class="text-3xl md:text-4xl font-bold text-gray-900 mb-2"></h1>
-                        <p id="reportDate" class="text-gray-600"></p>
-                    </div>
-
-                    <!-- Description -->
-                    <div class="mb-6">
-                        <h2 class="text-lg font-bold text-gray-900 mb-3">Description</h2>
-                        <p id="reportDescription" class="text-gray-700 leading-relaxed text-base"></p>
-                    </div>
-
-                    <!-- Details Grid -->
-                    <div class="grid md:grid-cols-2 gap-6 mb-6">
-                        <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
-                            <h3 class="text-sm font-semibold text-gray-700 mb-2 uppercase tracking-wide">Location</h3>
-                            <div class="flex items-center gap-2 text-gray-900">
-                                <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                                </svg>
-                                <span id="reportLocation" class="font-medium"></span>
-                            </div>
-                        </div>
-                        <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
-                            <h3 class="text-sm font-semibold text-gray-700 mb-2 uppercase tracking-wide">Reported By</h3>
-                            <div class="flex items-center gap-2 text-gray-900">
-                                <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                </svg>
-                                <span id="reportAuthor" class="font-medium"></span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Photos/Attachments Section -->
-                    <div id="photoSection" class="border-t border-gray-200 pt-6 hidden">
-                        <h2 class="text-lg font-bold text-gray-900 mb-4">Photos & Attachments</h2>
-                        <div id="photosGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
-                    </div>
-                </div>
-
-                <!-- Not found state -->
-                <div id="notFoundState" class="hidden text-center py-12">
-                    <svg class="w-16 h-16 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                    <h3 class="text-xl font-bold text-gray-900 mb-2">Report Not Found</h3>
-                    <p class="text-gray-600 mb-6">The report you're looking for doesn't exist or has been removed.</p>
-                    <a href="{{ route('reports.index') }}" class="inline-flex items-center gap-2 px-6 py-3 bg-gray-900 text-white font-semibold rounded-lg hover:bg-gray-800">
-                        <span>Back to Reports</span>
-                    </a>
->>>>>>> 1aba87a0d1f507d0444bbc2b39e38f65ec486f9f
                 </div>
             </div>
-            
             @if($profile->isEmployee())
             <form method="POST" action="{{ route('reports.update', $ticket->id) }}" class="flex-shrink-0">
                 @csrf
@@ -141,13 +59,14 @@
 
         @if($ticket->description)
         <div class="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-100">
+            <h2 class="text-lg font-bold text-gray-900 mb-3">Description</h2>
             <p class="text-gray-900 leading-relaxed whitespace-pre-wrap">{{ $ticket->description }}</p>
         </div>
         @endif
 
         @if($ticket->attachments->where('message_id', null)->count() > 0)
         <div class="mt-4">
-            <p class="text-sm font-semibold text-gray-900 mb-3">Initial Attachments:</p>
+            <h2 class="text-lg font-bold text-gray-900 mb-3">Initial Attachments</h2>
             <div class="flex flex-wrap gap-2">
                 @foreach($ticket->attachments->where('message_id', null) as $attachment)
                 <a href="{{ $attachment->file_url }}" target="_blank" class="inline-flex items-center space-x-2 px-4 py-2 bg-[#65B741]/10 hover:bg-[#65B741]/20 rounded-lg transition-all duration-200 group">
@@ -163,62 +82,32 @@
                     <span class="text-sm font-medium text-[#65B741] group-hover:underline">{{ $attachment->file_name }}</span>
                 </a>
                 @endforeach
-        <!-- Chat Section -->
-        <div class="lg:col-span-1">
-            <div class="bg-white rounded-lg border border-gray-200 shadow-sm" id="chatSection">
-                <div class="p-4 border-b border-gray-200">
-                    <h3 class="text-lg font-bold text-gray-900">Chat with Staff</h3>
-                    <p class="text-xs text-gray-500 mt-1">Follow up on your report</p>
-                </div>
-
-                <!-- Chat Messages -->
-                <div id="chatMessages" class="h-96 overflow-y-auto p-4 space-y-4 bg-gray-50">
-                    <div class="text-center text-gray-500 text-sm py-8">
-                        <svg class="w-12 h-12 mx-auto mb-2 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                        </svg>
-                        <p>No messages yet. Start the conversation!</p>
-                    </div>
-                </div>
-
-                <!-- Chat Input -->
-                <div class="p-4 border-t border-gray-200 bg-white">
-                    @if(session('user'))
-                        <form id="chatForm" class="space-y-2">
-                            <!-- File Upload Area -->
-                            <div id="chatFilePreview" class="hidden mb-2">
-                                <div class="flex items-center gap-2 flex-wrap">
-                                    <div id="chatFileList" class="flex items-center gap-2 flex-wrap"></div>
-                                    <button type="button" onclick="clearChatFiles()" class="text-xs text-red-600 hover:text-red-800 font-semibold">Clear All</button>
-                                </div>
-                            </div>
-                            
-                            <div class="flex gap-2">
-                                <div class="flex-1 relative">
-                                    <input type="text" id="chatInput" placeholder="Type your message..." class="w-full px-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#65B741] focus:border-[#65B741] outline-none" required>
-                                    <input type="file" id="chatFileInput" multiple accept="image/*,.pdf,.doc,.docx" class="hidden">
-                                </div>
-                                <button type="button" onclick="document.getElementById('chatFileInput').click()" class="px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors" title="Attach file">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
-                                    </svg>
-                                </button>
-                                <button type="submit" class="px-4 py-2 bg-[#65B741] text-white rounded-lg hover:bg-[#4d8a32] transition-colors">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                                    </svg>
-                                </button>
-                            </div>
-                        </form>
-                    @else
-                        <div class="text-center py-4">
-                            <p class="text-sm text-gray-600 mb-3">Please log in to chat</p>
-                            <a href="{{ route('login') }}" class="text-sm text-[#65B741] hover:text-[#4d8a32] font-semibold">Login</a>
-                        </div>
-                    @endif
-                </div>
->>>>>>> 1aba87a0d1f507d0444bbc2b39e38f65ec486f9f
             </div>
+        </div>
+        @endif
+
+        @if($ticket->customer)
+        <div class="mt-4 grid md:grid-cols-2 gap-4">
+            <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
+                <h3 class="text-sm font-semibold text-gray-700 mb-2 uppercase tracking-wide">Reported By</h3>
+                <div class="flex items-center gap-2 text-gray-900">
+                    <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                    <span class="font-medium">{{ $ticket->customer->name }}</span>
+                </div>
+            </div>
+            @if($ticket->assignedEmployee)
+            <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
+                <h3 class="text-sm font-semibold text-gray-700 mb-2 uppercase tracking-wide">Assigned To</h3>
+                <div class="flex items-center gap-2 text-gray-900">
+                    <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                    <span class="font-medium">{{ $ticket->assignedEmployee->name }}</span>
+                </div>
+            </div>
+            @endif
         </div>
         @endif
     </div>

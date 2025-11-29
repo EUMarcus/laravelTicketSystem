@@ -72,9 +72,15 @@
                     </label>
                 </div>
                 <div id="file-list" class="mt-4 space-y-2"></div>
+                @error('attachments')
+                    <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
+                @enderror
                 @error('attachments.*')
                     <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
                 @enderror
+                @if($errors->has('attachments.0'))
+                    <p class="text-xs text-red-600 mt-1">{{ $errors->first('attachments.0') }}</p>
+                @endif
             </div>
 
             <div class="flex gap-4 pt-4 border-t border-gray-200">
@@ -88,6 +94,48 @@
         </form>
     </div>
 </div>
+
+<script>
+function displayFileList(files) {
+    const fileList = document.getElementById('file-list');
+    fileList.innerHTML = '';
+    
+    if (files && files.length > 0) {
+        Array.from(files).forEach((file, index) => {
+            const fileItem = document.createElement('div');
+            fileItem.className = 'flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200';
+            
+            const fileInfo = document.createElement('div');
+            fileInfo.className = 'flex items-center gap-3 flex-1';
+            
+            const fileIcon = document.createElement('div');
+            fileIcon.className = 'flex-shrink-0';
+            fileIcon.innerHTML = `
+                <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                </svg>
+            `;
+            
+            const fileName = document.createElement('span');
+            fileName.className = 'text-sm text-gray-700 font-medium truncate';
+            fileName.textContent = file.name;
+            fileName.title = file.name;
+            
+            const fileSize = document.createElement('span');
+            fileSize.className = 'text-xs text-gray-500';
+            const sizeInMB = (file.size / (1024 * 1024)).toFixed(2);
+            fileSize.textContent = `(${sizeInMB} MB)`;
+            
+            fileInfo.appendChild(fileIcon);
+            fileInfo.appendChild(fileName);
+            fileInfo.appendChild(fileSize);
+            
+            fileItem.appendChild(fileInfo);
+            fileList.appendChild(fileItem);
+        });
+    }
+}
+</script>
 
 @auth
 <script>

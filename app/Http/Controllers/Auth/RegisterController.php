@@ -7,6 +7,7 @@ use App\Models\Profile;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules;
@@ -32,22 +33,45 @@ class RegisterController extends Controller
 
         $userId = (string) Str::uuid();
         
-        $user = User::create([
-            'id' => $userId,
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'voters_id' => strtoupper($request->voters_id),
-            'contact_number' => $request->contact_number,
-            'address' => $request->address,
-        ]);
+        // Use database transaction to ensure both are created or neither
+        try {
+            DB::beginTransaction();
+            
+            // Create user FIRST (since profiles.id FK references users.id)
+            // Note: password is auto-hashed by the User model's cast
+            $user = User::create([
+                'id' => $userId,
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => $request->password, // Will be auto-hashed by model cast
+                'voters_id' => strtoupper($request->voters_id),
+                'contact_number' => $request->contact_number,
+                'address' => $request->address,
+            ]);
 
-        // Create profile with same UUID as user
-        $profile = Profile::create([
-            'id' => $userId,
-            'role' => $request->role === 'citizen' ? 'customer' : 'employee',
-            'name' => $request->name,
-        ]);
+            // Verify user was created
+            if (!$user->exists) {
+                throw new \Exception('Failed to create user');
+            }
+
+            // Then create profile with the same UUID (which references the user)
+            $profile = Profile::create([
+                'id' => $userId,
+                'role' => $request->role === 'citizen' ? 'customer' : 'employee',
+                'name' => $request->name,
+            ]);
+
+            // Verify profile was created
+            if (!$profile || !$profile->exists) {
+                throw new \Exception('Failed to create profile');
+            }
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::error('Registration failed: ' . $e->getMessage());
+            return back()->withErrors(['email' => 'Registration failed. Please try again.'])->withInput();
+        }
 
         Auth::login($user);
 
