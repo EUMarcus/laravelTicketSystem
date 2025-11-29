@@ -57,29 +57,6 @@
 </section>
 
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 bg-white" style="background-color: #ffffff !important; position: relative; z-index: 2; overflow: visible !important; padding-top: 2rem !important;">
-    <!-- Quick Stats -->
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-16 relative z-20" style="margin-top: -4rem !important; padding-top: 2rem !important;">
-        <div class="bg-white p-5 rounded-lg border border-gray-200 shadow-sm text-center">
-            <div class="text-3xl font-bold text-gray-900 mb-1">142</div>
-            <div class="text-sm text-gray-500 font-medium">Total Reports</div>
-        </div>
-        
-        <div class="bg-white p-5 rounded-lg border border-gray-200 shadow-sm text-center">
-            <div class="text-3xl font-bold text-[#65B741] mb-1">23</div>
-            <div class="text-sm text-gray-500 font-medium">Open</div>
-        </div>
-
-        <div class="bg-white p-5 rounded-lg border border-gray-200 shadow-sm text-center">
-            <div class="text-3xl font-bold text-[#FFB534] mb-1">89</div>
-            <div class="text-sm text-gray-500 font-medium">Suggestions</div>
-                </div>
-        
-        <div class="bg-white p-5 rounded-lg border border-gray-200 shadow-sm text-center">
-            <div class="text-3xl font-bold text-gray-700 mb-1">6</div>
-            <div class="text-sm text-gray-500 font-medium">Upcoming Events</div>
-        </div>
-    </div>
-
     <!-- Main Services Section -->
     <div class="mb-16">
         <div class="text-center mb-12">

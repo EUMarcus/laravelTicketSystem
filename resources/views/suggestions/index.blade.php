@@ -19,26 +19,6 @@
                 <span>New Suggestion</span>
             </a>
         </div>
-
-        <!-- Quick Stats -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div class="bg-white p-5 rounded-lg border border-gray-200">
-                <div class="text-3xl font-bold text-gray-900 mb-1">89</div>
-                <div class="text-sm text-gray-500 font-medium">Total</div>
-            </div>
-            <div class="bg-white p-5 rounded-lg border border-gray-200">
-                <div class="text-3xl font-bold text-[#65B741] mb-1">34</div>
-                <div class="text-sm text-gray-500 font-medium">Active</div>
-            </div>
-            <div class="bg-white p-5 rounded-lg border border-gray-200">
-                <div class="text-3xl font-bold text-[#FFB534] mb-1">1,245</div>
-                <div class="text-sm text-gray-500 font-medium">Total Votes</div>
-            </div>
-            <div class="bg-white p-5 rounded-lg border border-gray-200">
-                <div class="text-3xl font-bold text-gray-700 mb-1">156</div>
-                <div class="text-sm text-gray-500 font-medium">Comments</div>
-            </div>
-        </div>
     </div>
 
     <!-- Sort Options -->

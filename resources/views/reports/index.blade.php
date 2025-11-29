@@ -30,27 +30,6 @@
             </div>
         </div>
 
-        @if(!request('my_reports'))
-        <!-- Quick Stats -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div class="bg-white p-5 rounded-lg border border-gray-200">
-                <div class="text-3xl font-bold text-gray-900 mb-1">142</div>
-                <div class="text-sm text-gray-500 font-medium">Total</div>
-            </div>
-            <div class="bg-white p-5 rounded-lg border border-gray-200">
-                <div class="text-3xl font-bold text-[#65B741] mb-1">23</div>
-                <div class="text-sm text-gray-500 font-medium">Open</div>
-            </div>
-            <div class="bg-white p-5 rounded-lg border border-gray-200">
-                <div class="text-3xl font-bold text-[#FFB534] mb-1">45</div>
-                <div class="text-sm text-gray-500 font-medium">In Progress</div>
-            </div>
-            <div class="bg-white p-5 rounded-lg border border-gray-200">
-                <div class="text-3xl font-bold text-gray-700 mb-1">74</div>
-                <div class="text-sm text-gray-500 font-medium">Completed</div>
-            </div>
-        </div>
-        @endif
     </div>
 
     <!-- Regular Reports - With Sidebar -->
