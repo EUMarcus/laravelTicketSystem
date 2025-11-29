@@ -43,13 +43,24 @@ class RegisterController extends Controller
         ]);
 
         // Create profile with same UUID as user
-        Profile::create([
+        $profile = Profile::create([
             'id' => $userId,
             'role' => $request->role === 'citizen' ? 'customer' : 'employee',
             'name' => $request->name,
         ]);
 
         Auth::login($user);
+
+        // Set session user data for views and JavaScript
+        $request->session()->put('user', [
+            'id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
+            'role' => $profile->role,
+            'voters_id' => $user->voters_id,
+            'contact_number' => $user->contact_number,
+            'address' => $user->address,
+        ]);
 
         return redirect()->route('dashboard')->with('success', 'Account created successfully! Welcome to Community Hub.');
     }

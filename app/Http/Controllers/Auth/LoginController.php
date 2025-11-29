@@ -30,6 +30,17 @@ class LoginController extends Controller
             $user = Auth::user();
             $profile = \App\Models\Profile::find($user->id) ?? \App\Models\Profile::where('name', $user->name)->first();
             
+            // Set session user data for views and JavaScript
+            $request->session()->put('user', [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'role' => $profile ? $profile->role : 'citizen',
+                'voters_id' => $user->voters_id ?? null,
+                'contact_number' => $user->contact_number ?? null,
+                'address' => $user->address ?? null,
+            ]);
+            
             if ($profile && $profile->isEmployee()) {
                 // Employee - redirect to staff dashboard
                 return redirect()->route('staff.dashboard')->with('success', 'Welcome back, Staff!');
@@ -46,6 +57,9 @@ class LoginController extends Controller
 
     public function logout(Request $request)
     {
+        // Clear session user data
+        $request->session()->forget('user');
+        
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
