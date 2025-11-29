@@ -6,6 +6,7 @@ use App\Services\SupabaseService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
+use Carbon\Carbon;
 
 class AnnouncementController extends Controller
 {
@@ -163,6 +164,8 @@ class AnnouncementController extends Controller
             'category' => ['required', 'string', 'in:Event,Health,Meeting,Service,Infrastructure,Safety,Education,Other'],
             'content' => ['required', 'string'],
             'urgent' => ['nullable', 'boolean'],
+            'start_date' => ['nullable', 'date'],
+            'end_date' => ['nullable', 'date', 'after_or_equal:start_date'],
         ]);
 
         // Get user ID from session
@@ -175,6 +178,16 @@ class AnnouncementController extends Controller
             'full_content' => $validated['content'],
             'urgent' => $request->has('urgent') && $request->urgent == '1',
         ];
+
+        // Add start_date if provided (convert from datetime-local format to ISO 8601 with timezone)
+        if (!empty($validated['start_date'])) {
+            $announcementData['start_date'] = Carbon::parse($validated['start_date'])->setTimezone('UTC')->toIso8601String();
+        }
+
+        // Add end_date if provided (convert from datetime-local format to ISO 8601 with timezone)
+        if (!empty($validated['end_date'])) {
+            $announcementData['end_date'] = Carbon::parse($validated['end_date'])->setTimezone('UTC')->toIso8601String();
+        }
 
         // Add posted_by if user ID is available and is a valid UUID
         // Note: If using session-based auth, user ID might not be a UUID

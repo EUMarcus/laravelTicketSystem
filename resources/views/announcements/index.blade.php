@@ -205,6 +205,32 @@
                     ></textarea>
                 </div>
 
+                <!-- Start Date (for Events) -->
+                <div>
+                    <label for="start_date" class="block text-sm font-semibold text-gray-900 mb-2">
+                        Start Date & Time <span class="text-gray-400 font-normal">(Optional - for events)</span>
+                    </label>
+                    <input 
+                        type="datetime-local" 
+                        id="start_date" 
+                        name="start_date" 
+                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#65B741] focus:border-[#65B741] outline-none"
+                    >
+                </div>
+
+                <!-- End Date (for Events) -->
+                <div>
+                    <label for="end_date" class="block text-sm font-semibold text-gray-900 mb-2">
+                        End Date & Time <span class="text-gray-400 font-normal">(Optional - for events)</span>
+                    </label>
+                    <input 
+                        type="datetime-local" 
+                        id="end_date" 
+                        name="end_date" 
+                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#65B741] focus:border-[#65B741] outline-none"
+                    >
+                </div>
+
                 <!-- Urgent Checkbox -->
                 <div class="flex items-center">
                     <input 
