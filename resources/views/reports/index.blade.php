@@ -8,8 +8,9 @@
     <div class="mb-10">
         <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mb-8">
             <div>
-                <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-2">Reports & Tickets</h1>
-                <p class="text-lg text-gray-600">Track and manage community issues</p>
+                <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4">Reports & Tickets</h1>
+                <div class="w-40 h-2 bg-gradient-to-r from-[#65B741] via-[#65B741] to-transparent rounded-full mb-4"></div>
+                <p class="text-lg md:text-xl text-gray-600 max-w-2xl">Track and manage community issues</p>
             </div>
             <a href="{{ route('reports.create') }}" class="inline-flex items-center gap-2 px-6 py-3 bg-gray-900 text-white font-semibold rounded-lg hover:bg-gray-800">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
