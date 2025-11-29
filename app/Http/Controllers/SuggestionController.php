@@ -129,6 +129,64 @@ class SuggestionController extends Controller
         }
     }
 
+    public function show($id)
+    {
+        try {
+            // Fetch suggestion from Supabase
+            $suggestions = $this->supabase->select('suggestions', ['suggest_id' => $id], 'suggest_id,title,category,full_content,created_at,posted_by');
+            
+            if (empty($suggestions)) {
+                abort(404, 'Suggestion not found');
+            }
+            
+            $suggestion = $suggestions[0];
+            
+            // Format date
+            $date = isset($suggestion['created_at']) 
+                ? Carbon::parse($suggestion['created_at'])->diffForHumans()
+                : 'Just now';
+            
+            // Get author name (for now, use "Anonymous" if no posted_by)
+            $author = 'Anonymous';
+            if (isset($suggestion['posted_by'])) {
+                // In a real app, you'd fetch the user's name from a users table
+                $author = 'Anonymous';
+            }
+            
+            // Transform to match view expectations
+            $formattedSuggestion = [
+                'id' => $suggestion['suggest_id'],
+                'title' => $suggestion['title'],
+                'category' => $suggestion['category'] ?? 'Other',
+                'date' => $date,
+                'created_at' => isset($suggestion['created_at']) 
+                    ? Carbon::parse($suggestion['created_at'])->format('Y-m-d')
+                    : now()->format('Y-m-d'),
+                'author' => $author,
+                'content' => $suggestion['full_content'],
+                'upvotes' => 0, // Not in database schema yet
+                'comments' => 0, // Not in database schema yet
+            ];
+            
+            return view('suggestions.show', ['suggestion' => $formattedSuggestion]);
+        } catch (\Exception $e) {
+            // Fallback to hardcoded data
+            $hardcodedSuggestions = [
+                ['id' => 1, 'title' => 'Weekly Community Exercise Program', 'category' => 'Health', 'date' => '3 days ago', 'created_at' => '2024-12-10', 'author' => 'Maria Santos', 'content' => 'I suggest we organize a weekly community exercise program to promote health and wellness among residents. This could include activities like morning walks, yoga sessions, or group fitness classes.', 'upvotes' => 45, 'comments' => 12],
+                ['id' => 2, 'title' => 'Install Solar-Powered Streetlights', 'category' => 'Infrastructure', 'date' => '1 week ago', 'created_at' => '2024-12-03', 'author' => 'Anonymous', 'content' => 'I recommend installing solar-powered streetlights in our community to improve safety and reduce energy costs.', 'upvotes' => 89, 'comments' => 23],
+                ['id' => 3, 'title' => 'Monthly Barangay Festival', 'category' => 'Events', 'date' => '2 weeks ago', 'created_at' => '2024-11-26', 'author' => 'Juan Dela Cruz', 'content' => 'I propose organizing a monthly barangay festival to bring the community together and celebrate our local culture.', 'upvotes' => 156, 'comments' => 34],
+            ];
+            
+            $suggestion = collect($hardcodedSuggestions)->firstWhere('id', (int)$id);
+            
+            if (!$suggestion) {
+                abort(404, 'Suggestion not found');
+            }
+            
+            return view('suggestions.show', ['suggestion' => $suggestion]);
+        }
+    }
+
     public function store(Request $request)
     {
         // Check if user is logged in

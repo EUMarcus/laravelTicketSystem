@@ -35,9 +35,7 @@ Route::get('/suggestions/create', function () {
 
 Route::post('/suggestions', [App\Http\Controllers\SuggestionController::class, 'store'])->name('suggestions.store');
 
-Route::get('/suggestions/{id}', function ($id) {
-    return view('suggestions.show', ['id' => $id]);
-})->name('suggestions.show');
+Route::get('/suggestions/{id}', [App\Http\Controllers\SuggestionController::class, 'show'])->name('suggestions.show');
 
 Route::get('/announcements', [App\Http\Controllers\AnnouncementController::class, 'index'])->name('announcements.index');
 

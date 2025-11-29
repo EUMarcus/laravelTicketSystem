@@ -21,22 +21,6 @@
         </div>
     </div>
 
-    <!-- Sort Options -->
-    <div class="bg-white p-5 rounded-lg border border-gray-200 shadow-sm mb-6">
-        <div class="flex items-center gap-3 flex-wrap">
-            <span class="text-sm font-semibold text-gray-700 uppercase tracking-wide">Sort by:</span>
-            <a href="{{ route('suggestions.index', ['sort' => 'newest', 'page' => 1]) }}" class="px-4 py-2 rounded-lg text-sm font-semibold transition-colors {{ request('sort', 'newest') == 'newest' ? 'bg-gray-900 text-white' : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400' }}">
-                Newest
-            </a>
-            <a href="{{ route('suggestions.index', ['sort' => 'liked', 'page' => 1]) }}" class="px-4 py-2 rounded-lg text-sm font-semibold transition-colors {{ request('sort') == 'liked' ? 'bg-gray-900 text-white' : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400' }}">
-                Most Liked
-            </a>
-            <a href="{{ route('suggestions.index', ['sort' => 'discussed', 'page' => 1]) }}" class="px-4 py-2 rounded-lg text-sm font-semibold transition-colors {{ request('sort') == 'discussed' ? 'bg-gray-900 text-white' : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400' }}">
-                Most Discussed
-            </a>
-        </div>
-    </div>
-
     <!-- Section Separator -->
     <div class="mb-8 pt-6 border-t border-gray-200">
         <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Public Suggestions</h2>

@@ -4,36 +4,16 @@
 
 @section('content')
 @php
-    // NOTE: No login required - using browser localStorage for temporary user tracking
-    // When Supabase is integrated, you can optionally require login or keep it open
-    
-    // Same dataset as index page
-    $allSuggestions = [
-        ['id' => 1, 'title' => 'Weekly Community Exercise Program', 'category' => 'Health', 'upvotes' => 45, 'comments' => 12, 'author' => 'Maria Santos', 'date' => '3 days ago', 'description' => 'I suggest organizing a weekly community exercise program in the barangay park. This would include Zumba, yoga, or simple aerobics sessions every Saturday morning. This will help promote health and wellness among residents, especially seniors and stay-at-home parents. We can invite volunteer instructors or partner with fitness professionals in our community.'],
-        ['id' => 2, 'title' => 'Install Solar-Powered Streetlights', 'category' => 'Infrastructure', 'upvotes' => 89, 'comments' => 23, 'author' => 'Anonymous', 'date' => '1 week ago', 'description' => 'Proposing to install solar-powered streetlights throughout the barangay to reduce electricity costs and promote environmental sustainability. This would improve safety while being eco-friendly.'],
-        ['id' => 3, 'title' => 'Monthly Barangay Festival', 'category' => 'Events', 'upvotes' => 156, 'comments' => 34, 'author' => 'Juan Dela Cruz', 'date' => '2 weeks ago', 'description' => 'Organize a monthly barangay festival to celebrate our community spirit. Each month can have a different theme - food, music, arts, sports, etc. This will bring residents together and strengthen community bonds.'],
-        ['id' => 4, 'title' => 'Free Computer Literacy Classes', 'category' => 'Education', 'upvotes' => 67, 'comments' => 15, 'author' => 'Ana Reyes', 'date' => '1 week ago', 'description' => 'Offer free computer literacy classes for seniors and adults who want to learn basic computer skills. This will help bridge the digital divide in our community.'],
-        ['id' => 5, 'title' => 'Community Garden Project', 'category' => 'Environment', 'upvotes' => 112, 'comments' => 28, 'author' => 'Pedro Martinez', 'date' => '5 days ago', 'description' => 'Create a community garden where residents can grow vegetables and herbs. This promotes healthy eating, environmental awareness, and community cooperation.'],
-        ['id' => 6, 'title' => 'Youth Sports Tournament', 'category' => 'Sports', 'upvotes' => 78, 'comments' => 19, 'author' => 'Anonymous', 'date' => '4 days ago', 'description' => 'Organize quarterly youth sports tournaments (basketball, volleyball, badminton) to keep young people active and engaged in positive activities.'],
-    ];
-    
-    // Find the suggestion by ID
-    $suggestion = collect($allSuggestions)->firstWhere('id', (int)$id);
-    
-    // If suggestion not found, show 404
-    if (!$suggestion) {
-        abort(404, 'Suggestion not found');
+    // Map content to description for view compatibility
+    if (isset($suggestion['content'])) {
+        $suggestion['description'] = $suggestion['content'];
     }
     
-    // Sample comments
+    // Sample comments (can be replaced with database comments later)
     $comments = [
-        ['id' => 1, 'author' => 'Carlos Rivera', 'date' => '2 days ago', 'text' => 'Great idea! I would love to participate in this. Count me in for the Zumba sessions.'],
+        ['id' => 1, 'author' => 'Carlos Rivera', 'date' => '2 days ago', 'text' => 'Great idea! I would love to participate in this.'],
         ['id' => 2, 'author' => 'Liza Garcia', 'date' => '2 days ago', 'text' => 'This is exactly what our community needs. I can help organize if needed.'],
-        ['id' => 3, 'author' => 'Roberto Cruz', 'date' => '1 day ago', 'text' => 'I know a fitness instructor who might be willing to volunteer. Let me reach out to them.'],
-        ['id' => 4, 'author' => 'Anonymous', 'date' => '1 day ago', 'text' => 'Would this be free for all residents? What about equipment needs?'],
-        ['id' => 5, 'author' => 'Maria Santos', 'date' => '1 day ago', 'text' => 'Yes, it would be completely free! We can use the existing park space and minimal equipment.'],
     ];
-    
 @endphp
 
 <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8" style="padding-top: 6rem !important; padding-bottom: 2rem;">
