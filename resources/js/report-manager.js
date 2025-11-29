@@ -31,6 +31,12 @@ class ReportManager {
         return reports ? JSON.parse(reports) : [];
     }
 
+    // Get all public reports
+    getPublicReports() {
+        const allReports = this.getAllReports();
+        return allReports.filter(report => report.isPublic === true);
+    }
+
     // Get a specific report by ID
     getReportById(reportId) {
         const allReports = this.getAllReports();
@@ -48,6 +54,7 @@ class ReportManager {
             userName: this.getCurrentUserName(),
             ...reportData,
             status: 'Open',
+            isPublic: false, // Default to private
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString()
         };

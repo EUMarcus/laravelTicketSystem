@@ -39,14 +39,34 @@
                 <!-- Auth Buttons & Mobile Menu -->
                 <div class="flex items-center space-x-3">
                     @if(session('user'))
-                        <span class="hidden md:block text-sm text-gray-600">{{ session('user')['name'] }}</span>
-                        <form method="POST" action="{{ route('logout') }}" class="hidden md:block">
-                            @csrf
-                            <button type="submit" class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 rounded-lg hover:bg-gray-50 transition-colors">Logout</button>
-                        </form>
+                        <!-- User Menu (Separate Buttons) -->
+                        <div class="hidden md:flex items-center space-x-3">
+                            <a href="{{ route('profile.index') }}" class="flex items-center space-x-2 px-4 py-2 text-sm font-medium text-gray-600 hover:text-[#65B741] rounded-lg">
+                                <div class="w-8 h-8 bg-[#65B741] rounded-full flex items-center justify-center">
+                                    <span class="text-white font-semibold text-sm">{{ strtoupper(substr(session('user')['name'], 0, 1)) }}</span>
+                                </div>
+                                <span>{{ session('user')['name'] }}</span>
+                            </a>
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button type="submit" class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 rounded-lg">
+                                    Logout
+                                </button>
+                            </form>
+                        </div>
                     @else
-                        <a href="{{ route('login') }}" class="hidden md:block px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 rounded-lg hover:bg-gray-50 transition-colors">Login</a>
-                        <a href="{{ route('register') }}" class="hidden md:block px-5 py-2 text-sm font-semibold bg-[#65B741] text-white rounded-lg hover:bg-[#4d8a32] transition-colors">Register</a>
+                        <a href="{{ route('login') }}" class="hidden md:flex items-center space-x-2 px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 rounded-lg hover:bg-gray-50 transition-colors">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                            </svg>
+                            <span>Login</span>
+                        </a>
+                        <a href="{{ route('register') }}" class="hidden md:flex items-center space-x-2 px-5 py-2 text-sm font-semibold bg-[#65B741] text-white rounded-lg hover:bg-[#4d8a32] transition-colors">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                            </svg>
+                            <span>Register</span>
+                        </a>
                     @endif
                     <!-- Mobile menu button -->
                     <button id="mobile-menu-button" class="md:hidden p-2 rounded-lg hover:bg-gray-100 text-gray-600">
@@ -69,8 +89,36 @@
                 <a href="{{ route('polls.index') }}" class="block px-4 py-2 text-sm font-medium {{ request()->routeIs('polls.*') ? 'text-[#65B741] bg-[#65B741]/10' : 'text-gray-600' }} hover:text-[#65B741] hover:bg-[#65B741]/10 rounded-lg">Polls</a>
                 <a href="{{ route('faq.index') }}" class="block px-4 py-2 text-sm font-medium {{ request()->routeIs('faq.*') ? 'text-[#65B741] bg-[#65B741]/10' : 'text-gray-600' }} hover:text-[#65B741] hover:bg-[#65B741]/10 rounded-lg">FAQ</a>
                 <div class="border-t border-gray-200 mt-2 pt-2 space-y-1">
-                    <a href="{{ route('login') }}" class="block px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg">Login</a>
-                    <a href="{{ route('register') }}" class="block px-4 py-2 text-sm font-semibold bg-[#65B741] text-white rounded-lg hover:bg-[#4d8a32]">Register</a>
+                    @if(session('user'))
+                        <!-- User Menu (Mobile - Separate Buttons) -->
+                        <div class="block md:hidden space-y-1">
+                            <a href="{{ route('profile.index') }}" class="flex items-center space-x-2 px-4 py-2 text-sm font-medium text-gray-600 hover:text-[#65B741] rounded-lg">
+                                <div class="w-8 h-8 bg-[#65B741] rounded-full flex items-center justify-center">
+                                    <span class="text-white font-semibold text-sm">{{ strtoupper(substr(session('user')['name'], 0, 1)) }}</span>
+                                </div>
+                                <span>{{ session('user')['name'] }}</span>
+                            </a>
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button type="submit" class="w-full text-left px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 rounded-lg">
+                                    Logout
+                                </button>
+                            </form>
+                        </div>
+                    @else
+                        <a href="{{ route('login') }}" class="flex items-center space-x-2 px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                            </svg>
+                            <span>Login</span>
+                        </a>
+                        <a href="{{ route('register') }}" class="flex items-center space-x-2 px-4 py-2 text-sm font-semibold bg-[#65B741] text-white rounded-lg hover:bg-[#4d8a32]">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                            </svg>
+                            <span>Register</span>
+                        </a>
+                    @endif
                 </div>
             </div>
         </div>
@@ -225,8 +273,9 @@
         if (mobileMenuButton && mobileMenu) {
             mobileMenuButton.addEventListener('click', function() {
                 mobileMenu.classList.toggle('hidden');
-        });
+            });
         }
+
 
         // Hide/show navbar on scroll
         let lastScrollTop = 0;

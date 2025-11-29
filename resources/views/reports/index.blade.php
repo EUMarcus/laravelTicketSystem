@@ -327,4 +327,106 @@
     </div>
 </div>
 
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const reportManager = new ReportManager();
+    const reportsGrid = document.getElementById('reportsGrid');
+    
+    // Load public reports from localStorage
+    const publicReports = reportManager.getPublicReports();
+    
+    if (publicReports.length > 0) {
+        publicReports.forEach(report => {
+            // Check if report already exists in the grid (from PHP)
+            const existingReport = Array.from(reportsGrid.querySelectorAll('a')).find(a => {
+                const ticketId = a.querySelector('.font-mono')?.textContent.trim();
+                return ticketId === report.id;
+            });
+            
+            if (!existingReport) {
+                // Create report card
+                const reportCard = document.createElement('a');
+                reportCard.href = `/reports/${report.id}`;
+                reportCard.className = 'block group';
+                
+                // Format date
+                const reportDate = reportManager.formatDate(report.createdAt);
+                
+                // Status badge classes
+                let statusClasses = 'bg-gray-100 text-gray-600 border border-gray-200';
+                if (report.status === 'Open') {
+                    statusClasses = 'bg-[#65B741]/10 text-[#65B741] border border-[#65B741]/20';
+                } else if (report.status === 'In Progress') {
+                    statusClasses = 'bg-[#FFB534]/10 text-[#FFB534] border border-[#FFB534]/20';
+                } else if (report.status === 'Completed') {
+                    statusClasses = 'bg-gray-100 text-gray-700 border border-gray-200';
+                }
+                
+                // Priority badge classes
+                let priorityClasses = 'bg-gray-50 text-gray-600 border border-gray-200';
+                if (report.priority === 'High') {
+                    priorityClasses = 'bg-red-50 text-red-700 border border-red-200';
+                } else if (report.priority === 'Normal') {
+                    priorityClasses = 'bg-yellow-50 text-yellow-700 border border-yellow-200';
+                }
+                
+                reportCard.innerHTML = `
+                    <div class="bg-white p-5 rounded-lg border border-gray-200 h-full flex flex-col hover:border-gray-300 hover:shadow-md">
+                        <div class="mb-4">
+                            <div class="flex items-start justify-between mb-3">
+                                <h3 class="text-base font-bold text-gray-900 line-clamp-2 flex-1 group-hover:text-gray-700">
+                                    ${report.title || 'Untitled Report'}
+                                </h3>
+                                <svg class="w-5 h-5 text-gray-400 group-hover:text-gray-600 flex-shrink-0 ml-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                </svg>
+                            </div>
+                            
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800 border border-gray-200">
+                                    ${report.category || 'N/A'}
+                                </span>
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded text-xs font-medium ${statusClasses}">
+                                    ${report.status || 'Open'}
+                                </span>
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded text-xs font-medium ${priorityClasses}">
+                                    ${report.priority || 'Normal'}
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <p class="text-gray-600 text-sm mb-4 line-clamp-2 leading-relaxed flex-grow">
+                            ${report.description || 'No description provided.'}
+                        </p>
+
+                        <div class="pt-4 border-t border-gray-100">
+                            <div class="flex items-center justify-between text-xs">
+                                <div class="flex items-center gap-4 text-gray-500">
+                                    <span class="flex items-center gap-1.5">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                        </svg>
+                                        <span class="font-medium">${report.location || 'Not specified'}</span>
+                                    </span>
+                                    <span class="flex items-center gap-1.5">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                        <span class="font-medium">${reportDate}</span>
+                                    </span>
+                                </div>
+                                <span class="text-gray-400 font-mono text-xs">${report.id}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // Insert at the beginning of the grid
+                reportsGrid.insertBefore(reportCard, reportsGrid.firstChild);
+            }
+        });
+    }
+});
+</script>
+
 @endsection

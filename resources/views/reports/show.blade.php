@@ -28,11 +28,21 @@
                 <div id="reportContent" class="hidden">
                     <!-- Header -->
                     <div class="mb-6 pb-6 border-b border-gray-200">
-                        <div class="flex items-center gap-2 flex-wrap mb-4">
-                            <span id="reportCategory" class="inline-flex items-center px-2.5 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800 border border-gray-200"></span>
-                            <span id="reportStatus" class="inline-flex items-center px-2.5 py-0.5 rounded text-xs font-medium"></span>
-                            <span id="reportPriority" class="inline-flex items-center px-2.5 py-0.5 rounded text-xs font-medium"></span>
-                            <span id="reportTicketId" class="text-gray-400 font-mono text-xs"></span>
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <span id="reportCategory" class="inline-flex items-center px-2.5 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800 border border-gray-200"></span>
+                                <span id="reportStatus" class="inline-flex items-center px-2.5 py-0.5 rounded text-xs font-medium"></span>
+                                <span id="reportPriority" class="inline-flex items-center px-2.5 py-0.5 rounded text-xs font-medium"></span>
+                                <span id="reportTicketId" class="text-gray-400 font-mono text-xs"></span>
+                            </div>
+                            <!-- Public Toggle (only for report owner) -->
+                            <div id="publicToggleContainer" class="hidden flex items-center gap-3">
+                                <span class="text-sm text-gray-600 font-medium">Share Publicly</span>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" id="publicToggle" class="sr-only peer">
+                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-[#65B741] rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#65B741]"></div>
+                                </label>
+                            </div>
                         </div>
                         <h1 id="reportTitle" class="text-3xl md:text-4xl font-bold text-gray-900 mb-2"></h1>
                         <p id="reportDate" class="text-gray-600"></p>
@@ -285,6 +295,43 @@ document.addEventListener('DOMContentLoaded', function() {
         // Show report content
         document.getElementById('loadingState').classList.add('hidden');
         document.getElementById('reportContent').classList.remove('hidden');
+
+        // Setup public toggle (only show if user owns the report)
+        const currentUserEmail = window.currentUserEmail;
+        if (currentUserEmail && report.userEmail === currentUserEmail) {
+            const toggleContainer = document.getElementById('publicToggleContainer');
+            const publicToggle = document.getElementById('publicToggle');
+            
+            if (toggleContainer && publicToggle) {
+                toggleContainer.classList.remove('hidden');
+                publicToggle.checked = report.isPublic || false;
+                
+                // Handle toggle change
+                publicToggle.addEventListener('change', function() {
+                    const isPublic = publicToggle.checked;
+                    reportManager.updateReport(reportId, { isPublic: isPublic });
+                    
+                    // Show feedback
+                    const feedback = document.createElement('div');
+                    feedback.className = 'fixed top-20 right-4 bg-white border border-gray-200 rounded-lg shadow-lg px-4 py-3 z-50';
+                    feedback.innerHTML = `
+                        <div class="flex items-center gap-2">
+                            <svg class="w-5 h-5 text-[#65B741]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <span class="text-sm font-medium text-gray-900">${isPublic ? 'Report is now public' : 'Report is now private'}</span>
+                        </div>
+                    `;
+                    document.body.appendChild(feedback);
+                    
+                    setTimeout(() => {
+                        feedback.style.opacity = '0';
+                        feedback.style.transition = 'opacity 0.3s';
+                        setTimeout(() => feedback.remove(), 300);
+                    }, 2000);
+                });
+            }
+        }
     }
 
     // Load and display chat messages
