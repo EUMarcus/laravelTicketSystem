@@ -78,6 +78,26 @@ Route::get('/staff/dashboard', function () {
     return view('staff.dashboard');
 })->name('staff.dashboard');
 
+Route::get('/staff/reports', function () {
+    return view('staff.reports');
+})->name('staff.reports');
+
+Route::get('/staff/suggestions', function () {
+    return view('staff.suggestions');
+})->name('staff.suggestions');
+
+Route::get('/staff/announcements', function () {
+    return view('staff.announcements');
+})->name('staff.announcements');
+
+Route::get('/staff/events', function () {
+    return view('staff.events');
+})->name('staff.events');
+
+Route::get('/staff/polls', function () {
+    return view('staff.polls');
+})->name('staff.polls');
+
 // Auth routes
 Route::get('/login', [App\Http\Controllers\Auth\LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [App\Http\Controllers\Auth\LoginController::class, 'login']);

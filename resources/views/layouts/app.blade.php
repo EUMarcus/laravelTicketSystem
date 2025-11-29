@@ -25,7 +25,8 @@
                     </a>
                 </div>
                 
-                <!-- Desktop Navigation -->
+                <!-- Desktop Navigation - Hidden for staff users -->
+                @if(!session('user') || session('user')['role'] !== 'employee')
                 <div class="hidden md:flex items-center space-x-1">
                     <a href="{{ route('home') }}" class="px-4 py-2 text-sm font-medium {{ request()->routeIs('home') ? 'text-[#65B741] bg-[#65B741]/10' : 'text-gray-600' }} hover:text-[#65B741] hover:bg-[#65B741]/10 rounded-lg transition-colors">Home</a>
                     <a href="{{ route('reports.index') }}" class="px-4 py-2 text-sm font-medium {{ request()->routeIs('reports.*') ? 'text-[#65B741] bg-[#65B741]/10' : 'text-gray-600' }} hover:text-[#65B741] hover:bg-[#65B741]/10 rounded-lg transition-colors">Reports</a>
@@ -35,6 +36,7 @@
                     <a href="{{ route('polls.index') }}" class="px-4 py-2 text-sm font-medium {{ request()->routeIs('polls.*') ? 'text-[#65B741] bg-[#65B741]/10' : 'text-gray-600' }} hover:text-[#65B741] hover:bg-[#65B741]/10 rounded-lg transition-colors">Polls</a>
                     <a href="{{ route('faq.index') }}" class="px-4 py-2 text-sm font-medium {{ request()->routeIs('faq.*') ? 'text-[#65B741] bg-[#65B741]/10' : 'text-gray-600' }} hover:text-[#65B741] hover:bg-[#65B741]/10 rounded-lg transition-colors">FAQ</a>
                 </div>
+                @endif
 
                 <!-- Auth Buttons & Mobile Menu -->
                 <div class="flex items-center space-x-3">
@@ -68,17 +70,20 @@
                             <span>Register</span>
                         </a>
                     @endif
-                    <!-- Mobile menu button -->
+                    <!-- Mobile menu button - Hidden for staff users -->
+                    @if(!session('user') || session('user')['role'] !== 'employee')
                     <button id="mobile-menu-button" class="md:hidden p-2 rounded-lg hover:bg-gray-100 text-gray-600">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                         </svg>
                     </button>
+                    @endif
                 </div>
             </div>
         </div>
         
-        <!-- Mobile Menu -->
+        <!-- Mobile Menu - Hidden for staff users -->
+        @if(!session('user') || session('user')['role'] !== 'employee')
         <div id="mobile-menu" class="hidden md:hidden border-t border-gray-200 bg-white">
             <div class="px-4 py-2 space-y-1">
                 <a href="{{ route('home') }}" class="block px-4 py-2 text-sm font-medium {{ request()->routeIs('home') ? 'text-[#65B741] bg-[#65B741]/10' : 'text-gray-600' }} hover:text-[#65B741] hover:bg-[#65B741]/10 rounded-lg">Home</a>
@@ -122,6 +127,7 @@
                 </div>
             </div>
         </div>
+        @endif
     </nav>
 
     <main class="min-h-[calc(100vh-4rem)]" style="position: relative; background-color: transparent !important; margin-top: 0 !important; overflow-y: visible !important; overflow-x: hidden !important;">
@@ -157,13 +163,13 @@
         <!-- Success Modal -->
         @if(session('success'))
             <div id="successModal" class="fixed inset-0 z-50 flex items-center justify-center" style="background-color: rgba(0, 0, 0, 0.5); backdrop-filter: blur(2px);">
-                <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 transform transition-all">
+                <div class="bg-white rounded-lg shadow-xl w-full mx-4 transform transition-all" style="max-width: 320px;">
                     <div class="p-6">
                         <div class="flex items-center justify-center mb-4">
                             <div class="w-16 h-16 bg-[#65B741]/10 rounded-full flex items-center justify-center">
                                 <svg class="w-8 h-8 text-[#65B741]" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                        </svg>
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
                             </div>
                         </div>
                         <h3 class="text-xl font-bold text-gray-900 text-center mb-2">Success!</h3>
@@ -171,7 +177,7 @@
                         <button onclick="closeSuccessModal()" class="w-full px-6 py-3 bg-[#65B741] text-white font-semibold rounded-lg hover:bg-[#4d8a32] transition-colors">
                             Okay
                         </button>
-            </div>
+                    </div>
                 </div>
             </div>
         @endif
