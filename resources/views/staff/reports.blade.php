@@ -58,14 +58,6 @@
                         <div class="w-40 h-2 bg-gradient-to-r from-[#65B741] via-[#65B741] to-transparent rounded-full mb-4"></div>
                         <p class="text-lg md:text-xl text-gray-600 max-w-2xl">Track and manage community issues</p>
                     </div>
-                    <div class="flex items-center gap-3">
-                        <a href="{{ route('reports.create') }}" class="inline-flex items-center gap-2 px-6 py-3 bg-gray-900 text-white font-semibold rounded-lg hover:bg-gray-800">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                            </svg>
-                            <span>New Report</span>
-                        </a>
-                    </div>
                 </div>
             </div>
 
@@ -131,18 +123,8 @@
                                 <!-- Action Buttons -->
                                 <div class="flex items-center gap-2">
                                     <a href="{{ route('reports.show', $ticket->id) }}" class="flex-1 px-3 py-2 text-xs font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 text-center">
-                                        View
+                                        Manage
                                     </a>
-                                    <a href="{{ route('reports.edit', $ticket->id) }}" class="flex-1 px-3 py-2 text-xs font-medium text-blue-700 bg-blue-50 rounded-lg hover:bg-blue-100 text-center">
-                                        Edit
-                                    </a>
-                                    <form action="{{ route('reports.destroy', $ticket->id) }}" method="POST" class="flex-1" onsubmit="return confirm('Are you sure you want to delete this report?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="w-full px-3 py-2 text-xs font-medium text-red-700 bg-red-50 rounded-lg hover:bg-red-100">
-                                            Delete
-                                        </button>
-                                    </form>
                                 </div>
                             </div>
                         </div>
