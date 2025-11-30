@@ -302,7 +302,7 @@ class SuggestionController extends Controller
                 // If status column doesn't exist, fetch without it
                 if (str_contains($e->getMessage(), 'status') || str_contains($e->getMessage(), '42703')) {
                     \Log::info('Status column not found, fetching without status field', ['id' => $id]);
-                    $suggestions = $this->supabase->select('suggestions', ['suggest_id' => $id], 'suggest_id,title,category,full_content,created_at,posted_by');
+            $suggestions = $this->supabase->select('suggestions', ['suggest_id' => $id], 'suggest_id,title,category,full_content,created_at,posted_by');
                 } else {
                     throw $e;
                 }
