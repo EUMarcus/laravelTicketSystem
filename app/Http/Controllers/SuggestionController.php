@@ -22,20 +22,49 @@ class SuggestionController extends Controller
             // Fetch suggestions from Supabase, ordered by created_at descending
             $suggestions = $this->supabase->select('suggestions', [], 'suggest_id,title,category,full_content,created_at,posted_by', 'created_at', 'desc');
             
+            // Get all suggestion IDs
+            $suggestionIds = array_column($suggestions, 'suggest_id');
+            
+            // Fetch comment counts for all suggestions
+            $commentCounts = [];
+            if (!empty($suggestionIds)) {
+                foreach ($suggestionIds as $suggestionId) {
+                    try {
+                        $comments = $this->supabase->select('suggestion_comments', ['suggestion_id' => $suggestionId], 'scom_id');
+                        $commentCounts[$suggestionId] = count($comments);
+                    } catch (\Exception $e) {
+                        $commentCounts[$suggestionId] = 0;
+                    }
+                }
+            }
+            
+            // Get all unique user IDs from suggestions
+            $userIds = array_filter(array_unique(array_column($suggestions, 'posted_by')));
+            
+            // Fetch user names from profiles
+            $userNames = [];
+            if (!empty($userIds)) {
+                $profiles = \App\Models\Profile::whereIn('id', $userIds)->get();
+                foreach ($profiles as $profile) {
+                    $userNames[$profile->id] = $profile->name;
+                }
+            }
+            
             // Transform data to match view expectations
-            $formattedSuggestions = array_map(function($suggestion) {
+            $formattedSuggestions = array_map(function($suggestion) use ($commentCounts, $userNames) {
                 // Format date
                 $date = isset($suggestion['created_at']) 
                     ? Carbon::parse($suggestion['created_at'])->diffForHumans()
                     : 'Just now';
                 
-                // Get author name (for now, use "Anonymous" if no posted_by)
+                // Get author name
                 $author = 'Anonymous';
-                if (isset($suggestion['posted_by'])) {
-                    // In a real app, you'd fetch the user's name from a users table
-                    // For now, we'll use "Anonymous" or try to get from session
-                    $author = 'Anonymous';
+                if (isset($suggestion['posted_by']) && isset($userNames[$suggestion['posted_by']])) {
+                    $author = $userNames[$suggestion['posted_by']];
                 }
+                
+                // Get comment count
+                $commentCount = $commentCounts[$suggestion['suggest_id']] ?? 0;
                 
                 return [
                     'id' => $suggestion['suggest_id'],
@@ -46,8 +75,8 @@ class SuggestionController extends Controller
                         ? Carbon::parse($suggestion['created_at'])->format('Y-m-d')
                         : now()->format('Y-m-d'),
                     'author' => $author,
-                    'upvotes' => 0, // Not in database schema yet
-                    'comments' => 0, // Not in database schema yet
+                    'upvotes' => 0, // Upvotes are currently stored in localStorage, would need a votes table for proper counting
+                    'comments' => $commentCount,
                 ];
             }, $suggestions);
             
@@ -144,15 +173,33 @@ class SuggestionController extends Controller
             // Fetch comments for this suggestion
             $comments = $this->supabase->select('suggestion_comments', ['suggestion_id' => $id], 'scom_id,comment,created_at,comment_from', 'created_at', 'asc');
             
+            // Get all unique user IDs from comments
+            $userIds = array_filter(array_unique(array_column($comments, 'comment_from')));
+            
+            // Fetch user names from profiles
+            $userNames = [];
+            if (!empty($userIds)) {
+                $profiles = \App\Models\Profile::whereIn('id', $userIds)->get();
+                foreach ($profiles as $profile) {
+                    $userNames[$profile->id] = $profile->name;
+                }
+            }
+            
             // Format comments
-            $formattedComments = array_map(function($comment) {
+            $formattedComments = array_map(function($comment) use ($userNames) {
+                $authorName = 'Anonymous';
+                if (isset($comment['comment_from']) && isset($userNames[$comment['comment_from']])) {
+                    $authorName = $userNames[$comment['comment_from']];
+                }
+                
                 return [
                     'id' => $comment['scom_id'],
                     'text' => $comment['comment'],
                     'date' => isset($comment['created_at']) 
                         ? Carbon::parse($comment['created_at'])->diffForHumans()
                         : 'Just now',
-                    'author' => 'Anonymous', // Can be enhanced later with user lookup
+                    'author' => $authorName,
+                    'comment_from' => $comment['comment_from'] ?? null,
                 ];
             }, $comments);
             
@@ -243,8 +290,7 @@ class SuggestionController extends Controller
             // Save to Supabase
             $result = $this->supabase->insert('suggestion_comments', $commentData);
             
-            return redirect()->route('suggestions.show', $id)
-                ->with('success', 'Comment posted successfully!');
+            return redirect()->route('suggestions.show', $id);
         } catch (\Exception $e) {
             // Log error and redirect with error message
             \Log::error('Failed to save comment to Supabase: ' . $e->getMessage());

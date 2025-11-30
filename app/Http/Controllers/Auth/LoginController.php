@@ -10,6 +10,9 @@ class LoginController extends Controller
 {
     public function showLoginForm()
     {
+        if (Auth::check()) {
+            return redirect()->route('dashboard');
+        }
         return view('auth.login');
     }
 
@@ -20,44 +23,31 @@ class LoginController extends Controller
             'password' => ['required'],
         ]);
 
-        // Frontend-only authentication (hardcoded users for development)
-        $validUsers = [
-            'jon@gmail.com' => [
-                'password' => '123456789',
-                'role' => 'citizen',
-                'name' => 'Jon',
-                'id' => 'temp_jon_123'
-            ],
-            'makoy@gmail.com' => [
-                'password' => '123456789',
-                'role' => 'employee',
-                'name' => 'Makoy',
-                'id' => 'temp_makoy_123'
-            ]
-        ];
-
-        $email = $credentials['email'];
-        $password = $credentials['password'];
-
-        // Check if user exists and password matches
-        if (isset($validUsers[$email]) && $validUsers[$email]['password'] === $password) {
-            $user = $validUsers[$email];
+        if (Auth::attempt($credentials, $request->boolean('remember'))) {
+            $request->session()->regenerate();
             
-            // Store user data in session
-            $request->session()->put('user', [
-                'id' => $user['id'],
-                'name' => $user['name'],
-                'email' => $email,
-                'role' => $user['role']
-            ]);
-
             // Redirect based on role
-            if ($user['role'] === 'employee') {
+            $user = Auth::user();
+            // With FK constraint, profile must exist for every user
+            $profile = $user->profile;
+            
+            // Set session user data for views and JavaScript
+            $request->session()->put('user', [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'role' => $profile->role ?? 'citizen',
+                'voters_id' => $user->voters_id ?? null,
+                'contact_number' => $user->contact_number ?? null,
+                'address' => $user->address ?? null,
+            ]);
+            
+            if ($profile && $profile->isEmployee()) {
                 // Employee - redirect to staff dashboard
                 return redirect()->route('staff.dashboard')->with('success', 'Welcome back, Staff!');
             } else {
-                // Citizen - redirect to reports/create page (reporting page)
-                return redirect()->route('reports.create')->with('success', 'Welcome back!');
+                // Citizen - redirect to reports index
+                return redirect()->intended(route('reports.index'));
             }
         }
 
@@ -68,8 +58,10 @@ class LoginController extends Controller
 
     public function logout(Request $request)
     {
-        // Frontend-only logout
+        // Clear session user data
         $request->session()->forget('user');
+        
+        Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
         

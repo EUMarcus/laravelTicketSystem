@@ -7,25 +7,15 @@ Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
-Route::get('/reports', function () {
-    return view('reports.index');
-})->name('reports.index');
-
-Route::get('/reports/create', function () {
-    return view('reports.create');
-})->name('reports.create');
-
-Route::get('/reports/my-reports', function () {
-    return view('reports.my-reports');
-})->name('reports.my-reports');
-
-Route::get('/reports/my-reports/{id}', function ($id) {
-    return view('reports.my-report-details', ['id' => $id]);
-})->name('reports.my-report-details');
-
-Route::get('/reports/{id}', function ($id) {
-    return view('reports.show', ['id' => $id]);
-})->name('reports.show');
+// Reports routes (using TicketController - keeping "reports" naming)
+Route::middleware('auth')->group(function () {
+    Route::get('/reports', [App\Http\Controllers\TicketController::class, 'index'])->name('reports.index');
+    Route::get('/reports/create', [App\Http\Controllers\TicketController::class, 'create'])->name('reports.create');
+    Route::post('/reports', [App\Http\Controllers\TicketController::class, 'store'])->name('reports.store');
+    Route::get('/reports/{ticket}', [App\Http\Controllers\TicketController::class, 'show'])->name('reports.show');
+    Route::patch('/reports/{ticket}', [App\Http\Controllers\TicketController::class, 'update'])->name('reports.update');
+    Route::post('/reports/{ticket}/messages', [App\Http\Controllers\MessageController::class, 'store'])->name('reports.messages.store');
+});
 
 Route::get('/suggestions', [App\Http\Controllers\SuggestionController::class, 'index'])->name('suggestions.index');
 
@@ -68,14 +58,16 @@ Route::get('/profile', function () {
     return view('profile.index');
 })->name('profile.index');
 
-// Staff routes
-Route::get('/staff/dashboard', function () {
-    return view('staff.dashboard');
-})->name('staff.dashboard');
+// Staff routes (require authentication)
+Route::middleware('auth')->group(function () {
+    Route::get('/staff/dashboard', function () {
+        return view('staff.dashboard');
+    })->name('staff.dashboard');
+});
 
-Route::get('/staff/reports', function () {
-    return view('staff.reports');
-})->name('staff.reports');
+Route::middleware('auth')->group(function () {
+    Route::get('/staff/reports', [App\Http\Controllers\TicketController::class, 'index'])->name('staff.reports');
+});
 
 Route::get('/staff/suggestions', function () {
     return view('staff.suggestions');
@@ -90,3 +82,10 @@ Route::post('/logout', [App\Http\Controllers\Auth\LoginController::class, 'logou
 
 Route::get('/register', [App\Http\Controllers\Auth\RegisterController::class, 'showRegistrationForm'])->name('register');
 Route::post('/register', [App\Http\Controllers\Auth\RegisterController::class, 'register']);
+
+// Dashboard redirects to reports
+Route::middleware('auth')->group(function () {
+    Route::get('/dashboard', function () {
+        return redirect()->route('reports.index');
+    })->name('dashboard');
+});

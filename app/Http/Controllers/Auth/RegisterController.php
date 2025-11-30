@@ -7,6 +7,7 @@ use App\Models\Profile;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules;
@@ -20,7 +21,7 @@ class RegisterController extends Controller
 
     public function register(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'contact_number' => ['required', 'string', 'max:20'],
@@ -32,26 +33,60 @@ class RegisterController extends Controller
 
         $userId = (string) Str::uuid();
         
-        $user = User::create([
-            'id' => $userId,
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'voters_id' => strtoupper($request->voters_id),
-            'contact_number' => $request->contact_number,
-            'address' => $request->address,
-        ]);
+        // Use database transaction to ensure both are created or neither
+        try {
+            DB::beginTransaction();
+            
+            // Create user FIRST (since profiles.id FK references users.id)
+            // Note: password is auto-hashed by the User model's cast
+            $user = User::create([
+                'id' => $userId,
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => $request->password, // Will be auto-hashed by model cast
+                'voters_id' => strtoupper($request->voters_id),
+                'contact_number' => $request->contact_number,
+                'address' => $request->address,
+            ]);
 
-        // Create profile with same UUID as user
-        Profile::create([
-            'id' => $userId,
-            'role' => $request->role,
-            'name' => $request->name,
-        ]);
+            // Verify user was created
+            if (!$user->exists) {
+                throw new \Exception('Failed to create user');
+            }
+
+            // Then create profile with the same UUID (which references the user)
+            $profile = Profile::create([
+                'id' => $userId,
+                'role' => $request->role === 'citizen' ? 'customer' : 'employee',
+                'name' => $request->name,
+            ]);
+
+            // Verify profile was created
+            if (!$profile || !$profile->exists) {
+                throw new \Exception('Failed to create profile');
+            }
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::error('Registration failed: ' . $e->getMessage());
+            return back()->withErrors(['email' => 'Registration failed. Please try again.'])->withInput();
+        }
 
         Auth::login($user);
 
-        return redirect()->route('dashboard');
+        // Set session user data for views and JavaScript
+        $request->session()->put('user', [
+            'id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
+            'role' => $profile->role,
+            'voters_id' => $user->voters_id,
+            'contact_number' => $user->contact_number,
+            'address' => $user->address,
+        ]);
+
+        return redirect()->route('dashboard')->with('success', 'Account created successfully! Welcome to Community Hub.');
     }
 }
 

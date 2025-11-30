@@ -38,14 +38,14 @@
 
                 <!-- Auth Buttons & Mobile Menu -->
                 <div class="flex items-center space-x-3">
-                    @if(session('user'))
+                    @auth
                         <!-- User Menu (Separate Buttons) -->
                         <div class="hidden md:flex items-center space-x-3">
                             <a href="{{ route('profile.index') }}" class="flex items-center space-x-2 px-4 py-2 text-sm font-medium text-gray-600 hover:text-[#65B741] rounded-lg">
                                 <div class="w-8 h-8 bg-[#65B741] rounded-full flex items-center justify-center">
-                                    <span class="text-white font-semibold text-sm">{{ strtoupper(substr(session('user')['name'], 0, 1)) }}</span>
+                                    <span class="text-white font-semibold text-sm">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}</span>
                                 </div>
-                                <span>{{ session('user')['name'] }}</span>
+                                <span>{{ Auth::user()->name }}</span>
                             </a>
                             @if(session('user')['role'] === 'employee')
                             <a href="{{ route('staff.dashboard') }}" class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-[#65B741] rounded-lg">
@@ -72,7 +72,7 @@
                             </svg>
                             <span>Register</span>
                         </a>
-                    @endif
+                    @endauth
                     <!-- Mobile menu button - Hidden only on staff dashboard pages -->
                     @if(!request()->routeIs('staff.*'))
                     <button id="mobile-menu-button" class="md:hidden p-2 rounded-lg hover:bg-gray-100 text-gray-600">
@@ -94,57 +94,63 @@
                 <a href="{{ route('suggestions.index') }}" class="block px-4 py-2 text-sm font-medium {{ request()->routeIs('suggestions.*') ? 'text-[#65B741] bg-[#65B741]/10' : 'text-gray-600' }} hover:text-[#65B741] hover:bg-[#65B741]/10 rounded-lg">Suggestions</a>
                 <a href="{{ route('announcements.index') }}" class="block px-4 py-2 text-sm font-medium {{ request()->routeIs('announcements.*') ? 'text-[#65B741] bg-[#65B741]/10' : 'text-gray-600' }} hover:text-[#65B741] hover:bg-[#65B741]/10 rounded-lg">News & Events</a>
                 <a href="{{ route('faq.index') }}" class="block px-4 py-2 text-sm font-medium {{ request()->routeIs('faq.*') ? 'text-[#65B741] bg-[#65B741]/10' : 'text-gray-600' }} hover:text-[#65B741] hover:bg-[#65B741]/10 rounded-lg">FAQ</a>
+                @auth
                 <div class="border-t border-gray-200 mt-2 pt-2 space-y-1">
-                    @if(session('user'))
-                        <!-- User Menu (Mobile - Separate Buttons) -->
-                        <div class="block md:hidden space-y-1">
-                            <a href="{{ route('profile.index') }}" class="flex items-center space-x-2 px-4 py-2 text-sm font-medium text-gray-600 hover:text-[#65B741] rounded-lg">
-                                <div class="w-8 h-8 bg-[#65B741] rounded-full flex items-center justify-center">
-                                    <span class="text-white font-semibold text-sm">{{ strtoupper(substr(session('user')['name'], 0, 1)) }}</span>
-                                </div>
-                                <span>{{ session('user')['name'] }}</span>
-                            </a>
-                            @if(session('user')['role'] === 'employee')
-                            <a href="{{ route('staff.dashboard') }}" class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-[#65B741] rounded-lg">
-                                Dashboard
-                            </a>
-                            @endif
-                            <form method="POST" action="{{ route('logout') }}" id="logoutFormMobile" onsubmit="handleLogout(event)">
-                                @csrf
-                                <button type="submit" class="w-full text-left px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 rounded-lg">
-                                    Logout
-                                </button>
-                            </form>
-                        </div>
-                    @else
-                        <a href="{{ route('login') }}" class="flex items-center space-x-2 px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
-                            </svg>
-                            <span>Login</span>
+                    <!-- User Menu (Mobile - Separate Buttons) -->
+                    <div class="block md:hidden space-y-1">
+                        <a href="{{ route('profile.index') }}" class="flex items-center space-x-2 px-4 py-2 text-sm font-medium text-gray-600 hover:text-[#65B741] rounded-lg">
+                            <div class="w-8 h-8 bg-[#65B741] rounded-full flex items-center justify-center">
+                                <span class="text-white font-semibold text-sm">{{ strtoupper(substr(session('user')['name'] ?? Auth::user()->name, 0, 1)) }}</span>
+                            </div>
+                            <span>{{ session('user')['name'] ?? Auth::user()->name }}</span>
                         </a>
-                        <a href="{{ route('register') }}" class="flex items-center space-x-2 px-4 py-2 text-sm font-semibold bg-[#65B741] text-white rounded-lg hover:bg-[#4d8a32]">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
-                            </svg>
-                            <span>Register</span>
+                        @if((session('user')['role'] ?? Auth::user()->profile->role ?? 'citizen') === 'employee')
+                        <a href="{{ route('staff.dashboard') }}" class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-[#65B741] rounded-lg">
+                            Dashboard
                         </a>
-                    @endif
+                        @endif
+                        <form method="POST" action="{{ route('logout') }}" id="logoutFormMobile" onsubmit="handleLogout(event)">
+                            @csrf
+                            <button type="submit" class="w-full text-left px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 rounded-lg">
+                                Logout
+                            </button>
+                        </form>
+                    </div>
                 </div>
+                @else
+                <div class="border-t border-gray-200 mt-2 pt-2 space-y-1">
+                    <a href="{{ route('login') }}" class="flex items-center space-x-2 px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                        </svg>
+                        <span>Login</span>
+                    </a>
+                    <a href="{{ route('register') }}" class="flex items-center space-x-2 px-4 py-2 text-sm font-semibold bg-[#65B741] text-white rounded-lg hover:bg-[#4d8a32]">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                        </svg>
+                        <span>Register</span>
+                    </a>
+                </div>
+                @endauth
             </div>
         </div>
         @endif
     </nav>
 
-    <main class="min-h-[calc(100vh-4rem)]" style="position: relative; background-color: transparent !important; margin-top: 0 !important; overflow-y: visible !important; overflow-x: hidden !important;">
+    <main class="min-h-[calc(100vh-4rem)]" style="position: relative; background-color: transparent !important; overflow-y: visible !important; overflow-x: hidden !important;">
         <style>
-            /* Ensure hero section is visible above white background */
+            /* Add padding for fixed header, except for hero section */
+            main {
+                padding-top: 4rem !important;
+            }
+            /* Ensure hero section is visible above white background and starts at top */
             main > section:first-child {
                 position: relative !important;
                 z-index: 1 !important;
                 background: transparent !important;
                 background-color: transparent !important;
-                margin-top: 0 !important;
+                margin-top: -4rem !important;
                 padding-top: 0 !important;
             }
             main > section:first-child img.hero-parallax {
