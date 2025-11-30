@@ -30,7 +30,8 @@ class UserSeeder extends Seeder
             ]
         );
 
-        Profile::firstOrCreate(
+        // Use updateOrCreate to ensure role is always set to employee
+        $makoyProfile = Profile::updateOrCreate(
             ['id' => $makoyUser->id],
             [
                 'role' => 'employee',

@@ -243,6 +243,120 @@ class AnnouncementController extends Controller
         }
     }
 
+    public function edit($id)
+    {
+        // Check if user is staff
+        if (!session('user') || !in_array(session('user')['role'] ?? '', ['employee', 'admin'])) {
+            abort(403, 'Only staff members can edit announcements.');
+        }
+
+        try {
+            $announcements = $this->supabase->select('announcements', ['announce_id' => $id], 'announce_id,title,category,full_content,urgent,start_date,end_date');
+            
+            if (empty($announcements)) {
+                abort(404, 'Announcement not found');
+            }
+            
+            $announcement = $announcements[0];
+            
+            // Format dates for form inputs
+            $startDate = null;
+            if (!empty($announcement['start_date'])) {
+                $startDate = Carbon::parse($announcement['start_date'])->format('Y-m-d\TH:i');
+            }
+            
+            $endDate = null;
+            if (!empty($announcement['end_date'])) {
+                $endDate = Carbon::parse($announcement['end_date'])->format('Y-m-d\TH:i');
+            }
+            
+            return view('announcements.edit', [
+                'announcement' => [
+                    'id' => $announcement['announce_id'],
+                    'title' => $announcement['title'],
+                    'category' => $announcement['category'] ?? 'Other',
+                    'content' => $announcement['full_content'],
+                    'urgent' => $announcement['urgent'] ?? false,
+                    'start_date' => $startDate,
+                    'end_date' => $endDate,
+                ]
+            ]);
+        } catch (\Exception $e) {
+            abort(404, 'Announcement not found');
+        }
+    }
+
+    public function update(Request $request, $id)
+    {
+        // Check if user is staff
+        if (!session('user') || !in_array(session('user')['role'] ?? '', ['employee', 'admin'])) {
+            abort(403, 'Only staff members can edit announcements.');
+        }
+
+        $validated = $request->validate([
+            'title' => ['required', 'string', 'max:255'],
+            'category' => ['required', 'string', 'in:Event,Health,Meeting,Service,Infrastructure,Safety,Education,Other'],
+            'content' => ['required', 'string'],
+            'urgent' => ['nullable', 'boolean'],
+            'start_date' => ['nullable', 'date'],
+            'end_date' => ['nullable', 'date', 'after_or_equal:start_date'],
+        ]);
+
+        try {
+            $updateData = [
+                'title' => $validated['title'],
+                'category' => $validated['category'],
+                'full_content' => $validated['content'],
+                'urgent' => $request->has('urgent') && $request->urgent == '1',
+            ];
+
+            // Add start_date if provided
+            if (!empty($validated['start_date'])) {
+                $updateData['start_date'] = Carbon::parse($validated['start_date'])->setTimezone('UTC')->toIso8601String();
+            } else {
+                $updateData['start_date'] = null;
+            }
+
+            // Add end_date if provided
+            if (!empty($validated['end_date'])) {
+                $updateData['end_date'] = Carbon::parse($validated['end_date'])->setTimezone('UTC')->toIso8601String();
+            } else {
+                $updateData['end_date'] = null;
+            }
+
+            $this->supabase->update('announcements', ['announce_id' => $id], $updateData);
+
+            return redirect()->route('announcements.show', $id)
+                ->with('success', 'Announcement updated successfully!');
+        } catch (\Exception $e) {
+            \Log::error('Failed to update announcement: ' . $e->getMessage());
+            
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['message' => 'Failed to update announcement. Please try again.']);
+        }
+    }
+
+    public function destroy($id)
+    {
+        // Check if user is staff
+        if (!session('user') || !in_array(session('user')['role'] ?? '', ['employee', 'admin'])) {
+            abort(403, 'Only staff members can delete announcements.');
+        }
+
+        try {
+            $this->supabase->delete('announcements', ['announce_id' => $id]);
+
+            return redirect()->route('staff.announcements')
+                ->with('success', 'Announcement deleted successfully!');
+        } catch (\Exception $e) {
+            \Log::error('Failed to delete announcement: ' . $e->getMessage());
+            
+            return redirect()->back()
+                ->withErrors(['message' => 'Failed to delete announcement. Please try again.']);
+        }
+    }
+
     /**
      * Check if a string is a valid UUID
      */

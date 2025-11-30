@@ -3,7 +3,7 @@
 @section('title', 'Reports - Staff Dashboard')
 
 @section('content')
-@if((session('user') && session('user')['role'] === 'employee') || (Auth::user() && Auth::user()->profile && Auth::user()->profile->role === 'employee'))
+@if((session('user') && in_array(session('user')['role'] ?? '', ['employee', 'admin'])) || (Auth::user() && Auth::user()->profile && Auth::user()->profile->isEmployee()))
 <div class="flex min-h-screen" style="padding-top: 4rem;">
     <!-- Sidebar -->
     <aside class="w-64 bg-white border-r border-gray-200 fixed left-0 top-16 h-[calc(100vh-4rem)] overflow-y-auto z-40 shadow-sm" style="position: fixed !important; top: 4rem !important; left: 0 !important; z-index: 40 !important; background-color: #ffffff !important;">
@@ -48,11 +48,11 @@
     </aside>
 
     <!-- Main Content -->
-    <main class="flex-1 ml-64 min-h-screen" style="margin-left: 16rem !important;">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <main class="flex-1 ml-64 min-h-screen" style="margin-left: 16rem !important; margin-top: -4rem !important;">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-0 pb-8">
             <!-- Header -->
             <div class="mb-10">
-                <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mb-8">
+                <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
                     <div>
                         <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4">Reports & Tickets</h1>
                         <div class="w-40 h-2 bg-gradient-to-r from-[#65B741] via-[#65B741] to-transparent rounded-full mb-4"></div>
@@ -75,63 +75,77 @@
                     <div id="reportsGrid" class="grid md:grid-cols-2 gap-4 mb-6">
                         @if($tickets->count() > 0)
                         @foreach($tickets as $ticket)
-                        <a href="{{ route('reports.show', $ticket->id) }}" class="block group">
-                            <div class="bg-white p-5 rounded-lg border border-gray-200 h-full flex flex-col hover:border-gray-300 hover:shadow-md transition-all">
-                                <!-- Header -->
-                                <div class="mb-4">
-                                    <div class="flex items-start justify-between mb-3">
-                                        <h3 class="text-base font-bold text-gray-900 line-clamp-2 flex-1 group-hover:text-gray-700">
+                        <div class="bg-white p-5 rounded-lg border border-gray-200 h-full flex flex-col hover:border-gray-300 hover:shadow-md transition-all">
+                            <!-- Header -->
+                            <div class="mb-4">
+                                <div class="flex items-start justify-between mb-3">
+                                    <a href="{{ route('reports.show', $ticket->id) }}" class="flex-1 group">
+                                        <h3 class="text-base font-bold text-gray-900 line-clamp-2 group-hover:text-gray-700">
                                             {{ $ticket->subject }}
                                         </h3>
-                                        <svg class="w-5 h-5 text-gray-400 group-hover:text-gray-600 flex-shrink-0 ml-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                                        </svg>
-                                    </div>
-                                    
-                                    <div class="flex items-center gap-2 flex-wrap">
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded text-xs font-medium
-                                            @if($ticket->status === 'open') bg-[#65B741]/10 text-[#65B741] border border-[#65B741]/20
-                                            @elseif($ticket->status === 'in_progress') bg-[#FFB534]/10 text-[#FFB534] border border-[#FFB534]/20
-                                            @elseif($ticket->status === 'resolved' || $ticket->status === 'closed') bg-gray-100 text-gray-700 border border-gray-200
-                                            @else bg-gray-100 text-gray-600 border border-gray-200 @endif">
-                                            {{ ucfirst(str_replace('_', ' ', $ticket->status)) }}
-                                        </span>
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded text-xs font-medium
-                                            @if($ticket->priority === 'urgent' || $ticket->priority === 'high') bg-red-50 text-red-700 border border-red-200
-                                            @elseif($ticket->priority === 'medium') bg-yellow-50 text-yellow-700 border border-yellow-200
-                                            @else bg-gray-50 text-gray-600 border border-gray-200 @endif">
-                                            {{ ucfirst($ticket->priority) }} Priority
-                                        </span>
-                                    </div>
+                                    </a>
                                 </div>
                                 
-                                <!-- Description -->
-                                @if($ticket->description)
-                                <p class="text-gray-600 text-sm mb-4 line-clamp-2 leading-relaxed flex-grow">
-                                    {{ $ticket->description }}
-                                </p>
-                                @endif
-
-                                <!-- Footer Info -->
-                                <div class="pt-4 border-t border-gray-100">
-                                    <div class="flex items-center justify-between text-xs">
-                                        <div class="flex items-center gap-4 text-gray-500">
-                                            <span class="flex items-center gap-1.5">
-                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                </svg>
-                                                <span class="font-medium">{{ $ticket->created_at->diffForHumans() }}</span>
-                                            </span>
-                                            @if($ticket->customer)
-                                            <span>•</span>
-                                            <span class="font-medium">{{ $ticket->customer->name }}</span>
-                                            @endif
-                                        </div>
-                                        <span class="text-gray-400 font-mono text-xs">#{{ substr($ticket->id, 0, 8) }}</span>
-                                    </div>
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded text-xs font-medium
+                                        @if($ticket->status === 'open') bg-[#65B741]/10 text-[#65B741] border border-[#65B741]/20
+                                        @elseif($ticket->status === 'in_progress') bg-[#FFB534]/10 text-[#FFB534] border border-[#FFB534]/20
+                                        @elseif($ticket->status === 'resolved' || $ticket->status === 'closed') bg-gray-100 text-gray-700 border border-gray-200
+                                        @else bg-gray-100 text-gray-600 border border-gray-200 @endif">
+                                        {{ ucfirst(str_replace('_', ' ', $ticket->status)) }}
+                                    </span>
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded text-xs font-medium
+                                        @if($ticket->priority === 'urgent' || $ticket->priority === 'high') bg-red-50 text-red-700 border border-red-200
+                                        @elseif($ticket->priority === 'medium') bg-yellow-50 text-yellow-700 border border-yellow-200
+                                        @else bg-gray-50 text-gray-600 border border-gray-200 @endif">
+                                        {{ ucfirst($ticket->priority) }} Priority
+                                    </span>
                                 </div>
                             </div>
-                        </a>
+                            
+                            <!-- Description -->
+                            @if($ticket->description)
+                            <p class="text-gray-600 text-sm mb-4 line-clamp-2 leading-relaxed flex-grow">
+                                {{ $ticket->description }}
+                            </p>
+                            @endif
+
+                            <!-- Footer Info -->
+                            <div class="pt-4 border-t border-gray-100">
+                                <div class="flex items-center justify-between text-xs mb-3">
+                                    <div class="flex items-center gap-4 text-gray-500">
+                                        <span class="flex items-center gap-1.5">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                            <span class="font-medium">{{ $ticket->created_at->diffForHumans() }}</span>
+                                        </span>
+                                        @if($ticket->customer)
+                                        <span>•</span>
+                                        <span class="font-medium">{{ $ticket->customer->name }}</span>
+                                        @endif
+                                    </div>
+                                    <span class="text-gray-400 font-mono text-xs">#{{ substr($ticket->id, 0, 8) }}</span>
+                                </div>
+                                
+                                <!-- Action Buttons -->
+                                <div class="flex items-center gap-2">
+                                    <a href="{{ route('reports.show', $ticket->id) }}" class="flex-1 px-3 py-2 text-xs font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 text-center">
+                                        View
+                                    </a>
+                                    <a href="{{ route('reports.edit', $ticket->id) }}" class="flex-1 px-3 py-2 text-xs font-medium text-blue-700 bg-blue-50 rounded-lg hover:bg-blue-100 text-center">
+                                        Edit
+                                    </a>
+                                    <form action="{{ route('reports.destroy', $ticket->id) }}" method="POST" class="flex-1" onsubmit="return confirm('Are you sure you want to delete this report?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="w-full px-3 py-2 text-xs font-medium text-red-700 bg-red-50 rounded-lg hover:bg-red-100">
+                                            Delete
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
                         @endforeach
                         @else
                         <div class="col-span-2 text-center py-12">

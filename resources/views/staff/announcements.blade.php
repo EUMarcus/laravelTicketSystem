@@ -3,7 +3,7 @@
 @section('title', 'Announcements - Staff Dashboard')
 
 @section('content')
-@if(session('user') && session('user')['role'] === 'employee')
+@if(session('user') && in_array(session('user')['role'] ?? '', ['employee', 'admin']))
 <div class="flex min-h-screen" style="padding-top: 4rem;">
     <!-- Sidebar -->
     <aside class="w-64 bg-white border-r border-gray-200 fixed left-0 top-16 h-[calc(100vh-4rem)] overflow-y-auto z-40">
@@ -48,26 +48,22 @@
     </aside>
 
     <!-- Main Content -->
-    <main class="flex-1 ml-64 min-h-screen">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <main class="flex-1 ml-64 min-h-screen" style="margin-top: -4rem !important;">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-0 pb-8">
         <!-- Header -->
         <div class="mb-10">
-            <div class="mb-8">
-                <div class="flex items-center justify-between mb-6">
-                    <div class="flex-1"></div>
-                    <div class="flex-1"></div>
-                    <div class="flex-1 flex justify-end">
-                        <button onclick="openAnnouncementModal()" class="inline-flex items-center gap-2 px-6 py-3 bg-[#65B741] text-white font-semibold rounded-lg hover:bg-[#4d8a32] transition-colors">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                            </svg>
-                            <span>Create Post</span>
-                        </button>
-                    </div>
+            <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+                <div>
+                    <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4">News & Events</h1>
+                    <div class="w-40 h-2 bg-gradient-to-r from-[#65B741] via-[#65B741] to-transparent rounded-full mb-4"></div>
+                    <p class="text-lg md:text-xl text-gray-600 max-w-2xl">Stay informed with the latest community updates and important notices</p>
                 </div>
-                <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4">News & Events</h1>
-                <div class="w-40 h-2 bg-gradient-to-r from-[#65B741] via-[#65B741] to-transparent rounded-full mb-4"></div>
-                <p class="text-lg md:text-xl text-gray-600 max-w-2xl">Stay informed with the latest community updates and important notices</p>
+                <button onclick="openAnnouncementModal()" class="inline-flex items-center gap-2 px-6 py-3 bg-gray-900 text-white font-semibold rounded-lg hover:bg-gray-800">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                    <span>Create Post</span>
+                </button>
             </div>
         </div>
 
@@ -85,17 +81,15 @@
         @if(count($announcements) > 0)
             <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
             @foreach($announcements as $announcement)
-            <a href="{{ route('announcements.show', $announcement['id']) }}" class="block group">
-                        <div class="bg-white p-5 rounded-lg border border-gray-200 shadow-sm h-full flex flex-col hover:border-gray-300 hover:shadow-md">
+            <div class="bg-white p-5 rounded-lg border border-gray-200 shadow-sm h-full flex flex-col hover:border-gray-300 hover:shadow-md">
                             <!-- Header -->
                     <div class="mb-4">
                                 <div class="flex items-start justify-between mb-3">
-                                    <h3 class="text-base font-bold text-gray-900 line-clamp-2 flex-1 group-hover:text-gray-700">
-                                        {{ $announcement['title'] }}
-                                    </h3>
-                                    <svg class="w-5 h-5 text-gray-400 group-hover:text-gray-600 flex-shrink-0 ml-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                                    </svg>
+                                    <a href="{{ route('announcements.show', $announcement['id']) }}" class="flex-1 group">
+                                        <h3 class="text-base font-bold text-gray-900 line-clamp-2 group-hover:text-gray-700">
+                                            {{ $announcement['title'] }}
+                                        </h3>
+                                    </a>
                                 </div>
                                 
                                 <div class="flex items-center gap-2 flex-wrap mb-3">
@@ -115,17 +109,34 @@
                     </div>
                             
                             <!-- Footer -->
-                            <div class="flex items-center justify-between pt-4 border-t border-gray-100 mt-auto">
-                                <div class="flex items-center text-xs text-gray-500">
-                                    <svg class="w-3.5 h-3.5 text-gray-500 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                    </svg>
-                                    <span>{{ $announcement['date'] }}</span>
+                            <div class="pt-4 border-t border-gray-100 mt-auto">
+                                <div class="flex items-center justify-between text-xs text-gray-500 mb-3">
+                                    <div class="flex items-center">
+                                        <svg class="w-3.5 h-3.5 text-gray-500 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                        </svg>
+                                        <span>{{ $announcement['date'] }}</span>
+                                    </div>
                                 </div>
-                                <span class="text-xs font-semibold text-gray-700 group-hover:text-gray-900">Read More →</span>
-                    </div>
-                </div>
-            </a>
+                                
+                                <!-- Action Buttons -->
+                                <div class="flex items-center gap-2">
+                                    <a href="{{ route('announcements.show', $announcement['id']) }}" class="flex-1 px-3 py-2 text-xs font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 text-center">
+                                        View
+                                    </a>
+                                    <a href="{{ route('announcements.edit', $announcement['id']) }}" class="flex-1 px-3 py-2 text-xs font-medium text-blue-700 bg-blue-50 rounded-lg hover:bg-blue-100 text-center">
+                                        Edit
+                                    </a>
+                                    <form action="{{ route('announcements.destroy', $announcement['id']) }}" method="POST" class="flex-1" onsubmit="return confirm('Are you sure you want to delete this announcement?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="w-full px-3 py-2 text-xs font-medium text-red-700 bg-red-50 rounded-lg hover:bg-red-100">
+                                            Delete
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
             @endforeach
         </div>
 

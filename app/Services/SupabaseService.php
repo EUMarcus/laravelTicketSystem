@@ -175,7 +175,9 @@ class SupabaseService
         
         // Add filters as query parameters
         foreach ($filters as $key => $value) {
-            $url .= "&{$key}=eq.{$value}";
+            // URL encode the value to handle special characters
+            $encodedValue = urlencode($value);
+            $url .= "&{$key}=eq.{$encodedValue}";
         }
         
         // Add ordering
@@ -191,5 +193,79 @@ class SupabaseService
         }
 
         return $response->json() ?? [];
+    }
+
+    /**
+     * Update data in a Supabase table
+     */
+    public function update(string $table, array $filters, array $data): array
+    {
+        if (!$this->isConfigured()) {
+            throw new Exception('Supabase is not configured. Please set SUPABASE_URL and SUPABASE_SERVICE_KEY in your .env file.');
+        }
+
+        $http = Http::withHeaders([
+            'Authorization' => 'Bearer ' . $this->serviceKey,
+            'Content-Type' => 'application/json',
+            'apikey' => $this->serviceKey,
+            'Prefer' => 'return=representation',
+        ]);
+
+        if (!$this->verifySsl) {
+            $http = $http->withoutVerifying();
+        }
+
+        $url = "{$this->url}/rest/v1/{$table}";
+        
+        // Add filters as query parameters
+        foreach ($filters as $key => $value) {
+            $url .= (strpos($url, '?') === false ? '?' : '&') . "{$key}=eq.{$value}";
+        }
+
+        $response = $http->patch($url, $data);
+
+        if (!$response->successful()) {
+            $error = $response->json() ?? $response->body();
+            throw new Exception('Failed to update data in Supabase: ' . json_encode($error));
+        }
+
+        $result = $response->json();
+        return is_array($result) && isset($result[0]) ? $result[0] : $result;
+    }
+
+    /**
+     * Delete data from a Supabase table
+     */
+    public function delete(string $table, array $filters): bool
+    {
+        if (!$this->isConfigured()) {
+            throw new Exception('Supabase is not configured. Please set SUPABASE_URL and SUPABASE_SERVICE_KEY in your .env file.');
+        }
+
+        $http = Http::withHeaders([
+            'Authorization' => 'Bearer ' . $this->serviceKey,
+            'Content-Type' => 'application/json',
+            'apikey' => $this->serviceKey,
+        ]);
+
+        if (!$this->verifySsl) {
+            $http = $http->withoutVerifying();
+        }
+
+        $url = "{$this->url}/rest/v1/{$table}";
+        
+        // Add filters as query parameters
+        foreach ($filters as $key => $value) {
+            $url .= (strpos($url, '?') === false ? '?' : '&') . "{$key}=eq.{$value}";
+        }
+
+        $response = $http->delete($url);
+
+        if (!$response->successful()) {
+            $error = $response->json() ?? $response->body();
+            throw new Exception('Failed to delete data from Supabase: ' . json_encode($error));
+        }
+
+        return true;
     }
 }

@@ -3,7 +3,7 @@
 @section('title', 'Staff Dashboard - Community Hub')
 
 @section('content')
-@if(session('user') && session('user')['role'] === 'employee')
+@if(session('user') && in_array(session('user')['role'] ?? '', ['employee', 'admin']))
 <div class="flex min-h-screen" style="padding-top: 4rem;">
     <!-- Sidebar -->
     <aside class="w-64 bg-white border-r border-gray-200 fixed left-0 top-16 h-[calc(100vh-4rem)] overflow-y-auto z-40">
@@ -48,8 +48,8 @@
     </aside>
 
     <!-- Main Content -->
-    <main class="flex-1 ml-64 min-h-screen">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <main class="flex-1 ml-64 min-h-screen" style="margin-top: -4rem !important;">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-0 pb-8">
             <!-- Welcome Header -->
             <div class="mb-8">
                 <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">

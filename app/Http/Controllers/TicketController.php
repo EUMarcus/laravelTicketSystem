@@ -178,13 +178,40 @@ class TicketController extends Controller
         return view('reports.show', compact('ticket', 'profile'));
     }
 
+    public function edit(Ticket $ticket)
+    {
+        $user = auth()->user();
+        $profile = $user->profile;
+        
+        // Only staff can edit reports
+        if (!$profile || !$profile->isEmployee()) {
+            abort(403, 'Only staff members can edit reports.');
+        }
+
+        return view('reports.edit', compact('ticket'));
+    }
+
     public function update(Request $request, Ticket $ticket)
     {
-        $validated = $request->validate([
-            'status' => ['sometimes', 'in:open,in_progress,resolved,closed'],
-            'assigned_employee_id' => ['sometimes', 'exists:profiles,id'],
-            'priority' => ['sometimes', 'in:low,medium,high,urgent'],
-        ]);
+        $user = auth()->user();
+        $profile = $user->profile;
+        
+        // Staff can edit everything, citizens can only update status/priority
+        if ($profile && $profile->isEmployee()) {
+            $validated = $request->validate([
+                'subject' => ['sometimes', 'required', 'string', 'max:255'],
+                'description' => ['sometimes', 'nullable', 'string'],
+                'status' => ['sometimes', 'in:open,in_progress,resolved,closed'],
+                'assigned_employee_id' => ['sometimes', 'exists:profiles,id'],
+                'priority' => ['sometimes', 'in:low,medium,high,urgent'],
+            ]);
+        } else {
+            $validated = $request->validate([
+                'status' => ['sometimes', 'in:open,in_progress,resolved,closed'],
+                'assigned_employee_id' => ['sometimes', 'exists:profiles,id'],
+                'priority' => ['sometimes', 'in:low,medium,high,urgent'],
+            ]);
+        }
 
         if (isset($validated['status']) && $validated['status'] === 'resolved') {
             $validated['resolved_at'] = now();
@@ -193,6 +220,55 @@ class TicketController extends Controller
         $ticket->update($validated);
 
         return back()->with('success', 'Report updated successfully!');
+    }
+
+    public function destroy(Ticket $ticket)
+    {
+        $user = auth()->user();
+        $profile = $user->profile;
+        
+        // Only staff can delete reports
+        if (!$profile || !$profile->isEmployee()) {
+            abort(403, 'Only staff members can delete reports.');
+        }
+
+        // Delete attachments first
+        foreach ($ticket->attachments as $attachment) {
+            try {
+                if ($this->supabase->isConfigured() && $attachment->file_path) {
+                    // Delete from Supabase if configured
+                    $this->supabase->deleteFile($attachment->file_path);
+                } elseif ($attachment->file_path && file_exists(storage_path('app/public/' . $attachment->file_path))) {
+                    // Delete local file
+                    unlink(storage_path('app/public/' . $attachment->file_path));
+                }
+            } catch (\Exception $e) {
+                Log::error('Failed to delete attachment: ' . $e->getMessage());
+            }
+            $attachment->delete();
+        }
+
+        // Delete messages and their attachments
+        foreach ($ticket->messages as $message) {
+            foreach ($message->attachments as $attachment) {
+                try {
+                    if ($this->supabase->isConfigured() && $attachment->file_path) {
+                        $this->supabase->deleteFile($attachment->file_path);
+                    } elseif ($attachment->file_path && file_exists(storage_path('app/public/' . $attachment->file_path))) {
+                        unlink(storage_path('app/public/' . $attachment->file_path));
+                    }
+                } catch (\Exception $e) {
+                    Log::error('Failed to delete message attachment: ' . $e->getMessage());
+                }
+                $attachment->delete();
+            }
+            $message->delete();
+        }
+
+        $ticket->delete();
+
+        return redirect()->route('staff.reports')
+            ->with('success', 'Report deleted successfully!');
     }
 }
 

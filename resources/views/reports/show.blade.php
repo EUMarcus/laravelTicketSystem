@@ -6,7 +6,7 @@
 <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8" style="padding-top: 6rem !important; padding-bottom: 2rem;">
     <!-- Back Button -->
     <div class="mb-6">
-        <a href="{{ route('reports.index') }}" class="inline-flex items-center space-x-2 text-gray-600 hover:text-[#65B741] transition-colors">
+        <a href="{{ (session('user') && in_array(session('user')['role'] ?? '', ['employee', 'admin'])) ? route('staff.reports') : route('reports.index') }}" class="inline-flex items-center space-x-2 text-gray-600 hover:text-[#65B741] transition-colors">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
             </svg>
