@@ -2,112 +2,62 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\SupabaseService;
+use App\Models\Suggestion;
+use App\Models\SuggestionComment;
+use App\Models\Profile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Str;
 use Carbon\Carbon;
 
 class SuggestionController extends Controller
 {
-    protected $supabase;
-
-    public function __construct(SupabaseService $supabase)
-    {
-        $this->supabase = $supabase;
-    }
-
     public function index()
     {
         try {
-            // Fetch suggestions from Supabase, ordered by created_at descending
-            $suggestions = $this->supabase->select('suggestions', [], 'suggest_id,title,category,full_content,created_at,posted_by', 'created_at', 'desc');
-            
-            // Get all suggestion IDs
-            $suggestionIds = array_column($suggestions, 'suggest_id');
-            
-            // Fetch comment counts for all suggestions
-            $commentCounts = [];
-            if (!empty($suggestionIds)) {
-                foreach ($suggestionIds as $suggestionId) {
-                    try {
-                        $comments = $this->supabase->select('suggestion_comments', ['suggestion_id' => $suggestionId], 'scom_id');
-                        $commentCounts[$suggestionId] = count($comments);
-                    } catch (\Exception $e) {
-                        $commentCounts[$suggestionId] = 0;
-                    }
-                }
-            }
-            
-            // Get all unique user IDs from suggestions
-            $userIds = array_filter(array_unique(array_column($suggestions, 'posted_by')));
-            
-            // Fetch user names from profiles
-            $userNames = [];
-            if (!empty($userIds)) {
-                $profiles = \App\Models\Profile::whereIn('id', $userIds)->get();
-                foreach ($profiles as $profile) {
-                    $userNames[$profile->id] = $profile->name;
-                }
-            }
-            
-            // Transform data to match view expectations
-            $formattedSuggestions = array_map(function($suggestion) use ($commentCounts, $userNames) {
-                // Format date
-                $date = isset($suggestion['created_at']) 
-                    ? Carbon::parse($suggestion['created_at'])->diffForHumans()
-                    : 'Just now';
-                
-                // Get author name
-                $author = 'Anonymous';
-                if (isset($suggestion['posted_by']) && isset($userNames[$suggestion['posted_by']])) {
-                    $author = $userNames[$suggestion['posted_by']];
-                }
-                
-                // Get comment count
-                $commentCount = $commentCounts[$suggestion['suggest_id']] ?? 0;
-                
-                return [
-                    'id' => $suggestion['suggest_id'],
-                    'title' => $suggestion['title'],
-                    'category' => $suggestion['category'] ?? 'Other',
-                    'date' => $date,
-                    'created_at' => isset($suggestion['created_at']) 
-                        ? Carbon::parse($suggestion['created_at'])->format('Y-m-d')
-                        : now()->format('Y-m-d'),
-                    'author' => $author,
-                    'upvotes' => 0, // Upvotes are currently stored in localStorage, would need a votes table for proper counting
-                    'comments' => $commentCount,
-                    'status' => $suggestion['status'] ?? 'pending',
-                ];
-            }, $suggestions);
+            // Fetch suggestions from database with relationships
+            $query = Suggestion::with(['author', 'comments'])->latest();
             
             // Apply sorting
             $sortBy = request('sort', 'newest');
             if ($sortBy === 'liked') {
-                usort($formattedSuggestions, function($a, $b) {
-                    return $b['upvotes'] - $a['upvotes'];
-                });
+                // For now, upvotes are 0 (stored in localStorage)
+                // In the future, you could add an upvotes column or votes table
+                $query->orderBy('created_at', 'desc');
             } elseif ($sortBy === 'discussed') {
-                usort($formattedSuggestions, function($a, $b) {
-                    return $b['comments'] - $a['comments'];
-                });
+                $query->withCount('comments')->orderBy('comments_count', 'desc');
             } else {
-                // Newest (default) - already sorted by date
-                usort($formattedSuggestions, function($a, $b) {
-                    return strtotime($b['created_at']) - strtotime($a['created_at']);
-                });
+                $query->orderBy('created_at', 'desc');
+            }
+            
+            // Transform data to match view expectations
+            $suggestions = $query->get()->map(function($suggestion) {
+                return [
+                    'id' => $suggestion->id,
+                    'title' => $suggestion->title,
+                    'category' => $suggestion->category ?? 'Other',
+                    'date' => $suggestion->created_at->diffForHumans(),
+                    'created_at' => $suggestion->created_at->format('Y-m-d'),
+                    'author' => $suggestion->author ? $suggestion->author->name : 'Anonymous',
+                    'upvotes' => 0, // Upvotes are currently stored in localStorage
+                    'comments' => $suggestion->comments->count(),
+                    'status' => $suggestion->status ?? 'pending',
+                ];
+            });
+            
+            // Apply client-side sorting for upvotes (since they're in localStorage)
+            if ($sortBy === 'liked') {
+                $suggestions = $suggestions->sortByDesc('upvotes')->values();
+            } elseif ($sortBy === 'discussed') {
+                $suggestions = $suggestions->sortByDesc('comments')->values();
             }
             
             // Paginate
             $perPage = 6;
             $currentPage = request('page', 1);
-            $total = count($formattedSuggestions);
-            $offset = ($currentPage - 1) * $perPage;
-            $paginatedSuggestions = array_slice($formattedSuggestions, $offset, $perPage);
-            
             $suggestions = new \Illuminate\Pagination\LengthAwarePaginator(
-                $paginatedSuggestions,
-                $total,
+                $suggestions->forPage($currentPage, $perPage),
+                $suggestions->count(),
                 $perPage,
                 $currentPage,
                 ['path' => request()->url(), 'query' => request()->query()]
@@ -115,7 +65,9 @@ class SuggestionController extends Controller
             
             return view('suggestions.index', compact('suggestions'));
         } catch (\Exception $e) {
-            // Fallback to hardcoded data if Supabase fails
+            \Log::error('Failed to fetch suggestions: ' . $e->getMessage());
+            
+            // Fallback to hardcoded data if database fails
             $hardcodedSuggestions = [
                 ['id' => 1, 'title' => 'Weekly Community Exercise Program', 'category' => 'Health', 'upvotes' => 45, 'comments' => 12, 'author' => 'Maria Santos', 'date' => '3 days ago', 'created_at' => '2024-12-10'],
                 ['id' => 2, 'title' => 'Install Solar-Powered Streetlights', 'category' => 'Infrastructure', 'upvotes' => 89, 'comments' => 23, 'author' => 'Anonymous', 'date' => '1 week ago', 'created_at' => '2024-12-03'],
@@ -162,95 +114,47 @@ class SuggestionController extends Controller
     public function staffIndex()
     {
         try {
-            // Fetch suggestions from Supabase, ordered by created_at descending
-            $suggestions = $this->supabase->select('suggestions', [], 'suggest_id,title,category,full_content,created_at,posted_by', 'created_at', 'desc');
-            
-            // Get all suggestion IDs
-            $suggestionIds = array_column($suggestions, 'suggest_id');
-            
-            // Fetch comment counts for all suggestions
-            $commentCounts = [];
-            if (!empty($suggestionIds)) {
-                foreach ($suggestionIds as $suggestionId) {
-                    try {
-                        $comments = $this->supabase->select('suggestion_comments', ['suggestion_id' => $suggestionId], 'scom_id');
-                        $commentCounts[$suggestionId] = count($comments);
-                    } catch (\Exception $e) {
-                        $commentCounts[$suggestionId] = 0;
-                    }
-                }
-            }
-            
-            // Get all unique user IDs from suggestions
-            $userIds = array_filter(array_unique(array_column($suggestions, 'posted_by')));
-            
-            // Fetch user names from profiles
-            $userNames = [];
-            if (!empty($userIds)) {
-                $profiles = \App\Models\Profile::whereIn('id', $userIds)->get();
-                foreach ($profiles as $profile) {
-                    $userNames[$profile->id] = $profile->name;
-                }
-            }
-            
-            // Transform data to match view expectations
-            $formattedSuggestions = array_map(function($suggestion) use ($commentCounts, $userNames) {
-                // Format date
-                $date = isset($suggestion['created_at']) 
-                    ? Carbon::parse($suggestion['created_at'])->diffForHumans()
-                    : 'Just now';
-                
-                // Get author name
-                $author = 'Anonymous';
-                if (isset($suggestion['posted_by']) && isset($userNames[$suggestion['posted_by']])) {
-                    $author = $userNames[$suggestion['posted_by']];
-                }
-                
-                // Get comment count
-                $commentCount = $commentCounts[$suggestion['suggest_id']] ?? 0;
-                
-                return [
-                    'id' => $suggestion['suggest_id'], // Use UUID from Supabase
-                    'title' => $suggestion['title'],
-                    'category' => $suggestion['category'] ?? 'Other',
-                    'date' => $date,
-                    'created_at' => isset($suggestion['created_at']) 
-                        ? Carbon::parse($suggestion['created_at'])->format('Y-m-d')
-                        : now()->format('Y-m-d'),
-                    'author' => $author,
-                    'upvotes' => 0, // Upvotes are currently stored in localStorage, would need a votes table for proper counting
-                    'comments' => $commentCount,
-                    'status' => $suggestion['status'] ?? 'pending',
-                ];
-            }, $suggestions);
+            // Fetch suggestions from database with relationships
+            $query = Suggestion::with(['author', 'comments'])->latest();
             
             // Apply sorting
             $sortBy = request('sort', 'newest');
             if ($sortBy === 'liked') {
-                usort($formattedSuggestions, function($a, $b) {
-                    return $b['upvotes'] - $a['upvotes'];
-                });
+                $query->orderBy('created_at', 'desc');
             } elseif ($sortBy === 'discussed') {
-                usort($formattedSuggestions, function($a, $b) {
-                    return $b['comments'] - $a['comments'];
-                });
+                $query->withCount('comments')->orderBy('comments_count', 'desc');
             } else {
-                // Newest (default) - already sorted by date
-                usort($formattedSuggestions, function($a, $b) {
-                    return strtotime($b['created_at']) - strtotime($a['created_at']);
-                });
+                $query->orderBy('created_at', 'desc');
+            }
+            
+            // Transform data to match view expectations
+            $suggestions = $query->get()->map(function($suggestion) {
+                return [
+                    'id' => $suggestion->id,
+                    'title' => $suggestion->title,
+                    'category' => $suggestion->category ?? 'Other',
+                    'date' => $suggestion->created_at->diffForHumans(),
+                    'created_at' => $suggestion->created_at->format('Y-m-d'),
+                    'author' => $suggestion->author ? $suggestion->author->name : 'Anonymous',
+                    'upvotes' => 0,
+                    'comments' => $suggestion->comments->count(),
+                    'status' => $suggestion->status ?? 'pending',
+                ];
+            });
+            
+            // Apply client-side sorting for upvotes
+            if ($sortBy === 'liked') {
+                $suggestions = $suggestions->sortByDesc('upvotes')->values();
+            } elseif ($sortBy === 'discussed') {
+                $suggestions = $suggestions->sortByDesc('comments')->values();
             }
             
             // Paginate
             $perPage = 6;
             $currentPage = request('page', 1);
-            $total = count($formattedSuggestions);
-            $offset = ($currentPage - 1) * $perPage;
-            $paginatedSuggestions = array_slice($formattedSuggestions, $offset, $perPage);
-            
             $suggestions = new \Illuminate\Pagination\LengthAwarePaginator(
-                $paginatedSuggestions,
-                $total,
+                $suggestions->forPage($currentPage, $perPage),
+                $suggestions->count(),
                 $perPage,
                 $currentPage,
                 ['path' => request()->url(), 'query' => request()->query()]
@@ -282,117 +186,45 @@ class SuggestionController extends Controller
         ]);
         
         try {
-            // Check if Supabase is configured
-            if (!$this->supabase->isConfigured()) {
-                \Log::error('Supabase not configured when trying to show suggestion', ['id' => $id]);
-                abort(500, 'Database not configured');
-            }
-            
-            // Fetch suggestion from Supabase (try with status first, fallback without if column doesn't exist)
-            \Log::info('Attempting to fetch suggestion from Supabase', [
-                'id' => $id,
-                'id_type' => gettype($id),
-                'query_params' => ['suggest_id' => $id],
-            ]);
-            
-            // Try to fetch with status field first
-            try {
-                $suggestions = $this->supabase->select('suggestions', ['suggest_id' => $id], 'suggest_id,title,category,full_content,created_at,posted_by,status');
-            } catch (\Exception $e) {
-                // If status column doesn't exist, fetch without it
-                if (str_contains($e->getMessage(), 'status') || str_contains($e->getMessage(), '42703')) {
-                    \Log::info('Status column not found, fetching without status field', ['id' => $id]);
-                    $suggestions = $this->supabase->select('suggestions', ['suggest_id' => $id], 'suggest_id,title,category,full_content,created_at,posted_by');
-                } else {
-                    throw $e;
-                }
-            }
-            
-            \Log::info('Supabase query result', [
-                'id' => $id,
-                'count' => count($suggestions),
-                'suggestions' => $suggestions,
-                'is_empty' => empty($suggestions),
-            ]);
-            
-            if (empty($suggestions)) {
-                \Log::warning('Suggestion not found in Supabase', [
-                    'id' => $id,
-                    'id_type' => gettype($id),
-                    'searched_field' => 'suggest_id',
-                ]);
-                abort(404, 'Suggestion not found');
-            }
-            
-            $suggestion = $suggestions[0];
-            
-            // Fetch comments for this suggestion
-            $comments = $this->supabase->select('suggestion_comments', ['suggestion_id' => $id], 'scom_id,comment,created_at,comment_from', 'created_at', 'asc');
-            
-            // Get all unique user IDs from comments
-            $userIds = array_filter(array_unique(array_column($comments, 'comment_from')));
-            
-            // Fetch user names from profiles
-            $userNames = [];
-            if (!empty($userIds)) {
-                $profiles = \App\Models\Profile::whereIn('id', $userIds)->get();
-                foreach ($profiles as $profile) {
-                    $userNames[$profile->id] = $profile->name;
-                }
-            }
+            // Fetch suggestion from database with relationships
+            $suggestion = Suggestion::with(['author', 'comments.author'])->findOrFail($id);
             
             // Format comments
-            $formattedComments = array_map(function($comment) use ($userNames) {
+            $formattedComments = $suggestion->comments->map(function($comment) {
                 $authorName = 'Anonymous';
                 $isStaff = false;
-                if (isset($comment['comment_from']) && isset($userNames[$comment['comment_from']])) {
-                    $authorName = $userNames[$comment['comment_from']];
+                
+                if ($comment->author) {
+                    $authorName = $comment->author->name;
                     // Check if the comment author is staff
-                    $profile = \App\Models\Profile::find($comment['comment_from']);
-                    if ($profile && in_array($profile->role, ['employee', 'admin'])) {
+                    if (in_array($comment->author->role, ['employee', 'admin'])) {
                         $isStaff = true;
                         $authorName = 'Staff ' . $authorName;
                     }
                 }
                 
                 return [
-                    'id' => $comment['scom_id'],
-                    'text' => $comment['comment'],
-                    'date' => isset($comment['created_at']) 
-                        ? Carbon::parse($comment['created_at'])->diffForHumans()
-                        : 'Just now',
+                    'id' => $comment->id,
+                    'text' => $comment->comment,
+                    'date' => $comment->created_at->diffForHumans(),
                     'author' => $authorName,
-                    'comment_from' => $comment['comment_from'] ?? null,
+                    'comment_from' => $comment->comment_from,
                     'is_staff' => $isStaff,
                 ];
-            }, $comments);
-            
-            // Format date
-            $date = isset($suggestion['created_at']) 
-                ? Carbon::parse($suggestion['created_at'])->diffForHumans()
-                : 'Just now';
-            
-            // Get author name (for now, use "Anonymous" if no posted_by)
-            $author = 'Anonymous';
-            if (isset($suggestion['posted_by'])) {
-                // In a real app, you'd fetch the user's name from a users table
-                $author = 'Anonymous';
-            }
+            });
             
             // Transform to match view expectations
             $formattedSuggestion = [
-                'id' => $suggestion['suggest_id'],
-                'title' => $suggestion['title'],
-                'category' => $suggestion['category'] ?? 'Other',
-                'date' => $date,
-                'created_at' => isset($suggestion['created_at']) 
-                    ? Carbon::parse($suggestion['created_at'])->format('Y-m-d')
-                    : now()->format('Y-m-d'),
-                'author' => $author,
-                'content' => $suggestion['full_content'],
-                'upvotes' => 0, // Not in database schema yet
-                'comments' => count($formattedComments),
-                'status' => $suggestion['status'] ?? 'pending',
+                'id' => $suggestion->id,
+                'title' => $suggestion->title,
+                'category' => $suggestion->category ?? 'Other',
+                'date' => $suggestion->created_at->diffForHumans(),
+                'created_at' => $suggestion->created_at->format('Y-m-d'),
+                'author' => $suggestion->author ? $suggestion->author->name : 'Anonymous',
+                'content' => $suggestion->full_content,
+                'upvotes' => 0,
+                'comments' => $formattedComments->count(),
+                'status' => $suggestion->status ?? 'pending',
             ];
             
             \Log::info('Suggestion loaded successfully', [
@@ -454,25 +286,21 @@ class SuggestionController extends Controller
         // Get user ID from session
         $userId = session('user')['id'] ?? null;
         
-        // Prepare data for Supabase
-        $commentData = [
-            'suggestion_id' => $id,
-            'comment' => $validated['comment'],
-        ];
-
-        // Add comment_from if user ID is available and is a valid UUID
-        if ($userId && $this->isValidUuid($userId)) {
-            $commentData['comment_from'] = $userId;
-        }
-
         try {
-            // Save to Supabase
-            $result = $this->supabase->insert('suggestion_comments', $commentData);
+            // Verify suggestion exists
+            $suggestion = Suggestion::findOrFail($id);
+            
+            // Create comment
+            $comment = SuggestionComment::create([
+                'id' => (string) Str::uuid(),
+                'suggestion_id' => $id,
+                'comment_from' => $userId,
+                'comment' => $validated['comment'],
+            ]);
             
             return redirect()->route('suggestions.show', $id);
         } catch (\Exception $e) {
-            // Log error and redirect with error message
-            \Log::error('Failed to save comment to Supabase: ' . $e->getMessage());
+            \Log::error('Failed to save comment: ' . $e->getMessage());
             
             return redirect()->back()
                 ->withInput()
@@ -497,27 +325,21 @@ class SuggestionController extends Controller
         // Get user ID from session
         $userId = session('user')['id'] ?? null;
         
-        // Prepare data for Supabase
-        $suggestionData = [
-            'title' => $validated['title'],
-            'category' => $validated['category'] ?? null,
-            'full_content' => $validated['description'],
-        ];
-
-        // Add posted_by if user ID is available and is a valid UUID
-        if ($userId && $this->isValidUuid($userId)) {
-            $suggestionData['posted_by'] = $userId;
-        }
-
         try {
-            // Save to Supabase
-            $result = $this->supabase->insert('suggestions', $suggestionData);
+            // Create suggestion
+            $suggestion = Suggestion::create([
+                'id' => (string) Str::uuid(),
+                'title' => $validated['title'],
+                'category' => $validated['category'] ?? null,
+                'full_content' => $validated['description'],
+                'posted_by' => $userId,
+                'status' => 'pending',
+            ]);
             
             return redirect()->route('suggestions.index')
                 ->with('success', 'Suggestion submitted successfully!');
         } catch (\Exception $e) {
-            // Log error and redirect with error message
-            \Log::error('Failed to save suggestion to Supabase: ' . $e->getMessage());
+            \Log::error('Failed to save suggestion: ' . $e->getMessage());
             
             return redirect()->back()
                 ->withInput()
@@ -527,7 +349,6 @@ class SuggestionController extends Controller
 
     public function edit($id)
     {
-        // Log that we're in the edit method
         \Log::info('=== SUGGESTION EDIT METHOD CALLED ===', [
             'id' => $id,
             'id_type' => gettype($id),
@@ -542,30 +363,14 @@ class SuggestionController extends Controller
         }
 
         try {
-            // Check if Supabase is configured
-            if (!$this->supabase->isConfigured()) {
-                \Log::error('Supabase not configured');
-                abort(500, 'Database not configured');
-            }
-            
-            // Fetch from Supabase using UUID
-            $suggestions = $this->supabase->select('suggestions', ['suggest_id' => $id], 'suggest_id,title,category,full_content');
-            
-            \Log::info('Supabase query result', ['id' => $id, 'count' => count($suggestions)]);
-            
-            if (empty($suggestions)) {
-                \Log::warning('Suggestion not found in Supabase', ['id' => $id, 'id_type' => gettype($id)]);
-                abort(404, 'Suggestion not found');
-            }
-            
-            $suggestion = $suggestions[0];
+            $suggestion = Suggestion::findOrFail($id);
             
             return view('suggestions.edit', [
                 'suggestion' => [
-                    'suggest_id' => $suggestion['suggest_id'],
-                    'title' => $suggestion['title'],
-                    'category' => $suggestion['category'] ?? '',
-                    'full_content' => $suggestion['full_content'],
+                    'suggest_id' => $suggestion->id,
+                    'title' => $suggestion->title,
+                    'category' => $suggestion->category ?? '',
+                    'full_content' => $suggestion->full_content,
                 ]
             ]);
         } catch (\Exception $e) {
@@ -594,7 +399,9 @@ class SuggestionController extends Controller
         ]);
 
         try {
-            $this->supabase->update('suggestions', ['suggest_id' => $id], [
+            $suggestion = Suggestion::findOrFail($id);
+            
+            $suggestion->update([
                 'title' => $validated['title'],
                 'category' => $validated['category'] ?? null,
                 'full_content' => $validated['description'],
@@ -623,7 +430,9 @@ class SuggestionController extends Controller
         ]);
 
         try {
-            $this->supabase->update('suggestions', ['suggest_id' => $id], [
+            $suggestion = Suggestion::findOrFail($id);
+            
+            $suggestion->update([
                 'status' => $validated['status'],
             ]);
 
@@ -645,11 +454,13 @@ class SuggestionController extends Controller
         }
 
         try {
-            // Delete comments first
-            $this->supabase->delete('suggestion_comments', ['suggestion_id' => $id]);
+            $suggestion = Suggestion::findOrFail($id);
+            
+            // Delete comments first (cascade should handle this, but being explicit)
+            $suggestion->comments()->delete();
             
             // Delete suggestion
-            $this->supabase->delete('suggestions', ['suggest_id' => $id]);
+            $suggestion->delete();
 
             return redirect()->route('staff.suggestions')
                 ->with('success', 'Suggestion deleted successfully!');
@@ -660,13 +471,4 @@ class SuggestionController extends Controller
                 ->withErrors(['message' => 'Failed to delete suggestion. Please try again.']);
         }
     }
-
-    /**
-     * Check if a string is a valid UUID
-     */
-    private function isValidUuid(string $uuid): bool
-    {
-        return preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i', $uuid) === 1;
-    }
 }
-
