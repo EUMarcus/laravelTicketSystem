@@ -144,15 +144,33 @@ class SuggestionController extends Controller
             // Fetch comments for this suggestion
             $comments = $this->supabase->select('suggestion_comments', ['suggestion_id' => $id], 'scom_id,comment,created_at,comment_from', 'created_at', 'asc');
             
+            // Get all unique user IDs from comments
+            $userIds = array_filter(array_unique(array_column($comments, 'comment_from')));
+            
+            // Fetch user names from profiles
+            $userNames = [];
+            if (!empty($userIds)) {
+                $profiles = \App\Models\Profile::whereIn('id', $userIds)->get();
+                foreach ($profiles as $profile) {
+                    $userNames[$profile->id] = $profile->name;
+                }
+            }
+            
             // Format comments
-            $formattedComments = array_map(function($comment) {
+            $formattedComments = array_map(function($comment) use ($userNames) {
+                $authorName = 'Anonymous';
+                if (isset($comment['comment_from']) && isset($userNames[$comment['comment_from']])) {
+                    $authorName = $userNames[$comment['comment_from']];
+                }
+                
                 return [
                     'id' => $comment['scom_id'],
                     'text' => $comment['comment'],
                     'date' => isset($comment['created_at']) 
                         ? Carbon::parse($comment['created_at'])->diffForHumans()
                         : 'Just now',
-                    'author' => 'Anonymous', // Can be enhanced later with user lookup
+                    'author' => $authorName,
+                    'comment_from' => $comment['comment_from'] ?? null,
                 ];
             }, $comments);
             
@@ -243,8 +261,7 @@ class SuggestionController extends Controller
             // Save to Supabase
             $result = $this->supabase->insert('suggestion_comments', $commentData);
             
-            return redirect()->route('suggestions.show', $id)
-                ->with('success', 'Comment posted successfully!');
+            return redirect()->route('suggestions.show', $id);
         } catch (\Exception $e) {
             // Log error and redirect with error message
             \Log::error('Failed to save comment to Supabase: ' . $e->getMessage());
