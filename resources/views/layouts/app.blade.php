@@ -198,7 +198,7 @@
     </main>
 
     <!-- Footer -->
-    @if(!request()->routeIs('staff.*'))
+    @if(!request()->routeIs('staff.*') && !(auth()->check() && auth()->user()->profile && auth()->user()->profile->isEmployee() && (request()->routeIs('reports.show') || request()->routeIs('suggestions.show') || request()->routeIs('announcements.show'))))
     <footer class="bg-white border-t border-gray-200 mt-auto">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
             <div class="grid md:grid-cols-4 gap-8 mb-8">
