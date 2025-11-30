@@ -68,9 +68,11 @@ Route::get('/terms-of-service', function () {
     return view('about.terms-of-service');
 })->name('terms-of-service');
 
-Route::get('/profile', function () {
-    return view('profile.index');
-})->name('profile.index');
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [App\Http\Controllers\ProfileController::class, 'index'])->name('profile.index');
+    Route::put('/profile', [App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [App\Http\Controllers\ProfileController::class, 'destroy'])->name('profile.destroy');
+});
 
 // Staff routes (require authentication)
 Route::middleware('auth')->group(function () {

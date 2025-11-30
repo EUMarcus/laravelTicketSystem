@@ -3,7 +3,7 @@
 @section('title', 'My Profile - Community Hub')
 
 @section('content')
-@if(session('user'))
+@auth
 <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8" style="padding-top: 6rem !important; padding-bottom: 2rem;">
     <!-- Header -->
     <div class="mb-10">
@@ -12,39 +12,83 @@
         <p class="text-lg md:text-xl text-gray-600 max-w-2xl">Manage your account details and preferences</p>
     </div>
 
+    @if(session('success'))
+        <div class="mb-6">
+            <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg">
+                {{ session('success') }}
+            </div>
+        </div>
+    @endif
+
+    @if($errors->any())
+        <div class="mb-6">
+            <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+                <ul class="list-disc list-inside">
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        </div>
+    @endif
+
     <!-- Profile Information Card -->
     <div class="bg-white p-6 rounded-lg border border-gray-200 shadow-sm mb-6">
         <h2 class="text-xl font-bold text-gray-900 mb-6">Account Information</h2>
         
-        <form id="profileForm" class="space-y-5">
+        <form action="{{ route('profile.update') }}" method="POST" class="space-y-5">
+            @csrf
+            @method('PUT')
+
             <div class="grid md:grid-cols-2 gap-5">
                 <div>
                     <label class="block text-sm font-semibold text-gray-900 mb-2">Full Name <span class="text-red-500">*</span></label>
-                    <input type="text" id="profileName" name="name" value="{{ session('user')['name'] }}" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-gray-900 outline-none bg-white" required>
+                    <input type="text" name="name" value="{{ old('name', $user->name) }}" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-gray-900 outline-none bg-white" required>
                 </div>
 
                 <div>
                     <label class="block text-sm font-semibold text-gray-900 mb-2">Email <span class="text-red-500">*</span></label>
-                    <input type="email" id="profileEmail" name="email" value="{{ session('user')['email'] }}" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-gray-900 outline-none bg-white" required>
+                    <input type="email" name="email" value="{{ old('email', $user->email) }}" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-gray-900 outline-none bg-white" required>
                 </div>
             </div>
 
             <div>
                 <label class="block text-sm font-semibold text-gray-900 mb-2">Role</label>
-                <input type="text" value="{{ ucfirst(session('user')['role']) }}" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-gray-50 cursor-not-allowed" disabled>
+                <input type="text" value="{{ ucfirst($profile->role) }}" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-gray-50 cursor-not-allowed" disabled>
             </div>
 
             <div class="grid md:grid-cols-2 gap-5">
                 <div>
                     <label class="block text-sm font-semibold text-gray-900 mb-2">Voters ID</label>
-                    <input type="text" id="profileVotersId" name="voters_id" value="{{ strtoupper(session('user')['voters_id'] ?? '') }}" maxlength="22" pattern="[A-Za-z0-9]{22}" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-gray-900 outline-none bg-white uppercase" placeholder="Enter 22-character Voters ID">
+                    <input type="text" name="voters_id" value="{{ old('voters_id', strtoupper($user->voters_id ?? '')) }}" maxlength="22" pattern="[A-Za-z0-9]{22}" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-gray-900 outline-none bg-white uppercase" placeholder="Enter 22-character Voters ID">
                     <p class="text-xs text-gray-500 mt-1">Must be exactly 22 alphanumeric characters</p>
                 </div>
 
                 <div>
                     <label class="block text-sm font-semibold text-gray-900 mb-2">Contact Number</label>
-                    <input type="tel" id="profileContact" name="contact_number" value="{{ session('user')['contact_number'] ?? '' }}" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-gray-900 outline-none bg-white" placeholder="Enter your contact number">
+                    <input type="tel" name="contact_number" value="{{ old('contact_number', $user->contact_number ?? '') }}" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-gray-900 outline-none bg-white" placeholder="Enter your contact number">
                 </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-semibold text-gray-900 mb-2">Address</label>
+                <input type="text" name="address" value="{{ old('address', $user->address ?? '') }}" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-gray-900 outline-none bg-white" placeholder="Enter your address">
+            </div>
+
+            <div class="border-t border-gray-200 pt-5">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Change Password (Optional)</h3>
+                <div class="grid md:grid-cols-2 gap-5">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-900 mb-2">New Password</label>
+                        <input type="password" name="password" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-gray-900 outline-none bg-white" placeholder="Leave blank to keep current password">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-900 mb-2">Confirm New Password</label>
+                        <input type="password" name="password_confirmation" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-gray-900 outline-none bg-white" placeholder="Confirm new password">
+                    </div>
+                </div>
+                <p class="text-xs text-gray-500 mt-2">Leave password fields blank if you don't want to change it.</p>
             </div>
 
             <div class="flex gap-4 pt-4 border-t border-gray-200">
@@ -62,14 +106,14 @@
     <div class="grid md:grid-cols-2 gap-6 mb-6">
         <div class="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
             <h3 class="text-lg font-bold text-gray-900 mb-4">My Reports</h3>
-            <div class="text-3xl font-bold text-gray-900 mb-2" id="reportsCount">0</div>
+            <div class="text-3xl font-bold text-gray-900 mb-2">{{ $ticketsCount }}</div>
             <p class="text-sm text-gray-600">Total reports submitted</p>
-            <a href="{{ route('reports.my-reports') }}" class="block mt-4 text-sm text-[#65B741] hover:text-[#4d8a32] font-semibold">View All Reports →</a>
+            <a href="{{ route('reports.index') }}" class="block mt-4 text-sm text-[#65B741] hover:text-[#4d8a32] font-semibold">View All Reports →</a>
         </div>
 
         <div class="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
             <h3 class="text-lg font-bold text-gray-900 mb-4">My Suggestions</h3>
-            <div class="text-3xl font-bold text-gray-900 mb-2" id="suggestionsCount">0</div>
+            <div class="text-3xl font-bold text-gray-900 mb-2">{{ $suggestionsCount }}</div>
             <p class="text-sm text-gray-600">Total suggestions submitted</p>
             <a href="{{ route('suggestions.index') }}" class="block mt-4 text-sm text-[#65B741] hover:text-[#4d8a32] font-semibold">View All Suggestions →</a>
         </div>
@@ -88,50 +132,34 @@
         </div>
         <h3 class="text-2xl font-bold text-gray-900 mb-2 text-center">Delete Account</h3>
         <p class="text-gray-600 mb-6 text-center">Are you sure you want to delete your account? This action cannot be undone and will permanently remove all your data.</p>
-        <div class="flex gap-3">
-            <button type="button" id="cancelDeleteBtn" class="flex-1 px-6 py-3 border-2 border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50">
-                Cancel
-            </button>
-            <button type="button" id="confirmDeleteBtn" class="flex-1 px-6 py-3 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700">
-                Delete Account
-            </button>
-        </div>
+        <form action="{{ route('profile.destroy') }}" method="POST" id="deleteAccountForm">
+            @csrf
+            @method('DELETE')
+            <div class="flex gap-3">
+                <button type="button" id="cancelDeleteBtn" class="flex-1 px-6 py-3 border-2 border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50">
+                    Cancel
+                </button>
+                <button type="submit" class="flex-1 px-6 py-3 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700">
+                    Delete Account
+                </button>
+            </div>
+        </form>
     </div>
 </div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const profileForm = document.getElementById('profileForm');
     const deleteAccountBtn = document.getElementById('deleteAccountBtn');
     const deleteModal = document.getElementById('deleteModal');
     const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
-    const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
-
-    // Load statistics
-    function loadStatistics() {
-        // Count reports from localStorage
-        const reports = JSON.parse(localStorage.getItem('user_reports') || '[]');
-        const userEmail = '{{ session("user")["email"] }}';
-        const userReports = reports.filter(r => r.userEmail === userEmail);
-        document.getElementById('reportsCount').textContent = userReports.length;
-
-        // Count suggestions from localStorage
-        const suggestions = JSON.parse(localStorage.getItem('user_suggestions') || '[]');
-        const userSuggestions = suggestions.filter(s => s.userEmail === userEmail);
-        document.getElementById('suggestionsCount').textContent = userSuggestions.length;
-    }
-
-    loadStatistics();
+    const deleteAccountForm = document.getElementById('deleteAccountForm');
 
     // Voters ID validation and uppercase conversion
-    const profileVotersIdInput = document.getElementById('profileVotersId');
+    const profileVotersIdInput = document.querySelector('input[name="voters_id"]');
     if (profileVotersIdInput) {
         profileVotersIdInput.addEventListener('input', function(e) {
-            // Remove any non-alphanumeric characters
             let value = e.target.value.replace(/[^A-Za-z0-9]/g, '');
-            // Limit to 22 characters
             value = value.substring(0, 22);
-            // Convert to uppercase
             e.target.value = value.toUpperCase();
         });
 
@@ -144,34 +172,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-
-    // Handle profile update
-    profileForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        const name = document.getElementById('profileName').value.trim();
-        const email = document.getElementById('profileEmail').value.trim();
-        const votersId = document.getElementById('profileVotersId').value.trim();
-        const contactNumber = document.getElementById('profileContact').value.trim();
-
-        if (!name || !email) {
-            alert('Name and Email are required fields.');
-            return;
-        }
-
-        // Validate Voters ID if provided
-        if (votersId && votersId.length !== 22) {
-            alert('Voters ID must be exactly 22 alphanumeric characters.');
-            return;
-        }
-
-        // Update session data (in a real app, this would be an API call)
-        // For frontend-only, we'll show a success message
-        alert('Profile updated successfully! (Note: In a real application, this would update the backend database)');
-        
-        // In a real app, you would make an API call here to update the profile
-        // For now, we'll just show the success message
-    });
 
     // Handle delete account button click
     deleteAccountBtn.addEventListener('click', function() {
@@ -186,30 +186,9 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Confirm delete
-    confirmDeleteBtn.addEventListener('click', function() {
-        // In a real app, this would make an API call to delete the account
-        // For frontend-only, we'll just log out and clear localStorage
-        if (confirm('Are you absolutely sure? This will log you out and clear all your local data.')) {
-            // Clear localStorage data
-            localStorage.removeItem('user_reports');
-            localStorage.removeItem('user_suggestions');
-            localStorage.removeItem('suggestion_user_id');
-            localStorage.removeItem('suggestion_user_name');
-            localStorage.removeItem('suggestion_votes');
-            localStorage.removeItem('suggestion_comments');
-            localStorage.removeItem('user_suggestion_votes');
-            
-            // Logout (submit logout form)
-            const logoutForm = document.createElement('form');
-            logoutForm.method = 'POST';
-            logoutForm.action = '{{ route("logout") }}';
-            const csrfToken = document.createElement('input');
-            csrfToken.type = 'hidden';
-            csrfToken.name = '_token';
-            csrfToken.value = '{{ csrf_token() }}';
-            logoutForm.appendChild(csrfToken);
-            document.body.appendChild(logoutForm);
-            logoutForm.submit();
+    deleteAccountForm.addEventListener('submit', function(e) {
+        if (!confirm('Are you absolutely sure? This will permanently delete your account and all associated data.')) {
+            e.preventDefault();
         }
     });
 
@@ -246,5 +225,5 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
     </div>
 </div>
-@endif
+@endauth
 @endsection
