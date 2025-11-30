@@ -25,8 +25,8 @@
                     </a>
                 </div>
                 
-                <!-- Desktop Navigation - Hidden only on staff dashboard pages -->
-                @if(!request()->routeIs('staff.*'))
+                <!-- Desktop Navigation - Hidden only on staff dashboard pages and when staff is viewing detail pages -->
+                @if(!request()->routeIs('staff.*') && !(auth()->check() && auth()->user()->profile && auth()->user()->profile->isEmployee() && (request()->routeIs('reports.show') || request()->routeIs('suggestions.show') || request()->routeIs('announcements.show'))))
                 <div class="hidden md:flex items-center space-x-1">
                     <a href="{{ route('home') }}" class="px-4 py-2 text-sm font-medium {{ request()->routeIs('home') ? 'text-[#65B741] bg-[#65B741]/10' : 'text-gray-600' }} hover:text-[#65B741] hover:bg-[#65B741]/10 rounded-lg transition-colors">Home</a>
                     <a href="{{ route('reports.index') }}" class="px-4 py-2 text-sm font-medium {{ request()->routeIs('reports.*') ? 'text-[#65B741] bg-[#65B741]/10' : 'text-gray-600' }} hover:text-[#65B741] hover:bg-[#65B741]/10 rounded-lg transition-colors">Reports</a>
@@ -85,8 +85,8 @@
             </div>
         </div>
         
-        <!-- Mobile Menu - Hidden only on staff dashboard pages -->
-        @if(!request()->routeIs('staff.*'))
+        <!-- Mobile Menu - Hidden only on staff dashboard pages and when staff is viewing detail pages -->
+        @if(!request()->routeIs('staff.*') && !(auth()->check() && auth()->user()->profile && auth()->user()->profile->isEmployee() && (request()->routeIs('reports.show') || request()->routeIs('suggestions.show') || request()->routeIs('announcements.show'))))
         <div id="mobile-menu" class="hidden md:hidden border-t border-gray-200 bg-white">
             <div class="px-4 py-2 space-y-1">
                 <a href="{{ route('home') }}" class="block px-4 py-2 text-sm font-medium {{ request()->routeIs('home') ? 'text-[#65B741] bg-[#65B741]/10' : 'text-gray-600' }} hover:text-[#65B741] hover:bg-[#65B741]/10 rounded-lg">Home</a>

@@ -344,8 +344,15 @@ class SuggestionController extends Controller
             // Format comments
             $formattedComments = array_map(function($comment) use ($userNames) {
                 $authorName = 'Anonymous';
+                $isStaff = false;
                 if (isset($comment['comment_from']) && isset($userNames[$comment['comment_from']])) {
                     $authorName = $userNames[$comment['comment_from']];
+                    // Check if the comment author is staff
+                    $profile = \App\Models\Profile::find($comment['comment_from']);
+                    if ($profile && in_array($profile->role, ['employee', 'admin'])) {
+                        $isStaff = true;
+                        $authorName = 'Staff ' . $authorName;
+                    }
                 }
                 
                 return [
@@ -356,6 +363,7 @@ class SuggestionController extends Controller
                         : 'Just now',
                     'author' => $authorName,
                     'comment_from' => $comment['comment_from'] ?? null,
+                    'is_staff' => $isStaff,
                 ];
             }, $comments);
             

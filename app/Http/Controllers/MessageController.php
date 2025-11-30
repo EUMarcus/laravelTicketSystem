@@ -120,7 +120,7 @@ class MessageController extends Controller
             $ticket->update(['status' => 'in_progress']);
         }
 
-        return back()->with('success', 'Message sent!');
+        return back();
     }
 }
 
