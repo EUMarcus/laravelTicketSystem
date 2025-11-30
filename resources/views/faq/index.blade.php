@@ -71,25 +71,26 @@
         ];
     @endphp
 
-    <div id="faqContainer" class="space-y-4">
+    <div id="faqContainer" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         @foreach($faqs as $index => $faq)
-            <div class="faq-item bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden" data-category="{{ $faq['category'] }}">
-                <button onclick="toggleFaq({{ $index }})" class="w-full p-5 text-left flex items-center justify-between hover:bg-gray-50 transition-colors" id="faq-button-{{ $index }}">
-                    <div class="flex-1">
-                        <div class="flex items-center gap-2 mb-2">
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800 border border-gray-200">
-                                {{ $faq['category'] }}
-                            </span>
-                        </div>
-                        <h3 class="text-base font-bold text-gray-900">{{ $faq['question'] }}</h3>
+            <div class="faq-item bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden flex flex-col hover:border-gray-300 hover:shadow-md transition-all" data-category="{{ $faq['category'] }}" style="min-height: fit-content;">
+                <button onclick="toggleFaq({{ $index }})" class="w-full p-5 text-left flex flex-col hover:bg-gray-50 transition-colors" id="faq-button-{{ $index }}">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800 border border-gray-200">
+                            {{ $faq['category'] }}
+                        </span>
                     </div>
-                    <svg class="w-5 h-5 text-gray-500 flex-shrink-0 ml-4 faq-icon" id="faq-icon-{{ $index }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                    </svg>
+                    <h3 class="text-base font-bold text-gray-900 mb-3">{{ $faq['question'] }}</h3>
+                    <div class="flex items-center justify-between pt-3 border-t border-gray-100">
+                        <span class="text-xs text-gray-500">Click to expand</span>
+                        <svg class="w-5 h-5 text-gray-500 flex-shrink-0 faq-icon" id="faq-icon-{{ $index }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
                 </button>
                 <div class="faq-answer hidden px-5 pb-5" id="faq-answer-{{ $index }}">
                     <div class="pt-2 border-t border-gray-100">
-                        <p class="text-gray-700 leading-relaxed">{{ $faq['answer'] }}</p>
+                        <p class="text-gray-700 text-sm leading-relaxed whitespace-pre-wrap">{{ $faq['answer'] }}</p>
                     </div>
                 </div>
             </div>
@@ -107,6 +108,7 @@ function toggleFaq(index) {
     const answer = document.getElementById(`faq-answer-${index}`);
     const icon = document.getElementById(`faq-icon-${index}`);
     const button = document.getElementById(`faq-button-${index}`);
+    const faqItem = button.closest('.faq-item');
     
     if (answer.classList.contains('hidden')) {
         // Close all other FAQs
@@ -114,8 +116,12 @@ function toggleFaq(index) {
             if (!item.classList.contains('hidden') && item.id !== `faq-answer-${index}`) {
                 item.classList.add('hidden');
                 const otherIndex = item.id.split('-')[2];
+                const otherItem = document.getElementById(`faq-button-${otherIndex}`).closest('.faq-item');
                 document.getElementById(`faq-icon-${otherIndex}`).classList.remove('rotate-180');
                 document.getElementById(`faq-button-${otherIndex}`).classList.remove('bg-gray-50');
+                if (otherItem) {
+                    otherItem.style.height = '';
+                }
             }
         });
         
@@ -123,11 +129,21 @@ function toggleFaq(index) {
         answer.classList.remove('hidden');
         icon.classList.add('rotate-180');
         button.classList.add('bg-gray-50');
+        
+        // Allow the card to expand naturally
+        if (faqItem) {
+            faqItem.style.height = 'auto';
+        }
     } else {
         // Close this FAQ
         answer.classList.add('hidden');
         icon.classList.remove('rotate-180');
         button.classList.remove('bg-gray-50');
+        
+        // Reset height
+        if (faqItem) {
+            faqItem.style.height = '';
+        }
     }
 }
 
@@ -150,7 +166,7 @@ function filterByCategory(category) {
     // Filter FAQs
     faqItems.forEach(item => {
         if (category === 'all' || item.dataset.category === category) {
-            item.style.display = 'block';
+            item.style.display = '';
             visibleCount++;
         } else {
             item.style.display = 'none';
@@ -178,7 +194,7 @@ document.getElementById('faqSearch').addEventListener('input', function(e) {
         const category = item.dataset.category.toLowerCase();
         
         if (question.includes(searchTerm) || answer.includes(searchTerm) || category.includes(searchTerm)) {
-            item.style.display = 'block';
+            item.style.display = '';
             visibleCount++;
         } else {
             item.style.display = 'none';
