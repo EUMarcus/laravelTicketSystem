@@ -41,7 +41,10 @@
 
         @if(count($suggestions) > 0)
         @foreach($suggestions as $suggestion)
-        <a href="{{ route('suggestions.show', $suggestion['id']) }}" class="block group">
+        <a href="{{ route('suggestions.show', $suggestion['id']) }}" 
+           class="block group suggestion-link" 
+           data-suggestion-id="{{ $suggestion['id'] }}"
+           onclick="console.log('Suggestion clicked:', { id: '{{ $suggestion['id'] }}', url: '{{ route('suggestions.show', $suggestion['id']) }}', title: '{{ addslashes($suggestion['title']) }}' }); return true;">
             <div class="bg-white p-5 rounded-lg border border-gray-200 h-full flex flex-col hover:border-gray-300 hover:shadow-md">
                 <!-- Header -->
             <div class="mb-4">
@@ -123,5 +126,37 @@
     </div>
     @endif
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Suggestions Index Page Loaded');
+    
+    // Log all suggestion links
+    const suggestionLinks = document.querySelectorAll('.suggestion-link');
+    console.log('Found suggestion links:', suggestionLinks.length);
+    
+    suggestionLinks.forEach((link, index) => {
+        const id = link.getAttribute('data-suggestion-id');
+        const url = link.getAttribute('href');
+        console.log(`Suggestion ${index + 1}:`, { id, url, element: link });
+        
+        // Add error handler
+        link.addEventListener('click', function(e) {
+            console.log('Link clicked:', { id, url, href: this.href });
+        });
+    });
+    
+    // Log route information
+    console.log('Route info:', {
+        suggestionsShowRoute: '{{ route("suggestions.show", ":id") }}',
+        currentUrl: window.location.href
+    });
+    
+    // Log all suggestion data
+    @if(count($suggestions) > 0)
+    console.log('Suggestions data:', @json($suggestions->items()));
+    @endif
+});
+</script>
 @endsection
 

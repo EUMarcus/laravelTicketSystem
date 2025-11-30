@@ -58,12 +58,6 @@
                         <div class="w-40 h-2 bg-gradient-to-r from-[#65B741] via-[#65B741] to-transparent rounded-full mb-4"></div>
                         <p class="text-lg md:text-xl text-gray-600 max-w-2xl">Share your ideas to improve our community</p>
                     </div>
-                    <a href="{{ route('suggestions.create') }}" class="inline-flex items-center gap-2 px-6 py-3 bg-gray-900 text-white font-semibold rounded-lg hover:bg-gray-800">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                        </svg>
-                        <span>New Suggestion</span>
-                    </a>
                 </div>
             </div>
 
@@ -97,7 +91,10 @@
                     <!-- Header -->
                     <div class="mb-4">
                         <div class="flex items-start justify-between mb-3">
-                            <a href="{{ route('suggestions.show', $suggestion['id']) }}" class="flex-1 group">
+                            <a href="{{ route('suggestions.show', $suggestion['id']) }}" 
+                               class="flex-1 group suggestion-link" 
+                               data-suggestion-id="{{ $suggestion['id'] }}"
+                               onclick="console.log('Suggestion clicked:', { id: '{{ $suggestion['id'] }}', url: '{{ route('suggestions.show', $suggestion['id']) }}', title: '{{ addslashes($suggestion['title']) }}' }); return true;">
                                 <h3 class="text-base font-bold text-gray-900 line-clamp-2 group-hover:text-gray-700">
                                     {{ $suggestion['title'] }}
                                 </h3>
@@ -138,19 +135,12 @@
                         
                         <!-- Action Buttons -->
                         <div class="flex items-center gap-2">
-                            <a href="{{ route('suggestions.show', $suggestion['id']) }}" class="flex-1 px-3 py-2 text-xs font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 text-center">
-                                View
+                            <a href="{{ route('suggestions.show', $suggestion['id']) }}" 
+                               class="flex-1 px-3 py-2 text-xs font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 text-center suggestion-link"
+                               data-suggestion-id="{{ $suggestion['id'] }}"
+                               onclick="console.log('Manage button clicked:', { id: '{{ $suggestion['id'] }}', url: '{{ route('suggestions.show', $suggestion['id']) }}' }); return true;">
+                                Manage
                             </a>
-                            <a href="{{ route('suggestions.edit', $suggestion['id']) }}" class="flex-1 px-3 py-2 text-xs font-medium text-blue-700 bg-blue-50 rounded-lg hover:bg-blue-100 text-center">
-                                Edit
-                            </a>
-                            <form action="{{ route('suggestions.destroy', $suggestion['id']) }}" method="POST" class="flex-1" onsubmit="return confirm('Are you sure you want to delete this suggestion?');">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="w-full px-3 py-2 text-xs font-medium text-red-700 bg-red-50 rounded-lg hover:bg-red-100">
-                                    Delete
-                                </button>
-                            </form>
                         </div>
                     </div>
                 </div>
@@ -191,6 +181,32 @@
         </div>
     </main>
 </div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Staff Suggestions Page Loaded');
+    
+    // Log all suggestion links
+    const suggestionLinks = document.querySelectorAll('.suggestion-link');
+    console.log('Found suggestion links:', suggestionLinks.length);
+    
+    suggestionLinks.forEach((link, index) => {
+        const id = link.getAttribute('data-suggestion-id');
+        const url = link.getAttribute('href');
+        console.log(`Suggestion ${index + 1}:`, { id, url, element: link });
+        
+        // Add error handler
+        link.addEventListener('click', function(e) {
+            console.log('Link clicked:', { id, url, href: this.href });
+        });
+    });
+    
+    // Log route information
+    console.log('Route info:', {
+        suggestionsShowRoute: '{{ route("suggestions.show", ":id") }}',
+        currentUrl: window.location.href
+    });
+});
+</script>
 @else
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" style="padding-top: 6rem !important; padding-bottom: 2rem;">
     <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-8 text-center">

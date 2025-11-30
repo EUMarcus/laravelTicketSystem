@@ -77,6 +77,7 @@ class SuggestionController extends Controller
                     'author' => $author,
                     'upvotes' => 0, // Upvotes are currently stored in localStorage, would need a votes table for proper counting
                     'comments' => $commentCount,
+                    'status' => $suggestion['status'] ?? 'pending',
                 ];
             }, $suggestions);
             
@@ -219,6 +220,7 @@ class SuggestionController extends Controller
                     'author' => $author,
                     'upvotes' => 0, // Upvotes are currently stored in localStorage, would need a votes table for proper counting
                     'comments' => $commentCount,
+                    'status' => $suggestion['status'] ?? 'pending',
                 ];
             }, $suggestions);
             
@@ -271,11 +273,54 @@ class SuggestionController extends Controller
 
     public function show($id)
     {
+        \Log::info('=== SUGGESTION SHOW METHOD CALLED ===', [
+            'id' => $id,
+            'id_type' => gettype($id),
+            'url' => request()->url(),
+            'route_name' => request()->route()->getName() ?? 'unknown',
+            'method' => request()->method(),
+        ]);
+        
         try {
-            // Fetch suggestion from Supabase
-            $suggestions = $this->supabase->select('suggestions', ['suggest_id' => $id], 'suggest_id,title,category,full_content,created_at,posted_by');
+            // Check if Supabase is configured
+            if (!$this->supabase->isConfigured()) {
+                \Log::error('Supabase not configured when trying to show suggestion', ['id' => $id]);
+                abort(500, 'Database not configured');
+            }
+            
+            // Fetch suggestion from Supabase (try with status first, fallback without if column doesn't exist)
+            \Log::info('Attempting to fetch suggestion from Supabase', [
+                'id' => $id,
+                'id_type' => gettype($id),
+                'query_params' => ['suggest_id' => $id],
+            ]);
+            
+            // Try to fetch with status field first
+            try {
+                $suggestions = $this->supabase->select('suggestions', ['suggest_id' => $id], 'suggest_id,title,category,full_content,created_at,posted_by,status');
+            } catch (\Exception $e) {
+                // If status column doesn't exist, fetch without it
+                if (str_contains($e->getMessage(), 'status') || str_contains($e->getMessage(), '42703')) {
+                    \Log::info('Status column not found, fetching without status field', ['id' => $id]);
+                    $suggestions = $this->supabase->select('suggestions', ['suggest_id' => $id], 'suggest_id,title,category,full_content,created_at,posted_by');
+                } else {
+                    throw $e;
+                }
+            }
+            
+            \Log::info('Supabase query result', [
+                'id' => $id,
+                'count' => count($suggestions),
+                'suggestions' => $suggestions,
+                'is_empty' => empty($suggestions),
+            ]);
             
             if (empty($suggestions)) {
+                \Log::warning('Suggestion not found in Supabase', [
+                    'id' => $id,
+                    'id_type' => gettype($id),
+                    'searched_field' => 'suggest_id',
+                ]);
                 abort(404, 'Suggestion not found');
             }
             
@@ -339,13 +384,28 @@ class SuggestionController extends Controller
                 'content' => $suggestion['full_content'],
                 'upvotes' => 0, // Not in database schema yet
                 'comments' => count($formattedComments),
+                'status' => $suggestion['status'] ?? 'pending',
             ];
+            
+            \Log::info('Suggestion loaded successfully', [
+                'id' => $id,
+                'suggestion_id' => $formattedSuggestion['id'],
+                'title' => $formattedSuggestion['title'],
+            ]);
             
             return view('suggestions.show', [
                 'suggestion' => $formattedSuggestion,
                 'comments' => $formattedComments
             ]);
         } catch (\Exception $e) {
+            \Log::error('Error in suggestion show method', [
+                'id' => $id,
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            
             // Fallback to hardcoded data
             $hardcodedSuggestions = [
                 ['id' => 1, 'title' => 'Weekly Community Exercise Program', 'category' => 'Health', 'date' => '3 days ago', 'created_at' => '2024-12-10', 'author' => 'Maria Santos', 'content' => 'I suggest we organize a weekly community exercise program to promote health and wellness among residents. This could include activities like morning walks, yoga sessions, or group fitness classes.', 'upvotes' => 45, 'comments' => 12],
@@ -540,6 +600,32 @@ class SuggestionController extends Controller
             return redirect()->back()
                 ->withInput()
                 ->withErrors(['message' => 'Failed to update suggestion. Please try again.']);
+        }
+    }
+
+    public function updateStatus(Request $request, $id)
+    {
+        // Check if user is staff
+        if (!session('user') || !in_array(session('user')['role'] ?? '', ['employee', 'admin'])) {
+            abort(403, 'Only staff members can update suggestion status.');
+        }
+
+        $validated = $request->validate([
+            'status' => ['required', 'in:pending,considering,processing,approved,rejected'],
+        ]);
+
+        try {
+            $this->supabase->update('suggestions', ['suggest_id' => $id], [
+                'status' => $validated['status'],
+            ]);
+
+            return redirect()->back()
+                ->with('success', 'Suggestion status updated successfully!');
+        } catch (\Exception $e) {
+            \Log::error('Failed to update suggestion status: ' . $e->getMessage());
+            
+            return redirect()->back()
+                ->withErrors(['message' => 'Failed to update suggestion status. Please try again.']);
         }
     }
 

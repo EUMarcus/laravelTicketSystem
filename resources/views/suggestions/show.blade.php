@@ -28,22 +28,49 @@
     <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-6 lg:p-8 mb-6">
         <!-- Header -->
         <div class="mb-6 pb-6 border-b border-gray-200">
-            <div class="flex items-center gap-2 flex-wrap mb-4">
-                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-700 border border-gray-200">
-                    {{ $suggestion['category'] }}
-                </span>
-            </div>
-            <h1 class="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-4">{{ $suggestion['title'] }}</h1>
-            <div class="flex items-center text-sm text-gray-500">
-                <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
-                <span>By {{ $suggestion['author'] }}</span>
-                <span class="mx-2">•</span>
-                <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-                <span>{{ $suggestion['date'] }}</span>
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
+                <div class="flex-1">
+                    <div class="flex items-center gap-2 flex-wrap mb-4">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-700 border border-gray-200">
+                            {{ $suggestion['category'] }}
+                        </span>
+                        @if(isset($suggestion['status']))
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold
+                            @if($suggestion['status'] === 'approved') bg-green-100 text-green-700 border border-green-200
+                            @elseif($suggestion['status'] === 'rejected') bg-red-100 text-red-700 border border-red-200
+                            @elseif($suggestion['status'] === 'processing') bg-blue-100 text-blue-700 border border-blue-200
+                            @elseif($suggestion['status'] === 'considering') bg-yellow-100 text-yellow-700 border border-yellow-200
+                            @else bg-gray-100 text-gray-700 border border-gray-200 @endif">
+                            {{ ucfirst($suggestion['status']) }}
+                        </span>
+                        @endif
+                    </div>
+                    <h1 class="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-4">{{ $suggestion['title'] }}</h1>
+                    <div class="flex items-center text-sm text-gray-500">
+                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                        <span>By {{ $suggestion['author'] }}</span>
+                        <span class="mx-2">•</span>
+                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        <span>{{ $suggestion['date'] }}</span>
+                    </div>
+                </div>
+                @if(session('user') && in_array(session('user')['role'] ?? '', ['employee', 'admin']))
+                <form method="POST" action="{{ route('suggestions.status.update', $suggestion['id']) }}" class="flex-shrink-0">
+                    @csrf
+                    @method('PATCH')
+                    <select name="status" onchange="this.form.submit()" class="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-gray-900 outline-none bg-white cursor-pointer">
+                        <option value="pending" {{ ($suggestion['status'] ?? 'pending') === 'pending' ? 'selected' : '' }}>Pending</option>
+                        <option value="considering" {{ ($suggestion['status'] ?? 'pending') === 'considering' ? 'selected' : '' }}>Considering</option>
+                        <option value="processing" {{ ($suggestion['status'] ?? 'pending') === 'processing' ? 'selected' : '' }}>Processing</option>
+                        <option value="approved" {{ ($suggestion['status'] ?? 'pending') === 'approved' ? 'selected' : '' }}>Approved</option>
+                        <option value="rejected" {{ ($suggestion['status'] ?? 'pending') === 'rejected' ? 'selected' : '' }}>Rejected</option>
+                    </select>
+                </form>
+                @endif
             </div>
         </div>
 

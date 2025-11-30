@@ -26,13 +26,14 @@ Route::get('/suggestions/create', function () {
 Route::post('/suggestions', [App\Http\Controllers\SuggestionController::class, 'store'])->name('suggestions.store');
 
 // CRITICAL: More specific routes MUST come before less specific ones
-// Define edit and comments routes FIRST (before the catch-all {id} route)
+// Define edit, comments, and status routes FIRST (before the catch-all {id} route)
 // These routes have additional path segments, so they must be defined first
 Route::get('/suggestions/{id}/edit', [App\Http\Controllers\SuggestionController::class, 'edit'])->name('suggestions.edit');
 Route::post('/suggestions/{id}/comments', [App\Http\Controllers\SuggestionController::class, 'storeComment'])->name('suggestions.comments.store');
+Route::middleware('auth')->patch('/suggestions/{id}/status', [App\Http\Controllers\SuggestionController::class, 'updateStatus'])->name('suggestions.status.update');
 
 // Base {id} routes come LAST (these will match anything that doesn't match the routes above)
-// IMPORTANT: These must be after /edit and /comments routes to avoid route conflicts
+// IMPORTANT: These must be after /edit, /comments, and /status routes to avoid route conflicts
 Route::get('/suggestions/{id}', [App\Http\Controllers\SuggestionController::class, 'show'])->name('suggestions.show');
 Route::put('/suggestions/{id}', [App\Http\Controllers\SuggestionController::class, 'update'])->name('suggestions.update');
 Route::delete('/suggestions/{id}', [App\Http\Controllers\SuggestionController::class, 'destroy'])->name('suggestions.destroy');
