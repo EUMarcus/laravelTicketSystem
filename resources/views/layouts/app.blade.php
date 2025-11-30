@@ -198,6 +198,7 @@
     </main>
 
     <!-- Footer -->
+    @if(!request()->routeIs('staff.*'))
     <footer class="bg-white border-t border-gray-200 mt-auto">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
             <div class="grid md:grid-cols-4 gap-8 mb-8">
@@ -227,8 +228,8 @@
                     <h3 class="font-bold text-gray-900 mb-4 text-sm uppercase tracking-wide">Resources</h3>
                     <ul class="space-y-3">
                         <li><a href="{{ route('announcements.index') }}" class="text-sm text-gray-600 hover:text-[#65B741] transition-colors">Announcements</a></li>
-                        <li><a href="#" class="text-sm text-gray-600 hover:text-[#65B741] transition-colors">Contact Us</a></li>
-                        <li><a href="#" class="text-sm text-gray-600 hover:text-[#65B741] transition-colors">About</a></li>
+                        <li><a href="{{ route('contact') }}" class="text-sm text-gray-600 hover:text-[#65B741] transition-colors">Contact Us</a></li>
+                        <li><a href="{{ route('about') }}" class="text-sm text-gray-600 hover:text-[#65B741] transition-colors">About</a></li>
                     </ul>
                 </div>
                 
@@ -272,14 +273,15 @@
                         &copy; {{ date('Y') }} Barangay Community Hub. All rights reserved.
                     </p>
                     <div class="flex items-center gap-4">
-                        <a href="#" class="text-sm text-gray-500 hover:text-[#65B741] transition-colors">Privacy Policy</a>
+                        <a href="{{ route('privacy-policy') }}" class="text-sm text-gray-500 hover:text-[#65B741] transition-colors">Privacy Policy</a>
                         <span class="text-gray-300">|</span>
-                        <a href="#" class="text-sm text-gray-500 hover:text-[#65B741] transition-colors">Terms of Service</a>
+                        <a href="{{ route('terms-of-service') }}" class="text-sm text-gray-500 hover:text-[#65B741] transition-colors">Terms of Service</a>
                     </div>
                 </div>
             </div>
         </div>
     </footer>
+    @endif
 
     <script>
         // Mobile menu toggle

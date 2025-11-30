@@ -38,6 +38,22 @@ Route::get('/faq', function () {
     return view('faq.index');
 })->name('faq.index');
 
+Route::get('/about', function () {
+    return view('about.about');
+})->name('about');
+
+Route::get('/contact', function () {
+    return view('about.contact');
+})->name('contact');
+
+Route::get('/privacy-policy', function () {
+    return view('about.privacy-policy');
+})->name('privacy-policy');
+
+Route::get('/terms-of-service', function () {
+    return view('about.terms-of-service');
+})->name('terms-of-service');
+
 Route::get('/profile', function () {
     return view('profile.index');
 })->name('profile.index');
