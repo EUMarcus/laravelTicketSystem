@@ -59,7 +59,7 @@
             <p class="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto">Access essential services and resources for our community</p>
         </div>
         
-        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="grid sm:grid-cols-2 md:grid-cols-4 gap-6">
             @php
                 $services = [
                     ['route' => 'reports.index', 'title' => 'Submit Reports', 'desc' => 'Report community issues and track their progress', 'color' => '65B741'],
