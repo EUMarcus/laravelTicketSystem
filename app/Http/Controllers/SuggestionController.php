@@ -15,14 +15,10 @@ class SuggestionController extends Controller
     public function index()
     {
         try {
-            // Fetch suggestions from database with relationships
             $query = Suggestion::with(['author', 'comments'])->latest();
             
-            // Apply sorting
             $sortBy = request('sort', 'newest');
             if ($sortBy === 'liked') {
-                // For now, upvotes are 0 (stored in localStorage)
-                // In the future, you could add an upvotes column or votes table
                 $query->orderBy('created_at', 'desc');
             } elseif ($sortBy === 'discussed') {
                 $query->withCount('comments')->orderBy('comments_count', 'desc');
@@ -30,7 +26,6 @@ class SuggestionController extends Controller
                 $query->orderBy('created_at', 'desc');
             }
             
-            // Transform data to match view expectations
             $suggestions = $query->get()->map(function($suggestion) {
                 return [
                     'id' => $suggestion->id,
@@ -39,20 +34,17 @@ class SuggestionController extends Controller
                     'date' => $suggestion->created_at->diffForHumans(),
                     'created_at' => $suggestion->created_at->format('Y-m-d'),
                     'author' => $suggestion->author ? $suggestion->author->name : 'Anonymous',
-                    'upvotes' => 0, // Upvotes are currently stored in localStorage
+                    'upvotes' => 0,
                     'comments' => $suggestion->comments->count(),
                     'status' => $suggestion->status ?? 'pending',
                 ];
             });
             
-            // Apply client-side sorting for upvotes (since they're in localStorage)
             if ($sortBy === 'liked') {
                 $suggestions = $suggestions->sortByDesc('upvotes')->values();
             } elseif ($sortBy === 'discussed') {
                 $suggestions = $suggestions->sortByDesc('comments')->values();
             }
-            
-            // Paginate
             $perPage = 6;
             $currentPage = request('page', 1);
             $suggestions = new \Illuminate\Pagination\LengthAwarePaginator(
@@ -67,14 +59,12 @@ class SuggestionController extends Controller
         } catch (\Exception $e) {
             \Log::error('Failed to fetch suggestions: ' . $e->getMessage());
             
-            // Fallback to hardcoded data if database fails
             $hardcodedSuggestions = [
                 ['id' => 1, 'title' => 'Weekly Community Exercise Program', 'category' => 'Health', 'upvotes' => 45, 'comments' => 12, 'author' => 'Maria Santos', 'date' => '3 days ago', 'created_at' => '2024-12-10'],
                 ['id' => 2, 'title' => 'Install Solar-Powered Streetlights', 'category' => 'Infrastructure', 'upvotes' => 89, 'comments' => 23, 'author' => 'Anonymous', 'date' => '1 week ago', 'created_at' => '2024-12-03'],
                 ['id' => 3, 'title' => 'Monthly Barangay Festival', 'category' => 'Events', 'upvotes' => 156, 'comments' => 34, 'author' => 'Juan Dela Cruz', 'date' => '2 weeks ago', 'created_at' => '2024-11-26'],
             ];
             
-            // Apply sorting
             $sortBy = request('sort', 'newest');
             $sortedSuggestions = $hardcodedSuggestions;
             
@@ -91,8 +81,6 @@ class SuggestionController extends Controller
                     return strtotime($b['created_at']) - strtotime($a['created_at']);
                 });
             }
-            
-            // Paginate
             $perPage = 6;
             $currentPage = request('page', 1);
             $total = count($sortedSuggestions);
@@ -114,10 +102,8 @@ class SuggestionController extends Controller
     public function staffIndex()
     {
         try {
-            // Fetch suggestions from database with relationships
             $query = Suggestion::with(['author', 'comments'])->latest();
             
-            // Apply sorting
             $sortBy = request('sort', 'newest');
             if ($sortBy === 'liked') {
                 $query->orderBy('created_at', 'desc');
@@ -127,7 +113,6 @@ class SuggestionController extends Controller
                 $query->orderBy('created_at', 'desc');
             }
             
-            // Transform data to match view expectations
             $suggestions = $query->get()->map(function($suggestion) {
                 return [
                     'id' => $suggestion->id,
@@ -142,14 +127,11 @@ class SuggestionController extends Controller
                 ];
             });
             
-            // Apply client-side sorting for upvotes
             if ($sortBy === 'liked') {
                 $suggestions = $suggestions->sortByDesc('upvotes')->values();
             } elseif ($sortBy === 'discussed') {
                 $suggestions = $suggestions->sortByDesc('comments')->values();
             }
-            
-            // Paginate
             $perPage = 6;
             $currentPage = request('page', 1);
             $suggestions = new \Illuminate\Pagination\LengthAwarePaginator(
@@ -163,7 +145,6 @@ class SuggestionController extends Controller
             return view('staff.suggestions', compact('suggestions'));
         } catch (\Exception $e) {
             \Log::error('Failed to fetch suggestions for staff: ' . $e->getMessage());
-            // Return empty paginator on error
             $suggestions = new \Illuminate\Pagination\LengthAwarePaginator(
                 [],
                 0,
@@ -177,26 +158,15 @@ class SuggestionController extends Controller
 
     public function show($id)
     {
-        \Log::info('=== SUGGESTION SHOW METHOD CALLED ===', [
-            'id' => $id,
-            'id_type' => gettype($id),
-            'url' => request()->url(),
-            'route_name' => request()->route()->getName() ?? 'unknown',
-            'method' => request()->method(),
-        ]);
-        
         try {
-            // Fetch suggestion from database with relationships
             $suggestion = Suggestion::with(['author', 'comments.author'])->findOrFail($id);
             
-            // Format comments
             $formattedComments = $suggestion->comments->map(function($comment) {
                 $authorName = 'Anonymous';
                 $isStaff = false;
                 
                 if ($comment->author) {
                     $authorName = $comment->author->name;
-                    // Check if the comment author is staff
                     if (in_array($comment->author->role, ['employee', 'admin'])) {
                         $isStaff = true;
                         $authorName = 'Staff ' . $authorName;
@@ -213,7 +183,6 @@ class SuggestionController extends Controller
                 ];
             });
             
-            // Transform to match view expectations
             $formattedSuggestion = [
                 'id' => $suggestion->id,
                 'title' => $suggestion->title,
@@ -227,12 +196,6 @@ class SuggestionController extends Controller
                 'status' => $suggestion->status ?? 'pending',
             ];
             
-            \Log::info('Suggestion loaded successfully', [
-                'id' => $id,
-                'suggestion_id' => $formattedSuggestion['id'],
-                'title' => $formattedSuggestion['title'],
-            ]);
-            
             return view('suggestions.show', [
                 'suggestion' => $formattedSuggestion,
                 'comments' => $formattedComments
@@ -241,12 +204,8 @@ class SuggestionController extends Controller
             \Log::error('Error in suggestion show method', [
                 'id' => $id,
                 'error' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
-                'trace' => $e->getTraceAsString(),
             ]);
             
-            // Fallback to hardcoded data
             $hardcodedSuggestions = [
                 ['id' => 1, 'title' => 'Weekly Community Exercise Program', 'category' => 'Health', 'date' => '3 days ago', 'created_at' => '2024-12-10', 'author' => 'Maria Santos', 'content' => 'I suggest we organize a weekly community exercise program to promote health and wellness among residents. This could include activities like morning walks, yoga sessions, or group fitness classes.', 'upvotes' => 45, 'comments' => 12],
                 ['id' => 2, 'title' => 'Install Solar-Powered Streetlights', 'category' => 'Infrastructure', 'date' => '1 week ago', 'created_at' => '2024-12-03', 'author' => 'Anonymous', 'content' => 'I recommend installing solar-powered streetlights in our community to improve safety and reduce energy costs.', 'upvotes' => 89, 'comments' => 23],
@@ -259,7 +218,6 @@ class SuggestionController extends Controller
                 abort(404, 'Suggestion not found');
             }
             
-            // Fallback comments
             $comments = [
                 ['id' => 1, 'author' => 'Carlos Rivera', 'date' => '2 days ago', 'text' => 'Great idea! I would love to participate in this.'],
             ];
@@ -273,7 +231,6 @@ class SuggestionController extends Controller
 
     public function storeComment(Request $request, $id)
     {
-        // Check if user is logged in
         if (!session('user')) {
             return redirect()->route('login')
                 ->withErrors(['message' => 'You must be logged in to comment.']);
@@ -283,14 +240,11 @@ class SuggestionController extends Controller
             'comment' => ['required', 'string', 'max:1000'],
         ]);
 
-        // Get user ID from session
         $userId = session('user')['id'] ?? null;
         
         try {
-            // Verify suggestion exists
             $suggestion = Suggestion::findOrFail($id);
             
-            // Create comment
             $comment = SuggestionComment::create([
                 'id' => (string) Str::uuid(),
                 'suggestion_id' => $id,
@@ -310,7 +264,6 @@ class SuggestionController extends Controller
 
     public function store(Request $request)
     {
-        // Check if user is logged in
         if (!session('user')) {
             return redirect()->route('login')
                 ->withErrors(['message' => 'You must be logged in to submit a suggestion.']);
@@ -322,11 +275,9 @@ class SuggestionController extends Controller
             'description' => ['required', 'string'],
         ]);
 
-        // Get user ID from session
         $userId = session('user')['id'] ?? null;
         
         try {
-            // Create suggestion
             $suggestion = Suggestion::create([
                 'id' => (string) Str::uuid(),
                 'title' => $validated['title'],
@@ -349,16 +300,7 @@ class SuggestionController extends Controller
 
     public function edit($id)
     {
-        \Log::info('=== SUGGESTION EDIT METHOD CALLED ===', [
-            'id' => $id,
-            'id_type' => gettype($id),
-            'url' => request()->url(),
-            'route_name' => request()->route()->getName(),
-        ]);
-        
-        // Check if user is staff
         if (!session('user') || !in_array(session('user')['role'] ?? '', ['employee', 'admin'])) {
-            \Log::warning('Unauthorized edit attempt', ['id' => $id, 'role' => session('user')['role'] ?? 'none']);
             abort(403, 'Only staff members can edit suggestions.');
         }
 
@@ -374,20 +316,12 @@ class SuggestionController extends Controller
                 ]
             ]);
         } catch (\Exception $e) {
-            \Log::error('Error fetching suggestion for edit', [
-                'id' => $id,
-                'error' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine()
-            ]);
-            
             abort(404, 'Suggestion not found: ' . $e->getMessage());
         }
     }
 
     public function update(Request $request, $id)
     {
-        // Check if user is staff
         if (!session('user') || !in_array(session('user')['role'] ?? '', ['employee', 'admin'])) {
             abort(403, 'Only staff members can edit suggestions.');
         }
@@ -420,7 +354,6 @@ class SuggestionController extends Controller
 
     public function updateStatus(Request $request, $id)
     {
-        // Check if user is staff
         if (!session('user') || !in_array(session('user')['role'] ?? '', ['employee', 'admin'])) {
             abort(403, 'Only staff members can update suggestion status.');
         }
@@ -448,18 +381,13 @@ class SuggestionController extends Controller
 
     public function destroy($id)
     {
-        // Check if user is staff
         if (!session('user') || !in_array(session('user')['role'] ?? '', ['employee', 'admin'])) {
             abort(403, 'Only staff members can delete suggestions.');
         }
 
         try {
             $suggestion = Suggestion::findOrFail($id);
-            
-            // Delete comments first (cascade should handle this, but being explicit)
             $suggestion->comments()->delete();
-            
-            // Delete suggestion
             $suggestion->delete();
 
             return redirect()->route('staff.suggestions')

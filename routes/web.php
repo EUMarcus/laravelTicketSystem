@@ -50,9 +50,7 @@ Route::middleware('auth')->group(function () {
 
 Route::get('/announcements/{id}', [App\Http\Controllers\AnnouncementController::class, 'show'])->name('announcements.show');
 
-Route::get('/faq', function () {
-    return view('faq.index');
-})->name('faq.index');
+Route::get('/faq', [App\Http\Controllers\FaqController::class, 'index'])->name('faq.index');
 
 Route::get('/about', function () {
     return view('about.about');
@@ -88,6 +86,15 @@ Route::middleware('auth')->group(function () {
 Route::get('/staff/suggestions', [App\Http\Controllers\SuggestionController::class, 'staffIndex'])->name('staff.suggestions');
 
 Route::get('/staff/announcements', [App\Http\Controllers\AnnouncementController::class, 'index'])->name('staff.announcements');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/staff/faqs', [App\Http\Controllers\FaqController::class, 'staffIndex'])->name('staff.faqs');
+    Route::get('/staff/faqs/create', [App\Http\Controllers\FaqController::class, 'create'])->name('staff.faqs.create');
+    Route::post('/staff/faqs', [App\Http\Controllers\FaqController::class, 'store'])->name('staff.faqs.store');
+    Route::get('/staff/faqs/{id}/edit', [App\Http\Controllers\FaqController::class, 'edit'])->name('staff.faqs.edit');
+    Route::put('/staff/faqs/{id}', [App\Http\Controllers\FaqController::class, 'update'])->name('staff.faqs.update');
+    Route::delete('/staff/faqs/{id}', [App\Http\Controllers\FaqController::class, 'destroy'])->name('staff.faqs.destroy');
+});
 
 // Auth routes
 Route::get('/login', [App\Http\Controllers\Auth\LoginController::class, 'showLoginForm'])->name('login');

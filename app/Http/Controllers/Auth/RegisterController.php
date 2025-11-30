@@ -33,35 +33,29 @@ class RegisterController extends Controller
 
         $userId = (string) Str::uuid();
         
-        // Use database transaction to ensure both are created or neither
         try {
             DB::beginTransaction();
             
-            // Create user FIRST (since profiles.id FK references users.id)
-            // Note: password is auto-hashed by the User model's cast
             $user = User::create([
                 'id' => $userId,
                 'name' => $request->name,
                 'email' => $request->email,
-                'password' => $request->password, // Will be auto-hashed by model cast
+                'password' => $request->password,
                 'voters_id' => strtoupper($request->voters_id),
                 'contact_number' => $request->contact_number,
                 'address' => $request->address,
             ]);
 
-            // Verify user was created
             if (!$user->exists) {
                 throw new \Exception('Failed to create user');
             }
 
-            // Then create profile with the same UUID (which references the user)
             $profile = Profile::create([
                 'id' => $userId,
                 'role' => $request->role === 'citizen' ? 'customer' : 'employee',
                 'name' => $request->name,
             ]);
 
-            // Verify profile was created
             if (!$profile || !$profile->exists) {
                 throw new \Exception('Failed to create profile');
             }
@@ -75,7 +69,6 @@ class RegisterController extends Controller
 
         Auth::login($user);
 
-        // Set session user data for views and JavaScript
         $request->session()->put('user', [
             'id' => $user->id,
             'name' => $user->name,

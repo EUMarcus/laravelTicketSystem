@@ -24,7 +24,7 @@ class MessageController extends Controller
         $validated = $request->validate([
             'content' => ['nullable', 'string', 'required_without:attachments'],
             'attachments' => ['nullable', 'array'],
-            'attachments.*' => ['file', 'max:10240', 'mimes:jpeg,jpg,png,pdf,doc,docx'], // 10MB max
+            'attachments.*' => ['file', 'max:10240', 'mimes:jpeg,jpg,png,pdf,doc,docx'],
         ], [
             'attachments.*.file' => 'Each attachment must be a valid file.',
             'attachments.*.max' => 'Each attachment must not be larger than 10MB.',
@@ -32,10 +32,8 @@ class MessageController extends Controller
         ]);
 
         $user = auth()->user();
-        // With FK constraint, profile must exist for every user
         $profile = $user->profile;
         
-        // Legacy data migration: create profile if missing (shouldn't happen with FK)
         if (!$profile) {
             $profile = Profile::create([
                 'id' => $user->id,
@@ -44,7 +42,6 @@ class MessageController extends Controller
             ]);
         }
 
-        // Check access
         if ($profile->isCitizen() && $ticket->customer_id !== $profile->id) {
             abort(403);
         }
@@ -56,21 +53,18 @@ class MessageController extends Controller
             'content' => $validated['content'] ?? '',
         ]);
 
-        // Handle file uploads
+        // for file uploads
         if ($request->hasFile('attachments')) {
             $uploadErrors = [];
             
             foreach ($request->file('attachments') as $index => $file) {
                 try {
-                    // Validate file before upload
                     if (!$file->isValid()) {
                         $uploadErrors[] = "File " . ($index + 1) . ": " . $file->getErrorMessage();
                         continue;
                     }
 
-                    // Check if Supabase is configured
                     if (!$this->supabase->isConfigured()) {
-                        // Fallback: Store file locally if Supabase is not configured
                         $fileName = time() . '_' . preg_replace('/[^a-zA-Z0-9._-]/', '_', $file->getClientOriginalName());
                         $filePath = $file->storeAs("tickets/{$ticket->id}/messages", $fileName, 'public');
                         
@@ -86,7 +80,6 @@ class MessageController extends Controller
                             'uploaded_by' => $profile->id,
                         ]);
                     } else {
-                        // Upload to Supabase
                         $upload = $this->supabase->uploadFile($file, "tickets/{$ticket->id}/messages");
                         
                         $message->attachments()->create([
@@ -107,7 +100,6 @@ class MessageController extends Controller
                 }
             }
             
-            // If there were upload errors, redirect back with errors
             if (!empty($uploadErrors)) {
                 return redirect()->back()
                     ->withInput()
@@ -115,7 +107,6 @@ class MessageController extends Controller
             }
         }
 
-        // Update ticket status if needed
         if ($ticket->status === 'resolved' || $ticket->status === 'closed') {
             $ticket->update(['status' => 'in_progress']);
         }

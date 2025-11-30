@@ -21,10 +21,8 @@ class TicketController extends Controller
     public function index()
     {
         $user = auth()->user();
-        // With FK constraint, profile must exist for every user
         $profile = $user->profile;
         
-        // Legacy data migration: create profile if missing (shouldn't happen with FK)
         if (!$profile) {
             $profile = Profile::create([
                 'id' => $user->id,
@@ -44,7 +42,6 @@ class TicketController extends Controller
                 ->paginate(15);
         }
 
-        // Return staff view if accessing staff route
         if (request()->routeIs('staff.reports')) {
             return view('staff.reports', compact('tickets', 'profile'));
         }
@@ -64,7 +61,7 @@ class TicketController extends Controller
             'description' => ['nullable', 'string'],
             'priority' => ['required', 'in:low,medium,high,urgent'],
             'attachments' => ['nullable', 'array'],
-            'attachments.*' => ['file', 'max:10240', 'mimes:jpeg,jpg,png,pdf,doc,docx'], // 10MB max
+            'attachments.*' => ['file', 'max:10240', 'mimes:jpeg,jpg,png,pdf,doc,docx'],
         ], [
             'attachments.*.file' => 'Each attachment must be a valid file.',
             'attachments.*.max' => 'Each attachment must not be larger than 10MB.',
@@ -72,10 +69,8 @@ class TicketController extends Controller
         ]);
 
         $user = auth()->user();
-        // With FK constraint, profile must exist for every user
         $profile = $user->profile;
         
-        // Legacy data migration: create profile if missing (shouldn't happen with FK)
         if (!$profile) {
             $profile = Profile::create([
                 'id' => $user->id,
@@ -93,21 +88,18 @@ class TicketController extends Controller
             'status' => 'open',
         ]);
 
-        // Handle file uploads
+        // for file uploads
         if ($request->hasFile('attachments')) {
             $uploadErrors = [];
             
             foreach ($request->file('attachments') as $index => $file) {
                 try {
-                    // Validate file before upload
                     if (!$file->isValid()) {
                         $uploadErrors[] = "File " . ($index + 1) . ": " . $file->getErrorMessage();
                         continue;
                     }
 
-                    // Check if Supabase is configured
                     if (!$this->supabase->isConfigured()) {
-                        // Fallback: Store file locally if Supabase is not configured
                         $fileName = time() . '_' . preg_replace('/[^a-zA-Z0-9._-]/', '_', $file->getClientOriginalName());
                         $filePath = $file->storeAs("tickets/{$ticket->id}", $fileName, 'public');
                         
@@ -122,7 +114,6 @@ class TicketController extends Controller
                             'uploaded_by' => $profile->id,
                         ]);
                     } else {
-                        // Upload to Supabase
                         $upload = $this->supabase->uploadFile($file, "tickets/{$ticket->id}");
                         
                         $ticket->attachments()->create([
@@ -142,7 +133,6 @@ class TicketController extends Controller
                 }
             }
             
-            // If there were upload errors, redirect back with errors
             if (!empty($uploadErrors)) {
                 return redirect()->back()
                     ->withInput()
@@ -158,10 +148,8 @@ class TicketController extends Controller
     {
         $ticket->load(['customer', 'assignedEmployee', 'messages.sender', 'messages.attachments', 'attachments']);
         $user = auth()->user();
-        // With FK constraint, profile must exist for every user
         $profile = $user->profile;
         
-        // Legacy data migration: create profile if missing (shouldn't happen with FK)
         if (!$profile) {
             $profile = Profile::create([
                 'id' => $user->id,
@@ -170,7 +158,6 @@ class TicketController extends Controller
             ]);
         }
 
-        // Check access
         if ($profile->isCitizen() && $ticket->customer_id !== $profile->id) {
             abort(403);
         }
@@ -183,7 +170,6 @@ class TicketController extends Controller
         $user = auth()->user();
         $profile = $user->profile;
         
-        // Only staff can edit reports
         if (!$profile || !$profile->isEmployee()) {
             abort(403, 'Only staff members can edit reports.');
         }
@@ -196,7 +182,6 @@ class TicketController extends Controller
         $user = auth()->user();
         $profile = $user->profile;
         
-        // Staff can edit everything, citizens can only update status/priority
         if ($profile && $profile->isEmployee()) {
             $validated = $request->validate([
                 'subject' => ['sometimes', 'required', 'string', 'max:255'],
@@ -227,19 +212,15 @@ class TicketController extends Controller
         $user = auth()->user();
         $profile = $user->profile;
         
-        // Only staff can delete reports
         if (!$profile || !$profile->isEmployee()) {
             abort(403, 'Only staff members can delete reports.');
         }
 
-        // Delete attachments first
         foreach ($ticket->attachments as $attachment) {
             try {
                 if ($this->supabase->isConfigured() && $attachment->file_path) {
-                    // Delete from Supabase if configured
                     $this->supabase->deleteFile($attachment->file_path);
                 } elseif ($attachment->file_path && file_exists(storage_path('app/public/' . $attachment->file_path))) {
-                    // Delete local file
                     unlink(storage_path('app/public/' . $attachment->file_path));
                 }
             } catch (\Exception $e) {
@@ -247,8 +228,6 @@ class TicketController extends Controller
             }
             $attachment->delete();
         }
-
-        // Delete messages and their attachments
         foreach ($ticket->messages as $message) {
             foreach ($message->attachments as $attachment) {
                 try {

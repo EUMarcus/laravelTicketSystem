@@ -13,12 +13,10 @@ class AnnouncementController extends Controller
     public function index()
     {
         try {
-            // Fetch announcements from database, ordered by created_at descending
             $announcements = Announcement::with('author')
                 ->latest()
                 ->get()
                 ->map(function ($announcement) {
-                    // Generate summary from full_content
                     $summary = mb_substr(strip_tags($announcement->full_content ?? ''), 0, 150);
                     if (mb_strlen($announcement->full_content ?? '') > 150) {
                         $summary .= '...';
@@ -32,20 +30,16 @@ class AnnouncementController extends Controller
                         'summary' => $summary,
                         'content' => $announcement->full_content,
                         'urgent' => $announcement->urgent ?? false,
-                        'images' => [], // No images for now
+                        'images' => [],
                     ];
                 });
 
-            // Merge with session announcements (if any)
             $sessionAnnouncements = session('announcements', []);
             $allAnnouncements = $announcements->merge($sessionAnnouncements)->all();
 
-            // Sort by date (newest first)
             usort($allAnnouncements, function ($a, $b) {
                 return strtotime($b['date']) - strtotime($a['date']);
             });
-
-            // Paginate
             $perPage = 6;
             $currentPage = request('page', 1);
             $total = count($allAnnouncements);
@@ -60,13 +54,11 @@ class AnnouncementController extends Controller
                 ['path' => request()->url(), 'query' => request()->query()]
             );
 
-            // Determine which view to use based on route
             $view = request()->routeIs('staff.announcements') ? 'staff.announcements' : 'announcements.index';
             return view($view, compact('announcements'));
         } catch (\Exception $e) {
             \Log::error('Failed to fetch announcements: ' . $e->getMessage());
             
-            // Fallback to hardcoded data if database fails
             $hardcodedAnnouncements = [
                 ['id' => 1, 'title' => 'Community Clean-Up Day Scheduled', 'category' => 'Event', 'date' => 'Dec 5, 2024', 'summary' => 'Join us for a community-wide clean-up activity this coming Saturday. All residents are welcome to participate.', 'urgent' => false],
                 ['id' => 2, 'title' => 'Health Advisory: Dengue Prevention', 'category' => 'Health', 'date' => 'Dec 3, 2024', 'summary' => 'Important reminders on preventing dengue. Keep your surroundings clean and eliminate stagnant water.', 'urgent' => true],
@@ -90,7 +82,6 @@ class AnnouncementController extends Controller
                 ['path' => request()->url(), 'query' => request()->query()]
             );
 
-            // Determine which view to use based on route
             $view = request()->routeIs('staff.announcements') ? 'staff.announcements' : 'announcements.index';
             return view($view, compact('announcements'));
         }
@@ -99,25 +90,20 @@ class AnnouncementController extends Controller
     public function show($id)
     {
         try {
-            // Fetch announcement from database
             $announcement = Announcement::with('author')->findOrFail($id);
 
-            // Format date
             $date = $announcement->created_at->format('M d, Y');
 
-            // Format start_date if provided
             $startDate = null;
             if ($announcement->start_date) {
                 $startDate = $announcement->start_date->format('M d, Y g:i A');
             }
 
-            // Format end_date if provided
             $endDate = null;
             if ($announcement->end_date) {
                 $endDate = $announcement->end_date->format('M d, Y g:i A');
             }
 
-            // Transform to match view expectations
             $formattedAnnouncement = [
                 'id' => $announcement->id,
                 'title' => $announcement->title,
@@ -126,7 +112,7 @@ class AnnouncementController extends Controller
                 'summary' => mb_substr(strip_tags($announcement->full_content ?? ''), 0, 150) . '...',
                 'content' => $announcement->full_content,
                 'urgent' => $announcement->urgent ?? false,
-                'images' => [], // No images for now
+                'images' => [],
                 'start_date' => $startDate,
                 'end_date' => $endDate,
             ];
@@ -135,7 +121,6 @@ class AnnouncementController extends Controller
         } catch (\Exception $e) {
             \Log::error('Failed to fetch announcement: ' . $e->getMessage());
             
-            // Fallback to hardcoded data
             $hardcodedAnnouncements = [
                 ['id' => 1, 'title' => 'Community Clean-Up Day Scheduled', 'category' => 'Event', 'date' => 'Dec 5, 2024', 'summary' => 'Join us for a community-wide clean-up activity this coming Saturday. All residents are welcome to participate.', 'urgent' => false, 'content' => 'We are excited to announce our upcoming Community Clean-Up Day scheduled for Saturday, December 14, 2024, from 8:00 AM to 12:00 PM. This is a community-wide initiative to clean and beautify our barangay. All residents are warmly invited to participate in this activity. Together, we can make our community a cleaner and more beautiful place to live.', 'images' => []],
             ];
@@ -152,7 +137,6 @@ class AnnouncementController extends Controller
 
     public function store(Request $request)
     {
-        // Check if user is staff
         if (!session('user') || session('user')['role'] !== 'employee') {
             abort(403, 'Only staff members can create announcements.');
         }
@@ -166,11 +150,9 @@ class AnnouncementController extends Controller
             'end_date' => ['nullable', 'date', 'after_or_equal:start_date'],
         ]);
 
-        // Get user ID from session
         $userId = session('user')['id'] ?? null;
 
         try {
-            // Create announcement
             $announcement = Announcement::create([
                 'id' => (string) Str::uuid(),
                 'title' => $validated['title'],
@@ -187,7 +169,6 @@ class AnnouncementController extends Controller
         } catch (\Exception $e) {
             \Log::error('Failed to create announcement: ' . $e->getMessage());
             
-            // Fallback to session storage if database fails
             $summary = mb_substr(strip_tags($validated['content']), 0, 150);
             if (mb_strlen($validated['content']) > 150) {
                 $summary .= '...';
@@ -215,7 +196,6 @@ class AnnouncementController extends Controller
 
     public function edit($id)
     {
-        // Check if user is staff
         if (!session('user') || !in_array(session('user')['role'] ?? '', ['employee', 'admin'])) {
             abort(403, 'Only staff members can edit announcements.');
         }
@@ -223,7 +203,6 @@ class AnnouncementController extends Controller
         try {
             $announcement = Announcement::findOrFail($id);
             
-            // Format dates for form inputs
             $startDate = null;
             if ($announcement->start_date) {
                 $startDate = $announcement->start_date->format('Y-m-d\TH:i');
@@ -253,7 +232,6 @@ class AnnouncementController extends Controller
 
     public function update(Request $request, $id)
     {
-        // Check if user is staff
         if (!session('user') || !in_array(session('user')['role'] ?? '', ['employee', 'admin'])) {
             abort(403, 'Only staff members can edit announcements.');
         }
@@ -292,7 +270,6 @@ class AnnouncementController extends Controller
 
     public function destroy($id)
     {
-        // Check if user is staff
         if (!session('user') || !in_array(session('user')['role'] ?? '', ['employee', 'admin'])) {
             abort(403, 'Only staff members can delete announcements.');
         }

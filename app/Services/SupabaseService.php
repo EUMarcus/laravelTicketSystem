@@ -24,9 +24,7 @@ class SupabaseService
         $this->verifySsl = config('supabase.verify_ssl', false);
     }
 
-    /**
-     * Upload a file to Supabase Storage
-     */
+    // for file uploads
     public function uploadFile(UploadedFile $file, string $path, ?string $bucket = null): array
     {
         if (!$this->isConfigured()) {
@@ -37,11 +35,10 @@ class SupabaseService
         $fileName = time() . '_' . preg_replace('/[^a-zA-Z0-9._-]/', '_', $file->getClientOriginalName());
         $filePath = trim($path . '/' . $fileName, '/');
 
-        // Upload to Supabase Storage using the Storage API
         $http = Http::withHeaders([
             'Authorization' => 'Bearer ' . $this->serviceKey,
             'Content-Type' => $file->getMimeType(),
-            'x-upsert' => 'true', // Overwrite if exists
+            'x-upsert' => 'true',
         ]);
 
         if (!$this->verifySsl) {
@@ -69,21 +66,13 @@ class SupabaseService
         ];
     }
 
-    /**
-     * Get public URL for a file in Supabase Storage
-     */
     public function getPublicUrl(string $bucket, string $path): string
     {
-        // Remove leading slash if present
         $path = ltrim($path, '/');
-        
-        // Supabase public URL format
         return "{$this->url}/storage/v1/object/public/{$bucket}/{$path}";
     }
 
-    /**
-     * Delete a file from Supabase Storage
-     */
+    // for file deletion
     public function deleteFile(string $path, ?string $bucket = null): bool
     {
         if (!$this->isConfigured()) {
@@ -109,17 +98,12 @@ class SupabaseService
         return $response->successful();
     }
 
-    /**
-     * Check if Supabase is configured
-     */
     public function isConfigured(): bool
     {
         return !empty($this->url) && !empty($this->serviceKey) && !empty($this->bucket);
     }
 
-    /**
-     * Insert data into a Supabase table
-     */
+    // legacy methods (not used anymore, kept for compatibility)
     public function insert(string $table, array $data): array
     {
         if (!$this->isConfigured()) {
@@ -151,9 +135,7 @@ class SupabaseService
         return is_array($result) && isset($result[0]) ? $result[0] : $result;
     }
 
-    /**
-     * Select data from a Supabase table
-     */
+    // legacy method (not used anymore)
     public function select(string $table, array $filters = [], string $select = '*', string $orderBy = null, string $orderDirection = 'desc'): array
     {
         if (!$this->isConfigured()) {
@@ -173,14 +155,11 @@ class SupabaseService
 
         $url = "{$this->url}/rest/v1/{$table}?select={$select}";
         
-        // Add filters as query parameters
         foreach ($filters as $key => $value) {
-            // URL encode the value to handle special characters
             $encodedValue = urlencode($value);
             $url .= "&{$key}=eq.{$encodedValue}";
         }
         
-        // Add ordering
         if ($orderBy) {
             $url .= "&order={$orderBy}.{$orderDirection}";
         }
@@ -195,9 +174,7 @@ class SupabaseService
         return $response->json() ?? [];
     }
 
-    /**
-     * Update data in a Supabase table
-     */
+    // legacy method (not used anymore)
     public function update(string $table, array $filters, array $data): array
     {
         if (!$this->isConfigured()) {
@@ -217,7 +194,6 @@ class SupabaseService
 
         $url = "{$this->url}/rest/v1/{$table}";
         
-        // Add filters as query parameters
         foreach ($filters as $key => $value) {
             $url .= (strpos($url, '?') === false ? '?' : '&') . "{$key}=eq.{$value}";
         }
@@ -233,9 +209,7 @@ class SupabaseService
         return is_array($result) && isset($result[0]) ? $result[0] : $result;
     }
 
-    /**
-     * Delete data from a Supabase table
-     */
+    // legacy method (not used anymore)
     public function delete(string $table, array $filters): bool
     {
         if (!$this->isConfigured()) {
@@ -254,7 +228,6 @@ class SupabaseService
 
         $url = "{$this->url}/rest/v1/{$table}";
         
-        // Add filters as query parameters
         foreach ($filters as $key => $value) {
             $url .= (strpos($url, '?') === false ? '?' : '&') . "{$key}=eq.{$value}";
         }
